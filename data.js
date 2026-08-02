@@ -1086,6 +1086,106 @@ const TARIFF_DATA = [
   }
 ];
 
+// ============================================================
+// REMISSION_ORDERS — relief FROM surtax, the inverse of SURTAX_ORDERS.
+// A shipment can be surtax-eligible AND remission-eligible at once —
+// these two arrays are deliberately independent, checked separately.
+// Each entry tracks: which surtax it relieves, the eligibility
+// condition, the import-date window (many remission orders only cover
+// goods imported before/after a specific date — this is the single
+// biggest source of missed recovery, since the window keeps getting
+// amended), and the CBSA special authorization code needed to claim it
+// via CARM (at import, or after via correction/adjustment).
+// Researched and verified 01 AUG 2026 — these orders are amended
+// often (see SOR/2025-122's history: amended at least 4 times since
+// April 2025), so re-verify import windows before relying on this for
+// a live recovery claim.
+// ============================================================
+const REMISSION_ORDERS = [
+  {
+    regNo: "SOR/2025-122 s.3",
+    name: "United States Surtax Remission Order (2025) — Aluminum, manufacturing/processing/packaging/agricultural use",
+    amendmentHistory: "Registered Apr 16, 2025; amended by SOR/2025-210, SOR/2025-269, and SOR/2026-154 (in force Feb 5, 2026 per Customs Notice 25-19, formally registered Jun 22, 2026)",
+    reliefFromRegNo: ["SOR/2025-95"],
+    specialAuthorityCode: "25-0466C",
+    carmReasonCode: "R2-74-1-GR-53",
+    eligibilityCondition: "Aluminum goods of United States origin, imported for use in Canada in manufacturing, processing, packaging of a food product or beverage, or production of an agricultural product.",
+    importWindow: { start: null, end: "2027-07-01" },
+    statusNote: "IMPORTANT: steel goods under this same section 3 relief (same uses) EXPIRED January 31, 2026 and were NOT extended — 25% surtax has applied to steel under this provision since Feb 1, 2026. Do not assume steel qualifies just because aluminum does under s.3 — check which metal before claiming.",
+    filingNote: "Claim at import via SA code on the CAD, or recover retroactively via CARM correction (before payment due date) or adjustment (after payment due date) using reason code R2-74-1-GR-53.",
+    lastVerified: "01 AUG 2026",
+    sourceUrl: "https://gazette.gc.ca/rp-pr/p2/2026/2026-07-01/html/sor-dors154-eng.html"
+  },
+  {
+    regNo: "SOR/2025-122 s.4.4",
+    name: "United States Surtax Remission Order (2025) — Schedule 6, Steel Mill Products",
+    amendmentHistory: "New section added by SOR/2026-154, in force Jul 1, 2026",
+    reliefFromRegNo: ["SOR/2025-95"],
+    specialAuthorityCode: "25-0466T01",
+    carmReasonCode: "R2-74-1-GR-53",
+    eligibilityCondition: "Steel mill products classified under one of 179 tariff items listed in Schedule 6 — goods Finance Canada determined are not produced in Canada. Broader than the case-by-case company-specific relief stream — applies based on tariff classification alone, no end-use proof required.",
+    importWindow: { start: null, end: null },
+    statusNote: "No import cutoff date — the newest and broadest remission stream added so far. Worth checking every steel-mill-product entry against Schedule 6's 179 items, since this doesn't require the manufacturing/processing end-use test that s.3 does.",
+    filingNote: "Same CAD/CARM mechanism as s.3 — claim at import via SA code, or recover retroactively via correction/adjustment.",
+    lastVerified: "01 AUG 2026",
+    sourceUrl: "https://gazette.gc.ca/rp-pr/p2/2026/2026-07-01/html/sor-dors154-eng.html"
+  },
+  {
+    regNo: "SOR/2026-34",
+    name: "Steel Derivative Goods Surtax Remission Order — Schedule (43 items) & utility wind towers",
+    amendmentHistory: "Entered into force Feb 24, 2026; guidance updated via Customs Notice 26-07 (Mar 11, 2026)",
+    reliefFromRegNo: ["SOR/2025-267"],
+    specialAuthorityCode: "26-0145A (public health/safety/national security stream) — separate codes apply for the Schedule-43 and wind tower streams, confirm current code before filing",
+    carmReasonCode: null,
+    eligibilityCondition: "Three separate relief paths: (1) goods imported by/for listed public health, public safety, or national security entities; (2) 43 specific tariff items listed in the Order's Schedule, where the goods are also produced domestically or were in documented short supply; (3) utility wind towers/tower sections (HS 7308.20.00) either under a supply order signed before Dec 26, 2025, or imported for offshore wind project installation.",
+    importWindow: { start: "2025-12-26", end: null },
+    statusNote: "Claims must be filed within 2 years of the import date. No duplicate relief allowed — can't stack with another surtax claim on the same goods.",
+    filingNote: "File via CAD in the CARM Commercial Client Portal (CCP), Special Authority OIC field, using the SA code matching whichever of the 3 relief paths applies.",
+    lastVerified: "01 AUG 2026",
+    sourceUrl: "https://www.cbsa-asfc.gc.ca/publications/cn-ad/cn26-07-eng.html"
+  },
+  {
+    regNo: "China Surtax Remission Order (2024)",
+    name: "China Surtax Remission Order — Schedule 1 & 2 (steel and aluminum products)",
+    amendmentHistory: "In force Jan 31, 2025; updated Mar 19, 2026 (extended eligibility periods, clarified Schedule 1/2 goods, added conditions, corrected technical errors)",
+    reliefFromRegNo: ["SOR/2025-154"],
+    specialAuthorityCode: null,
+    carmReasonCode: null,
+    eligibilityCondition: "Goods listed in Schedule 1 and Schedule 2 of the Order, subject to time-bound import periods and business-number eligibility conditions specific to each schedule.",
+    importWindow: { start: "2025-01-31", end: null },
+    statusNote: "PLACEHOLDER — special authority code and exact current Schedule 1/2 item list not yet pulled directly from the Order's current text. Confirm against the March 19, 2026 update before relying on this for a live claim; treat as a signal to investigate, not a confirmed match.",
+    filingNote: "Corrections and adjustments filed through CARM, subject to the Order's defined reason codes and deadlines — confirm the specific reason code against current CBSA guidance before filing.",
+    lastVerified: "01 AUG 2026 (needs a follow-up pass for full schedule detail)",
+    sourceUrl: "https://www.ghy.com/trade-compliance/canada-china-surtax-remission-order-update/"
+  }
+];
+
+// Checks whether an import date falls within a remission order's eligible
+// window. null start/end means open-ended on that side. Returns true/false
+// — but a true here means "worth investigating," not "confirmed eligible":
+// the real eligibility conditions (end-use, schedule membership, business
+// number) still need human review against eligibilityCondition/statusNote.
+function importDateInWindow(order, importDateStr){
+  if(!importDateStr) return true; // no date given — can't rule it out, surface it
+  const d = new Date(importDateStr);
+  if(isNaN(d)) return true;
+  if(order.importWindow.start && d < new Date(order.importWindow.start)) return false;
+  if(order.importWindow.end && d > new Date(order.importWindow.end)) return false;
+  return true;
+}
+
+// Finds remission orders that relieve the given surtax order AND whose
+// import-date window covers the given date. This is a filter to a
+// candidate list for human review, not an automated eligibility
+// determination — real eligibility depends on end-use, schedule
+// membership, and other conditions that need a person to check.
+function findRemissionMatches(surtaxRegNo, importDateStr){
+  if(!surtaxRegNo) return [];
+  return REMISSION_ORDERS.filter(r =>
+    r.reliefFromRegNo.includes(surtaxRegNo) && importDateInWindow(r, importDateStr)
+  );
+}
+
 // Precise rule-based check: does this surtax order apply to goods from
 // the given country? Uses the structured originScope field, not fuzzy
 // text matching against the free-text origin description.
