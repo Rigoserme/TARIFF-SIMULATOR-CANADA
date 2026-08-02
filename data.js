@@ -701,6 +701,27 @@ const SAFEGUARD_SOURCE_DATE = "28 JUL 2026 (Canada Gazette Part II, Vol. 160, No
 // have not yet been researched and getMfnRate() returns null for them.
 const MFN_SOURCE_DATE = "31 JUL 2026";
 const MFN_RATES = {
+  // ===== Chapter 1 — Live Animals (verified 02 AUG 2026 from CBSA ch01-2026 PDF) =====
+  // Chapter is Free by default (see MFN_FREE_DEFAULT_CHAPTERS) — these are
+  // the ONLY exceptions, all poultry-related (broiler/spent-fowl/turkey
+  // TRQ items with within/over access commitment rates).
+  "0105.11.21.00": {type:"specific", rate:null, note:"0.86¢/each"},
+  "0105.11.22.00": {type:"compound", rate:null, note:"238% but not less than 30.8¢/each"},
+  "0105.12.90.00": {type:"percent", rate:8, note:""},
+  "0105.13.90.00": {type:"percent", rate:8, note:""},
+  "0105.14.90.00": {type:"percent", rate:8, note:""},
+  "0105.15.90.00": {type:"percent", rate:2.5, note:""},
+  "0105.94.10.11": {type:"specific", rate:null, note:"2.82¢/kg"},
+  "0105.94.10.12": {type:"specific", rate:null, note:"2.82¢/kg"},
+  "0105.94.10.20": {type:"specific", rate:null, note:"2.82¢/kg"},
+  "0105.94.91.10": {type:"specific", rate:null, note:"1.9¢/kg"},
+  "0105.94.91.20": {type:"specific", rate:null, note:"1.9¢/kg"},
+  "0105.94.92.10": {type:"compound", rate:null, note:"238% but not less than $1.25/kg"},
+  "0105.94.92.20": {type:"compound", rate:null, note:"238% but not less than $1.25/kg"},
+  "0105.99.11.00": {type:"specific", rate:null, note:"1.9¢/kg"},
+  "0105.99.12.00": {type:"compound", rate:null, note:"154.5% but not less than $1.60/kg"},
+  "0105.99.90.00": {type:"percent", rate:3, note:""},
+
   "0701.90.00.20": {type:"specific", rate:null, note:"$4.94/tonne"},
   "0902.40.10.00": {type:"free", rate:null, note:""},
   "1109.00.10.00": {type:"free", rate:null, note:""},
@@ -908,7 +929,7 @@ const MFN_RATES = {
 // Chapters 73/76 are Free except the specific finished-goods exceptions listed
 // above in MFN_RATES. Codes not in MFN_RATES for these chapters fall back to Free.
 const MFN_FREE_CHAPTERS = ["72"];
-const MFN_FREE_DEFAULT_CHAPTERS = ["73", "76"]; // free unless explicit exception above
+const MFN_FREE_DEFAULT_CHAPTERS = ["73", "76", "01"]; // free unless explicit exception above
 
 function getMfnRate(code){
   if(!code) return null;
