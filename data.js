@@ -693,14 +693,16 @@ const SAFEGUARD_SOURCE_DATE = "28 JUL 2026 (Canada Gazette Part II, Vol. 160, No
 
 // ============================================================
 // MFN BASE DUTY RATES — confirmed against CBSA Customs Tariff 2026
-// (research passes through 02 AUG 2026). Covers 354 explicitly-verified
+// (research passes through 02 AUG 2026). Covers 502 explicitly-verified
 // codes across the codes tracked in SIMA_CASES/SURTAX_ORDERS/SAFEGUARD_
-// MEASURES/TARIFF_DATA above, plus full chapter passes for 01/02/03.
-// Chapter 72 (394 codes) is 100% Free; chapters 01/02/03/73/76 fall back
-// to the documented chapter-wide Free pattern for any code not listed as
-// an explicit exception below — see getMfnRate() below. Codes outside
-// these chapters with no entry here have not yet been researched and
-// getMfnRate() returns null for them.
+// MEASURES/TARIFF_DATA above, plus full chapter passes for 01/02/03/04/05.
+// Chapters 72 and 05 are 100% Free with zero exceptions; chapters
+// 01/02/03/73/76 fall back to the documented chapter-wide Free pattern for
+// any code not listed as an explicit exception below. Chapter 04 (dairy/
+// eggs/honey) is the opposite case — heavily supply-managed, so nearly
+// every code is listed explicitly rather than relying on a Free fallback.
+// See getMfnRate() below. Codes outside these chapters with no entry here
+// have not yet been researched and getMfnRate() returns null for them.
 const MFN_SOURCE_DATE = "02 AUG 2026";
 const MFN_RATES = {
   // ===== Chapter 1 — Live Animals (verified 02 AUG 2026 from CBSA ch01-2026 PDF) =====
@@ -888,6 +890,176 @@ const MFN_RATES = {
   "0309.90.10.00": {type:"percent", rate:5, note:""},
   "0309.90.21.00": {type:"percent", rate:4, note:""},
   "0309.90.91.00": {type:"percent", rate:4, note:""},
+
+  // ===== Chapter 4 — Dairy, Eggs, Honey (verified 02 AUG 2026 from CBSA ch04-2026 PDF) =====
+  // UNLIKE chapters 1/2/3/73/76, this chapter is NOT added to
+  // MFN_FREE_DEFAULT_CHAPTERS — dairy and eggs are Canada's most heavily
+  // supply-managed goods, so Free is the exception here, not the rule.
+  // Every tariff line in the chapter is listed explicitly below (including
+  // the handful of genuinely Free ones — honey, live insects, a few "other"
+  // egg/yogurt lines) so nothing in this chapter silently falls through to
+  // "not yet researched." Within-access commitment rates are still real
+  // duty (often a specific ¢/kg rate, not Free) — only over-access breaches
+  // the punishing 200%+ compound rates.
+  // 04.01 — Milk and cream, not concentrated:
+  "0401.10.10.00": {type:"percent", rate:7.5, note:""},
+  "0401.10.20.00": {type:"compound", rate:null, note:"241% but not less than $34.50/hl"},
+  "0401.20.10.00": {type:"percent", rate:7.5, note:""},
+  "0401.20.20.00": {type:"compound", rate:null, note:"241% but not less than $34.50/hl"},
+  "0401.40.10.00": {type:"percent", rate:7.5, note:""},
+  "0401.40.20.00": {type:"compound", rate:null, note:"292.5% but not less than $2.48/kg"},
+  "0401.50.10.00": {type:"percent", rate:7.5, note:""},
+  "0401.50.20.00": {type:"compound", rate:null, note:"292.5% but not less than $2.48/kg"},
+  // 04.02 — Milk and cream, concentrated/sweetened:
+  "0402.10.10.00": {type:"specific", rate:null, note:"3.32¢/kg"},
+  "0402.10.20.00": {type:"compound", rate:null, note:"201.5% but not less than $2.01/kg"},
+  "0402.21.11.00": {type:"specific", rate:null, note:"3.32¢/kg"},
+  "0402.21.12.00": {type:"compound", rate:null, note:"243% but not less than $2.82/kg"},
+  "0402.21.21.00": {type:"percent", rate:6.5, note:""},
+  "0402.21.22.00": {type:"compound", rate:null, note:"295.5% but not less than $4.29/kg"},
+  "0402.29.11.00": {type:"specific", rate:null, note:"3.32¢/kg"},
+  "0402.29.12.00": {type:"compound", rate:null, note:"243% but not less than $2.82/kg"},
+  "0402.29.21.00": {type:"percent", rate:6.5, note:""},
+  "0402.29.22.00": {type:"compound", rate:null, note:"295.5% but not less than $4.29/kg"},
+  "0402.91.10.00": {type:"specific", rate:null, note:"2.84¢/kg"},
+  "0402.91.20.00": {type:"compound", rate:null, note:"259% but not less than 78.9¢/kg"},
+  "0402.99.10.00": {type:"specific", rate:null, note:"2.84¢/kg"},
+  "0402.99.20.00": {type:"compound", rate:null, note:"255% but not less than 95.1¢/kg"},
+  // 04.03 — Yogurt, buttermilk, kephir:
+  "0403.20.10.00": {type:"free", rate:null, note:""},
+  "0403.20.21.00": {type:"percent", rate:6.5, note:""},
+  "0403.20.29.10": {type:"percent", rate:6.5, note:""},
+  "0403.20.29.20": {type:"percent", rate:6.5, note:""},
+  "0403.20.31.00": {type:"compound", rate:null, note:"250.5% but not less than $2.91/kg"},
+  "0403.20.39.10": {type:"compound", rate:null, note:"237.5% but not less than 46.6¢/kg"},
+  "0403.20.39.20": {type:"compound", rate:null, note:"237.5% but not less than 46.6¢/kg"},
+  "0403.90.11.00": {type:"specific", rate:null, note:"3.32¢/kg"},
+  "0403.90.12.00": {type:"compound", rate:null, note:"208% but not less than $2.07/kg"},
+  "0403.90.91.00": {type:"percent", rate:7.5, note:""},
+  "0403.90.92.00": {type:"compound", rate:null, note:"216.5% but not less than $2.15/kg"},
+  // 04.04 — Whey and natural-milk-constituent products:
+  "0404.10.10.00": {type:"specific", rate:null, note:"4.94¢/kg"},
+  "0404.10.21.00": {type:"specific", rate:null, note:"3.32¢/kg"},
+  "0404.10.22.00": {type:"compound", rate:null, note:"208% but not less than $2.07/kg (UST preferential alt: 75.5% but not less than $0.75/kg)"},
+  "0404.10.90.10": {type:"percent", rate:11, note:""},
+  "0404.10.90.20": {type:"percent", rate:11, note:""},
+  "0404.10.90.90": {type:"percent", rate:11, note:""},
+  "0404.90.10.11": {type:"percent", rate:3, note:""},
+  "0404.90.10.12": {type:"percent", rate:3, note:""},
+  "0404.90.10.19": {type:"percent", rate:3, note:""},
+  "0404.90.10.90": {type:"percent", rate:3, note:""},
+  "0404.90.20.11": {type:"compound", rate:null, note:"270% but not less than $3.15/kg"},
+  "0404.90.20.12": {type:"compound", rate:null, note:"270% but not less than $3.15/kg"},
+  "0404.90.20.19": {type:"compound", rate:null, note:"270% but not less than $3.15/kg"},
+  "0404.90.20.90": {type:"compound", rate:null, note:"270% but not less than $3.15/kg"},
+  // 04.05 — Butter, dairy spreads:
+  "0405.10.10.00": {type:"specific", rate:null, note:"11.38¢/kg"},
+  "0405.10.20.00": {type:"compound", rate:null, note:"298.5% but not less than $4.00/kg"},
+  "0405.20.10.00": {type:"percent", rate:7, note:""},
+  "0405.20.20.00": {type:"compound", rate:null, note:"274.5% but not less than $2.88/kg"},
+  "0405.90.10.00": {type:"percent", rate:7.5, note:""},
+  "0405.90.20.00": {type:"compound", rate:null, note:"313.5% but not less than $5.12/kg"},
+  // 04.06 — Cheese and curd (every cheese-type family has its own within/
+  // over-access pair; within-access is a specific ¢/kg rate, not Free):
+  "0406.10.10.10": {type:"specific", rate:null, note:"3.32¢/kg"},
+  "0406.10.10.90": {type:"specific", rate:null, note:"3.32¢/kg"},
+  "0406.10.20.00": {type:"compound", rate:null, note:"245.5% but not less than $4.52/kg"},
+  "0406.20.11.10": {type:"specific", rate:null, note:"2.84¢/kg"},
+  "0406.20.11.20": {type:"specific", rate:null, note:"2.84¢/kg"},
+  "0406.20.12.00": {type:"compound", rate:null, note:"245.5% but not less than $3.58/kg"},
+  "0406.20.91.10": {type:"specific", rate:null, note:"3.32¢/kg"},
+  "0406.20.91.20": {type:"specific", rate:null, note:"3.32¢/kg"},
+  "0406.20.91.90": {type:"specific", rate:null, note:"3.32¢/kg"},
+  "0406.20.92.00": {type:"compound", rate:null, note:"245.5% but not less than $5.11/kg"},
+  "0406.30.10.11": {type:"specific", rate:null, note:"3.32¢/kg"},
+  "0406.30.10.12": {type:"specific", rate:null, note:"3.32¢/kg"},
+  "0406.30.10.20": {type:"specific", rate:null, note:"3.32¢/kg"},
+  "0406.30.10.30": {type:"specific", rate:null, note:"3.32¢/kg"},
+  "0406.30.10.90": {type:"specific", rate:null, note:"3.32¢/kg"},
+  "0406.30.20.00": {type:"compound", rate:null, note:"245.5% but not less than $4.34/kg"},
+  "0406.40.10.00": {type:"specific", rate:null, note:"3.32¢/kg"},
+  "0406.40.20.00": {type:"compound", rate:null, note:"245.5% but not less than $5.33/kg"},
+  "0406.90.11.10": {type:"specific", rate:null, note:"2.84¢/kg"},
+  "0406.90.11.21": {type:"specific", rate:null, note:"2.84¢/kg"},
+  "0406.90.11.29": {type:"specific", rate:null, note:"2.84¢/kg"},
+  "0406.90.12.00": {type:"compound", rate:null, note:"245.5% but not less than $3.53/kg"},
+  "0406.90.21.10": {type:"specific", rate:null, note:"3.32¢/kg"},
+  "0406.90.21.20": {type:"specific", rate:null, note:"3.32¢/kg"},
+  "0406.90.22.00": {type:"compound", rate:null, note:"245.5% but not less than $5.78/kg"},
+  "0406.90.31.10": {type:"specific", rate:null, note:"3.32¢/kg"},
+  "0406.90.31.20": {type:"specific", rate:null, note:"3.32¢/kg"},
+  "0406.90.32.00": {type:"compound", rate:null, note:"245.5% but not less than $5.50/kg"},
+  "0406.90.41.10": {type:"specific", rate:null, note:"3.32¢/kg"},
+  "0406.90.41.20": {type:"specific", rate:null, note:"3.32¢/kg"},
+  "0406.90.41.90": {type:"specific", rate:null, note:"3.32¢/kg"},
+  "0406.90.42.00": {type:"compound", rate:null, note:"245.5% but not less than $4.23/kg"},
+  "0406.90.51.10": {type:"specific", rate:null, note:"3.32¢/kg"},
+  "0406.90.51.20": {type:"specific", rate:null, note:"3.32¢/kg"},
+  "0406.90.52.00": {type:"compound", rate:null, note:"245.5% but not less than $5.08/kg"},
+  "0406.90.61.00": {type:"specific", rate:null, note:"3.32¢/kg"},
+  "0406.90.62.00": {type:"compound", rate:null, note:"245.5% but not less than $3.53/kg"},
+  "0406.90.71.10": {type:"specific", rate:null, note:"3.32¢/kg"},
+  "0406.90.71.20": {type:"specific", rate:null, note:"3.32¢/kg"},
+  "0406.90.71.30": {type:"specific", rate:null, note:"3.32¢/kg"},
+  "0406.90.71.40": {type:"specific", rate:null, note:"3.32¢/kg"},
+  "0406.90.71.90": {type:"specific", rate:null, note:"3.32¢/kg"},
+  "0406.90.72.00": {type:"compound", rate:null, note:"245.5% but not less than $4.34/kg"},
+  "0406.90.81.10": {type:"specific", rate:null, note:"3.32¢/kg"},
+  "0406.90.81.20": {type:"specific", rate:null, note:"3.32¢/kg"},
+  "0406.90.82.00": {type:"compound", rate:null, note:"245.5% but not less than $5.26/kg"},
+  "0406.90.91.10": {type:"specific", rate:null, note:"3.32¢/kg"},
+  "0406.90.91.20": {type:"specific", rate:null, note:"3.32¢/kg"},
+  "0406.90.92.00": {type:"compound", rate:null, note:"245.5% but not less than $4.34/kg"},
+  "0406.90.93.10": {type:"specific", rate:null, note:"3.32¢/kg"},
+  "0406.90.93.20": {type:"specific", rate:null, note:"3.32¢/kg"},
+  "0406.90.94.00": {type:"compound", rate:null, note:"245.5% but not less than $5.08/kg"},
+  "0406.90.95.10": {type:"specific", rate:null, note:"3.32¢/kg"},
+  "0406.90.95.20": {type:"specific", rate:null, note:"3.32¢/kg"},
+  "0406.90.96.00": {type:"compound", rate:null, note:"245.5% but not less than $5.15/kg"},
+  "0406.90.98.10": {type:"specific", rate:null, note:"3.32¢/kg"},
+  "0406.90.98.20": {type:"specific", rate:null, note:"3.32¢/kg"},
+  "0406.90.98.30": {type:"specific", rate:null, note:"3.32¢/kg"},
+  "0406.90.98.40": {type:"specific", rate:null, note:"3.32¢/kg"},
+  "0406.90.98.90": {type:"specific", rate:null, note:"3.32¢/kg"},
+  "0406.90.99.00": {type:"compound", rate:null, note:"245.5% but not less than $3.53/kg"},
+  // 04.07 — Birds' eggs in shell:
+  "0407.11.11.00": {type:"specific", rate:null, note:"1.51¢/dozen"},
+  "0407.11.12.00": {type:"compound", rate:null, note:"238% but not less than $2.91/dozen"},
+  "0407.11.91.00": {type:"specific", rate:null, note:"1.51¢/dozen"},
+  "0407.11.92.00": {type:"compound", rate:null, note:"163.5% but not less than 79.9¢/dozen"},
+  "0407.19.00.10": {type:"free", rate:null, note:""},
+  "0407.19.00.90": {type:"free", rate:null, note:""},
+  "0407.21.10.10": {type:"specific", rate:null, note:"1.51¢/dozen"},
+  "0407.21.10.20": {type:"specific", rate:null, note:"1.51¢/dozen"},
+  "0407.21.10.30": {type:"specific", rate:null, note:"1.51¢/dozen"},
+  "0407.21.20.00": {type:"compound", rate:null, note:"163.5% but not less than 79.9¢/dozen"},
+  "0407.29.00.00": {type:"free", rate:null, note:""},
+  "0407.90.11.00": {type:"specific", rate:null, note:"1.51¢/dozen"},
+  "0407.90.12.00": {type:"compound", rate:null, note:"163.5% but not less than 79.9¢/dozen"},
+  "0407.90.90.00": {type:"free", rate:null, note:""},
+  // 04.08 — Eggs not in shell, egg yolks:
+  "0408.11.10.00": {type:"percent", rate:8.5, note:""},
+  "0408.11.20.00": {type:"specific", rate:null, note:"$6.12/kg"},
+  "0408.19.10.00": {type:"specific", rate:null, note:"6.63¢/kg"},
+  "0408.19.20.00": {type:"specific", rate:null, note:"$1.52/kg"},
+  "0408.91.10.00": {type:"percent", rate:8.5, note:""},
+  "0408.91.20.00": {type:"specific", rate:null, note:"$6.12/kg"},
+  "0408.99.10.10": {type:"specific", rate:null, note:"6.63¢/kg"},
+  "0408.99.10.90": {type:"specific", rate:null, note:"6.63¢/kg"},
+  "0408.99.20.00": {type:"specific", rate:null, note:"$1.52/kg"},
+  // 04.09 — Natural honey (all Free, no TRQ — honey isn't supply-managed):
+  "0409.00.00.10": {type:"free", rate:null, note:""},
+  "0409.00.00.21": {type:"free", rate:null, note:""},
+  "0409.00.00.22": {type:"free", rate:null, note:""},
+  "0409.00.00.23": {type:"free", rate:null, note:""},
+  "0409.00.00.24": {type:"free", rate:null, note:""},
+  "0409.00.00.25": {type:"free", rate:null, note:""},
+  "0409.00.00.26": {type:"free", rate:null, note:""},
+  "0409.00.00.29": {type:"free", rate:null, note:""},
+  // 04.10 — Edible insects and other animal-origin products nes:
+  "0410.10.10.00": {type:"free", rate:null, note:""},
+  "0410.10.90.00": {type:"percent", rate:11, note:""},
+  "0410.90.00.00": {type:"percent", rate:11, note:""},
 
   "0701.90.00.20": {type:"specific", rate:null, note:"$4.94/tonne"},
   "0902.40.10.00": {type:"free", rate:null, note:""},
@@ -1095,7 +1267,7 @@ const MFN_RATES = {
 // primary & semi-finished) is 100% MFN Free across all 394 tracked codes, and
 // Chapters 73/76 are Free except the specific finished-goods exceptions listed
 // above in MFN_RATES. Codes not in MFN_RATES for these chapters fall back to Free.
-const MFN_FREE_CHAPTERS = ["72"];
+const MFN_FREE_CHAPTERS = ["72", "05"]; // Chapter 5 (animal products nes) verified 100% Free, zero exceptions in the full PDF pass
 const MFN_FREE_DEFAULT_CHAPTERS = ["73", "76", "01", "02", "03"]; // free unless explicit exception above
 
 function getMfnRate(code){
