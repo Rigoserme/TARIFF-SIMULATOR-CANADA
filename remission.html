@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Remission Recovery Checker</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+  :root{
+    --ink:#1A2233; --ink-soft:#5B6478; --ink-faint:#9AA2B1;
+    --bg:#F7F8FA; --card:#FFFFFF;
+    --blue:#2A5FE0; --blue-soft:#EAF0FF;
+    --amber:#B8792E; --amber-soft:#FBF1E3;
+    --green:#1E8E5A; --green-soft:#E6F6EE;
+    --line:#E6E8EC;
+    --shadow: 0 1px 2px rgba(20,25,40,0.04), 0 4px 16px rgba(20,25,40,0.04);
+  }
+  *{ box-sizing:border-box; }
+  body{ margin:0; background:var(--bg); color:var(--ink); font-family:'Inter',sans-serif; line-height:1.55; }
+  .mono{ font-family:'IBM Plex Mono',monospace; }
+
+  header{ padding:36px 32px 24px; max-width:920px; margin:0 auto; }
+  header h1{ font-family:'Inter',sans-serif; font-weight:800; font-size:28px; margin:0 0 8px; letter-spacing:-0.01em; }
+  header p{ margin:0; color:var(--ink-soft); font-size:15px; max-width:68ch; }
+  header .badge{ display:inline-block; margin-top:12px; background:var(--amber-soft); color:var(--amber); font-size:12.5px; font-weight:600; padding:5px 12px; border-radius:20px; }
+
+  main{ max-width:920px; margin:0 auto; padding:0 32px 32px; }
+
+  .card{ background:var(--card); border:1px solid var(--line); border-radius:14px; padding:26px; margin-bottom:20px; box-shadow:var(--shadow); }
+  .card h2{ font-size:17px; font-weight:700; margin:0 0 4px; }
+  .card .sub{ font-size:13.5px; color:var(--ink-faint); margin:0 0 18px; }
+
+  .dropzone{
+    border:2px dashed var(--line); border-radius:12px; padding:32px 24px; text-align:center;
+    cursor:pointer; transition:border-color 0.15s, background 0.15s;
+  }
+  .dropzone:hover, .dropzone.dragover{ border-color:var(--blue); background:var(--blue-soft); }
+  .dropzone .icon{ font-size:28px; margin-bottom:8px; }
+  .dropzone .main-text{ font-weight:600; font-size:14.5px; color:var(--ink); }
+  .dropzone .sub-text{ font-size:12.5px; color:var(--ink-faint); margin-top:4px; }
+  #fileInput{ display:none; }
+
+  .divider-row{ display:flex; align-items:center; gap:12px; margin:18px 0; }
+  .divider-row .line{ flex:1; height:1px; background:var(--line); }
+  .divider-row span{ font-size:12px; color:var(--ink-faint); font-weight:600; text-transform:uppercase; letter-spacing:0.04em; }
+
+  .manual-toggle{ font-size:13.5px; color:var(--blue); cursor:pointer; font-weight:600; background:none; border:none; padding:0; }
+  #manualSection{ display:none; margin-top:14px; }
+  #manualSection.show{ display:block; }
+
+  textarea{
+    width:100%; min-height:100px; padding:12px 14px; border:1.5px solid var(--line); border-radius:8px;
+    font-family:'IBM Plex Mono',monospace; font-size:13px; resize:vertical; background:var(--bg);
+  }
+  textarea:focus{ outline:none; border-color:var(--blue); }
+  .format-hint{ font-size:12px; color:var(--ink-faint); margin-top:6px; }
+  .format-hint code{ background:var(--bg); padding:1px 5px; border-radius:4px; }
+
+  #previewTable{ margin-top:16px; display:none; }
+  #previewTable.show{ display:block; }
+  #previewTable table{ width:100%; border-collapse:collapse; font-size:13px; }
+  #previewTable th{ text-align:left; font-size:11.5px; text-transform:uppercase; letter-spacing:0.03em; color:var(--ink-faint); padding:6px 10px; border-bottom:1.5px solid var(--line); }
+  #previewTable td{ padding:8px 10px; border-bottom:1px solid var(--line); font-family:'IBM Plex Mono',monospace; }
+  #previewTable .row-count{ font-size:12.5px; color:var(--ink-faint); margin-bottom:8px; }
+
+  .btn{
+    padding:12px 22px; background:var(--blue); color:#fff; border:none;
+    border-radius:8px; font-family:'Inter',sans-serif; font-weight:700; font-size:14.5px; cursor:pointer;
+  }
+  .btn:hover{ opacity:0.9; }
+  .btn:disabled{ background:var(--ink-faint); cursor:not-allowed; }
+  .btn.secondary{ background:transparent; color:var(--ink-soft); border:1.5px solid var(--line); margin-left:8px; }
+  .btn.secondary:hover{ background:var(--bg); opacity:1; }
+
+  #results{ display:none; }
+  #results.show{ display:block; }
+
+  .entry-result{ border:1px solid var(--line); border-radius:12px; padding:20px 22px; margin-bottom:14px; background:var(--card); box-shadow:var(--shadow); }
+  .entry-result .entry-head{ display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:8px; margin-bottom:12px; }
+  .entry-head .code{ font-family:'IBM Plex Mono',monospace; font-size:15.5px; font-weight:700; color:var(--ink); }
+  .entry-head .meta{ font-size:12.5px; color:var(--ink-faint); }
+
+  .no-surtax{ color:var(--ink-faint); font-size:13.5px; font-style:italic; }
+
+  .surtax-line{ background:var(--amber-soft); border-radius:9px; padding:12px 14px; margin-bottom:10px; }
+  .surtax-line .label{ font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.03em; color:var(--amber); margin-bottom:3px; }
+  .surtax-line .value{ font-size:13.5px; color:var(--ink); }
+
+  .remission-candidate{ border-left:3px solid var(--green); background:var(--green-soft); border-radius:0 9px 9px 0; padding:14px 16px; margin-top:8px; }
+  .remission-candidate .rc-title{ font-weight:700; font-size:13.5px; color:var(--green); margin-bottom:4px; }
+  .remission-candidate .rc-row{ font-size:13px; color:var(--ink); margin-top:5px; }
+  .remission-candidate .rc-row b{ color:var(--ink-soft); font-weight:600; }
+  .remission-candidate .rc-status{ margin-top:8px; padding-top:8px; border-top:1px dashed #BFE0CE; font-size:12.5px; color:var(--ink-soft); }
+
+  .no-remission{ font-size:13px; color:var(--ink-faint); padding:8px 2px; }
+
+  .summary-bar{ display:flex; gap:14px; margin-bottom:18px; flex-wrap:wrap; }
+  .summary-stat{ background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px 20px; flex:1; min-width:140px; box-shadow:var(--shadow); }
+  .summary-stat .num{ font-size:24px; font-weight:800; }
+  .summary-stat.green .num{ color:var(--green); }
+  .summary-stat .lbl{ font-size:12px; color:var(--ink-faint); margin-top:2px; }
+
+  footer{ max-width:920px; margin:0 auto; padding:0 32px 50px; font-size:12px; color:var(--ink-faint); line-height:1.6; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Remission Recovery Checker</h1>
+  <p>Upload past or upcoming import entries to flag which ones may qualify for surtax remission — including relief programs added or amended <em>after</em> the goods were imported. This is a screening tool: it surfaces candidates for you to verify, not a confirmed eligibility determination.</p>
+  <span class="badge">Internal tool — example/hypothetical data only for now</span>
+</header>
+
+<main>
+  <div class="card">
+    <h2>Entries to check</h2>
+    <p class="sub">Upload a CSV export, or enter a few entries manually below.</p>
+
+    <div class="dropzone" id="dropzone" onclick="document.getElementById('fileInput').click()">
+      <div class="icon">📄</div>
+      <div class="main-text">Drop a CSV file here, or click to browse</div>
+      <div class="sub-text">Needs columns for HS code, origin, import date, and value — headers can be in any order</div>
+    </div>
+    <input type="file" id="fileInput" accept=".csv,.txt">
+
+    <div class="divider-row"><div class="line"></div><span>or</span><div class="line"></div></div>
+    <button class="manual-toggle" onclick="toggleManual()">Enter a few entries manually instead</button>
+
+    <div id="manualSection">
+      <textarea id="entriesInput" placeholder="7606.12.00.20, United States, 2026-05-15, 45000"></textarea>
+      <div class="format-hint">One per line: <code>HS code, origin, YYYY-MM-DD, value</code></div>
+    </div>
+
+    <div id="previewTable">
+      <div class="row-count"></div>
+      <table><thead><tr><th>HS Code</th><th>Origin</th><th>Import Date</th><th>Value (CAD)</th></tr></thead><tbody id="previewBody"></tbody></table>
+    </div>
+
+    <div style="margin-top:18px;">
+      <button class="btn" id="checkBtn" onclick="checkEntries()" disabled>Check for remission</button>
+      <button class="btn secondary" onclick="loadExample()">Load example entries</button>
+    </div>
+  </div>
+
+  <div id="results"></div>
+</main>
+
+<footer>
+  <p>Screening tool only — flags candidates based on which remission order relieves the surtax that matched, and whether the import date falls in that order's eligible window. Real eligibility also depends on end-use, schedule membership, and other conditions listed in each candidate's notes — verify against the current CBSA Customs Notice before filing a correction or adjustment. Files are read entirely in your browser and never uploaded anywhere.</p>
+</footer>
+
+<script src="data.js"></script>
+<script>
+let parsedEntries = [];
+
+function toggleManual(){
+  document.getElementById('manualSection').classList.toggle('show');
+}
+
+function loadExample(){
+  document.getElementById('manualSection').classList.add('show');
+  document.getElementById('entriesInput').value =
+`7606.12.00.20, United States, 2026-05-15, 45000
+7308.20.00.00, United States, 2025-11-01, 80000
+7308.20.00.00, United States, 2026-02-01, 80000`;
+  parseFromTextarea();
+}
+
+// Fuzzy header matching — CargoWise/CanData/Excel exports won't use our
+// exact field names, so match on common variants rather than requiring
+// one specific format.
+function findColumn(headers, candidates){
+  for(const c of candidates){
+    const idx = headers.findIndex(h => h.toLowerCase().replace(/[^a-z0-9]/g,'') === c);
+    if(idx !== -1) return idx;
+  }
+  return -1;
+}
+
+function parseCsvText(text){
+  const lines = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+  if(!lines.length) return [];
+
+  const firstRowCells = lines[0].split(',').map(c => c.trim().replace(/^"|"$/g,''));
+  // A row is data, not a header, if any cell looks like an actual HS code
+  // (digit groups separated by dots) or an actual date — headers describe
+  // fields, they don't contain plausible values. Checking for "any letter"
+  // was the wrong test: the origin column always has letters too ("United
+  // States"), which made every real data row misfire as a header.
+  const hasHsCodeLike = firstRowCells.some(c => /^\d{2,4}(\.\d{1,4}){1,4}$/.test(c));
+  const hasDateLike = firstRowCells.some(c => /^\d{4}-\d{1,2}-\d{1,2}$/.test(c));
+  const looksLikeHeader = !hasHsCodeLike && !hasDateLike;
+
+  let rows, codeIdx, originIdx, dateIdx, valueIdx;
+  if(looksLikeHeader){
+    const headers = firstRowCells;
+    codeIdx = findColumn(headers, ['hscode','code','tariffcode','tariffitem','hs']);
+    originIdx = findColumn(headers, ['origin','countryoforigin','country']);
+    dateIdx = findColumn(headers, ['importdate','date','dateofimport','entrydate']);
+    valueIdx = findColumn(headers, ['value','valuefordu​ty','valueforduty','vfd','amount','customsvalue']);
+    rows = lines.slice(1);
+  } else {
+    // No recognizable header — assume our default column order
+    codeIdx = 0; originIdx = 1; dateIdx = 2; valueIdx = 3;
+    rows = lines;
+  }
+
+  return rows.map(line => {
+    const cells = line.split(',').map(c => c.trim().replace(/^"|"$/g,''));
+    return {
+      code: codeIdx >= 0 ? cells[codeIdx] : '',
+      origin: originIdx >= 0 ? cells[originIdx] : '',
+      date: dateIdx >= 0 ? cells[dateIdx] : '',
+      value: valueIdx >= 0 ? (parseFloat(cells[valueIdx]) || 0) : 0
+    };
+  }).filter(e => e.code);
+}
+
+function showPreview(entries){
+  parsedEntries = entries;
+  const previewEl = document.getElementById('previewTable');
+  const bodyEl = document.getElementById('previewBody');
+  const checkBtn = document.getElementById('checkBtn');
+
+  if(!entries.length){
+    previewEl.className = '';
+    checkBtn.disabled = true;
+    return;
+  }
+
+  document.querySelector('#previewTable .row-count').textContent = `${entries.length} entr${entries.length === 1 ? 'y' : 'ies'} loaded — review below before checking`;
+  bodyEl.innerHTML = entries.map(e =>
+    `<tr><td>${e.code}</td><td>${e.origin || '—'}</td><td>${e.date || '—'}</td><td>$${e.value.toLocaleString('en-CA')}</td></tr>`
+  ).join('');
+  previewEl.className = 'show';
+  checkBtn.disabled = false;
+}
+
+function parseFromTextarea(){
+  const raw = document.getElementById('entriesInput').value;
+  const entries = raw.split('\n').map(l => l.trim()).filter(Boolean).map(line => {
+    const parts = line.split(',').map(p => p.trim());
+    return { code: parts[0], origin: parts[1], date: parts[2], value: parseFloat(parts[3]) || 0 };
+  }).filter(e => e.code);
+  showPreview(entries);
+}
+
+document.getElementById('entriesInput').addEventListener('input', parseFromTextarea);
+
+const dropzone = document.getElementById('dropzone');
+const fileInput = document.getElementById('fileInput');
+
+function handleFile(file){
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => showPreview(parseCsvText(e.target.result));
+  reader.readAsText(file);
+}
+
+fileInput.addEventListener('change', e => handleFile(e.target.files[0]));
+dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('dragover'); });
+dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+dropzone.addEventListener('drop', e => {
+  e.preventDefault();
+  dropzone.classList.remove('dragover');
+  handleFile(e.dataTransfer.files[0]);
+});
+
+function checkEntries(){
+  const resultsEl = document.getElementById('results');
+  if(!parsedEntries.length) return;
+
+  let recoveryCount = 0;
+  let html = '';
+
+  parsedEntries.forEach(entry => {
+    const surtaxMatches = findSurtaxMatches(entry.code).filter(o => surtaxAppliesToCountry(o, entry.origin));
+
+    html += `<div class="entry-result">
+      <div class="entry-head">
+        <span class="code">${entry.code}</span>
+        <span class="meta">${entry.origin || 'origin not given'} · imported ${entry.date || 'date not given'} · $${entry.value.toLocaleString('en-CA')} CAD</span>
+      </div>`;
+
+    if(!surtaxMatches.length){
+      html += `<p class="no-surtax">No matching surtax order found for this code/origin — nothing to check remission against.</p>`;
+    } else {
+      surtaxMatches.forEach(surtax => {
+        html += `<div class="surtax-line">
+          <div class="label">Surtax matched</div>
+          <div class="value"><b>${surtax.regNo}</b> — ${surtax.name} (${surtax.rateNote || surtax.rate + '%'})</div>
+        </div>`;
+
+        const remissionCandidates = findRemissionMatches(surtax.regNo, entry.date);
+        if(!remissionCandidates.length){
+          html += `<div class="no-remission">No remission order currently relieves this surtax for this import date — either none applies, or the window has closed. Worth a manual check if this seems surprising.</div>`;
+        } else {
+          recoveryCount++;
+          remissionCandidates.forEach(r => {
+            html += `<div class="remission-candidate">
+              <div class="rc-title">Possible recovery: ${r.regNo}</div>
+              <div class="rc-row"><b>${r.name}</b></div>
+              <div class="rc-row"><b>Eligibility:</b> ${r.eligibilityCondition}</div>
+              <div class="rc-row"><b>Special authority code:</b> ${r.specialAuthorityCode || 'not confirmed — check current CBSA notice'}</div>
+              ${r.carmReasonCode ? `<div class="rc-row"><b>CARM reason code:</b> ${r.carmReasonCode}</div>` : ''}
+              <div class="rc-row"><b>Filing:</b> ${r.filingNote}</div>
+              ${r.statusNote ? `<div class="rc-status">${r.statusNote}</div>` : ''}
+            </div>`;
+          });
+        }
+      });
+    }
+    html += `</div>`;
+  });
+
+  const summaryHtml = `<div class="summary-bar">
+    <div class="summary-stat"><div class="num">${parsedEntries.length}</div><div class="lbl">Entries checked</div></div>
+    <div class="summary-stat green"><div class="num">${recoveryCount}</div><div class="lbl">Flagged for possible recovery</div></div>
+  </div>
+  <div style="margin-bottom:16px;">
+    <label style="display:flex; align-items:center; gap:8px; font-size:13.5px; color:var(--ink-soft); cursor:pointer;">
+      <input type="checkbox" id="showAllToggle" ${parsedEntries.length > 20 ? '' : 'checked'} onchange="toggleShowAll()">
+      Show all ${parsedEntries.length} entries (unchecked = only the ${recoveryCount} flagged for possible recovery)
+    </label>
+  </div>`;
+
+  resultsEl.className = 'show';
+  resultsEl.innerHTML = summaryHtml + `<div id="entryList">${html}</div>`;
+  applyShowAllFilter();
+}
+
+// Large reports (the real-world case — a client's whole year of entries)
+// shouldn't force scrolling past hundreds of "nothing found" cards to find
+// the handful that matter. Defaults to flagged-only above 20 entries;
+// always available to expand to the full list.
+function toggleShowAll(){
+  applyShowAllFilter();
+}
+function applyShowAllFilter(){
+  const showAll = document.getElementById('showAllToggle')?.checked;
+  document.querySelectorAll('.entry-result').forEach(el => {
+    const hasRecovery = el.querySelector('.remission-candidate') !== null;
+    el.style.display = (showAll || hasRecovery) ? '' : 'none';
+  });
+}
+</script>
+</body>
+</html>
