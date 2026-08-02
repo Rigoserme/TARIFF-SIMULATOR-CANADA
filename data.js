@@ -693,13 +693,15 @@ const SAFEGUARD_SOURCE_DATE = "28 JUL 2026 (Canada Gazette Part II, Vol. 160, No
 
 // ============================================================
 // MFN BASE DUTY RATES — confirmed against CBSA Customs Tariff 2026
-// (31 JUL 2026 research pass). Covers 200 explicitly-verified codes
-// across the codes tracked in SIMA_CASES/SURTAX_ORDERS/SAFEGUARD_
-// MEASURES/TARIFF_DATA above. Chapter 72 (394 codes) and most of
-// 73/76 fall back to the documented chapter-wide Free pattern — see
-// getMfnRate() below. Codes outside these chapters with no entry here
-// have not yet been researched and getMfnRate() returns null for them.
-const MFN_SOURCE_DATE = "31 JUL 2026";
+// (research passes through 02 AUG 2026). Covers 354 explicitly-verified
+// codes across the codes tracked in SIMA_CASES/SURTAX_ORDERS/SAFEGUARD_
+// MEASURES/TARIFF_DATA above, plus full chapter passes for 01/02/03.
+// Chapter 72 (394 codes) is 100% Free; chapters 01/02/03/73/76 fall back
+// to the documented chapter-wide Free pattern for any code not listed as
+// an explicit exception below — see getMfnRate() below. Codes outside
+// these chapters with no entry here have not yet been researched and
+// getMfnRate() returns null for them.
+const MFN_SOURCE_DATE = "02 AUG 2026";
 const MFN_RATES = {
   // ===== Chapter 1 — Live Animals (verified 02 AUG 2026 from CBSA ch01-2026 PDF) =====
   // Chapter is Free by default (see MFN_FREE_DEFAULT_CHAPTERS) — these are
@@ -721,6 +723,171 @@ const MFN_RATES = {
   "0105.99.11.00": {type:"specific", rate:null, note:"1.9¢/kg"},
   "0105.99.12.00": {type:"compound", rate:null, note:"154.5% but not less than $1.60/kg"},
   "0105.99.90.00": {type:"percent", rate:3, note:""},
+
+  // ===== Chapter 2 — Meat and Edible Meat Offal (verified 02 AUG 2026 from CBSA ch02-2026 PDF) =====
+  // Chapter is Free by default (see MFN_FREE_DEFAULT_CHAPTERS) — these are
+  // the ONLY exceptions: bovine over-access-commitment cuts (26.5%), sheep/
+  // mutton (frozen only, non-TRQ 2-2.5%), and poultry (chicken/turkey/duck/
+  // goose/guinea fowl — both plain MFN rates on non-TRQ presentations like
+  // spent fowl, AND TRQ within/over-access compound rates), plus poultry fat
+  // (09.90) and the 02.10 salted/dried/smoked poultry meat TRQ lines.
+  // Bovine (02.01/02.02), over access commitment — 26.5% flat across all cuts:
+  "0201.10.20.10": {type:"percent", rate:26.5, note:""},
+  "0201.10.20.90": {type:"percent", rate:26.5, note:""},
+  "0201.20.20.10": {type:"percent", rate:26.5, note:""},
+  "0201.20.20.30": {type:"percent", rate:26.5, note:""},
+  "0201.20.20.91": {type:"percent", rate:26.5, note:""},
+  "0201.20.20.93": {type:"percent", rate:26.5, note:""},
+  "0201.20.20.99": {type:"percent", rate:26.5, note:""},
+  "0201.30.20.10": {type:"percent", rate:26.5, note:""},
+  "0201.30.20.50": {type:"percent", rate:26.5, note:""},
+  "0201.30.20.60": {type:"percent", rate:26.5, note:""},
+  "0201.30.20.92": {type:"percent", rate:26.5, note:""},
+  "0201.30.20.93": {type:"percent", rate:26.5, note:""},
+  "0201.30.20.94": {type:"percent", rate:26.5, note:""},
+  "0201.30.20.95": {type:"percent", rate:26.5, note:""},
+  "0201.30.20.99": {type:"percent", rate:26.5, note:""},
+  "0202.10.20.10": {type:"percent", rate:26.5, note:""},
+  "0202.10.20.90": {type:"percent", rate:26.5, note:""},
+  "0202.20.20.10": {type:"percent", rate:26.5, note:""},
+  "0202.20.20.30": {type:"percent", rate:26.5, note:""},
+  "0202.20.20.90": {type:"percent", rate:26.5, note:""},
+  "0202.30.20.10": {type:"percent", rate:26.5, note:""},
+  "0202.30.20.50": {type:"percent", rate:26.5, note:""},
+  "0202.30.20.95": {type:"percent", rate:26.5, note:""},
+  "0202.30.20.97": {type:"percent", rate:26.5, note:""},
+  "0202.30.20.99": {type:"percent", rate:26.5, note:""},
+  // Sheep, frozen — mutton only (lamb stays Free):
+  "0204.41.00.00": {type:"percent", rate:2, note:""},
+  "0204.42.20.00": {type:"percent", rate:2, note:""},
+  "0204.43.20.00": {type:"percent", rate:2.5, note:""},
+  // Poultry (02.07) — chicken/Gallus domesticus:
+  "0207.11.10.00": {type:"percent", rate:8, note:""},
+  "0207.11.91.00": {type:"compound", rate:null, note:"5% but not less than 4.74¢/kg or more than 9.48¢/kg"},
+  "0207.11.92.00": {type:"compound", rate:null, note:"238% but not less than $1.67/kg"},
+  "0207.12.10.00": {type:"percent", rate:8, note:""},
+  "0207.12.91.00": {type:"compound", rate:null, note:"5% but not less than 4.74¢/kg or more than 9.48¢/kg"},
+  "0207.12.92.00": {type:"compound", rate:null, note:"238% but not less than $1.67/kg"},
+  "0207.13.10.00": {type:"percent", rate:4, note:""},
+  "0207.13.91.00": {type:"compound", rate:null, note:"5% but not less than 4.74¢/kg or more than 9.48¢/kg"},
+  "0207.13.92.00": {type:"compound", rate:null, note:"249% but not less than $3.78/kg"},
+  "0207.13.93.00": {type:"compound", rate:null, note:"249% but not less than $6.74/kg"},
+  "0207.14.10.10": {type:"percent", rate:9, note:""},
+  "0207.14.10.20": {type:"percent", rate:9, note:""},
+  "0207.14.10.30": {type:"percent", rate:9, note:""},
+  "0207.14.10.40": {type:"percent", rate:9, note:""},
+  "0207.14.10.90": {type:"percent", rate:9, note:""},
+  "0207.14.22.00": {type:"compound", rate:null, note:"238% but not less than $6.45/kg"},
+  "0207.14.91.10": {type:"compound", rate:null, note:"5% but not less than 4.74¢/kg or more than 9.48¢/kg"},
+  "0207.14.91.20": {type:"compound", rate:null, note:"5% but not less than 4.74¢/kg or more than 9.48¢/kg"},
+  "0207.14.91.30": {type:"compound", rate:null, note:"5% but not less than 4.74¢/kg or more than 9.48¢/kg"},
+  "0207.14.91.41": {type:"compound", rate:null, note:"5% but not less than 4.74¢/kg or more than 9.48¢/kg"},
+  "0207.14.91.49": {type:"compound", rate:null, note:"5% but not less than 4.74¢/kg or more than 9.48¢/kg"},
+  "0207.14.91.90": {type:"compound", rate:null, note:"5% but not less than 4.74¢/kg or more than 9.48¢/kg"},
+  "0207.14.92.00": {type:"compound", rate:null, note:"249% but not less than $3.78/kg"},
+  "0207.14.93.00": {type:"compound", rate:null, note:"249% but not less than $6.74/kg"},
+  // Poultry (02.07) — turkey:
+  "0207.24.11.00": {type:"compound", rate:null, note:"5% but not less than 4.74¢/kg or more than 9.48¢/kg"},
+  "0207.24.12.00": {type:"compound", rate:null, note:"154.5% but not less than $2.11/kg"},
+  "0207.24.91.00": {type:"compound", rate:null, note:"5% but not less than 4.74¢/kg or more than 9.48¢/kg"},
+  "0207.24.92.00": {type:"compound", rate:null, note:"154.5% but not less than $1.95/kg"},
+  "0207.25.11.00": {type:"compound", rate:null, note:"5% but not less than 4.74¢/kg or more than 9.48¢/kg"},
+  "0207.25.12.00": {type:"compound", rate:null, note:"154.5% but not less than $2.11/kg"},
+  "0207.25.91.00": {type:"compound", rate:null, note:"5% but not less than 4.74¢/kg or more than 9.48¢/kg"},
+  "0207.25.92.00": {type:"compound", rate:null, note:"154.5% but not less than $1.95/kg"},
+  "0207.26.10.00": {type:"compound", rate:null, note:"5% but not less than 4.74¢/kg or more than 9.48¢/kg"},
+  "0207.26.20.00": {type:"compound", rate:null, note:"165% but not less than $2.94/kg"},
+  "0207.26.30.00": {type:"compound", rate:null, note:"165% but not less than $4.82/kg"},
+  "0207.27.12.00": {type:"compound", rate:null, note:"154.5% but not less than $4.51/kg"},
+  "0207.27.91.00": {type:"compound", rate:null, note:"5% but not less than 4.74¢/kg or more than 9.48¢/kg"},
+  "0207.27.92.00": {type:"compound", rate:null, note:"165% but not less than $2.94/kg"},
+  "0207.27.93.00": {type:"compound", rate:null, note:"165% but not less than $4.82/kg"},
+  // Poultry (02.07) — duck, goose, guinea fowl (livers stay Free; other cuts don't):
+  "0207.41.00.00": {type:"percent", rate:8, note:""},
+  "0207.42.00.00": {type:"percent", rate:5.5, note:""},
+  "0207.44.00.00": {type:"percent", rate:4, note:""},
+  "0207.45.90.00": {type:"percent", rate:4.5, note:""},
+  "0207.51.00.00": {type:"percent", rate:8, note:""},
+  "0207.52.00.00": {type:"percent", rate:5.5, note:""},
+  "0207.54.00.00": {type:"percent", rate:4, note:""},
+  "0207.55.90.00": {type:"percent", rate:4.5, note:""},
+  "0207.60.11.00": {type:"percent", rate:8, note:""},
+  "0207.60.19.00": {type:"percent", rate:4, note:""},
+  "0207.60.20.00": {type:"percent", rate:5.5, note:""},
+  "0207.60.99.00": {type:"percent", rate:4.5, note:""},
+  // Poultry fat (02.09.90) — chicken/turkey TRQ, "Other" fat at flat 11%:
+  "0209.90.10.00": {type:"compound", rate:null, note:"5% but not less than 4.74¢/kg or more than 9.48¢/kg"},
+  "0209.90.20.00": {type:"compound", rate:null, note:"249% but not less than $6.74/kg"},
+  "0209.90.30.00": {type:"compound", rate:null, note:"5% but not less than 4.74¢/kg or more than 9.48¢/kg"},
+  "0209.90.40.00": {type:"compound", rate:null, note:"165% but not less than $4.82/kg"},
+  "0209.90.90.00": {type:"percent", rate:11, note:""},
+  // 02.10 — salted/dried/smoked meat; only the poultry TRQ lines are non-Free
+  // (swine/bovine/other salted-dried-smoked meat in this heading is all Free):
+  "0210.99.11.00": {type:"compound", rate:null, note:"5% but not less than 4.74¢/kg or more than 9.48¢/kg"},
+  "0210.99.12.00": {type:"compound", rate:null, note:"249% but not less than $5.81/kg"},
+  "0210.99.13.00": {type:"compound", rate:null, note:"249% but not less than $10.36/kg"},
+  "0210.99.14.00": {type:"compound", rate:null, note:"5% but not less than 4.74¢/kg or more than 9.48¢/kg"},
+  "0210.99.15.00": {type:"compound", rate:null, note:"165% but not less than $3.67/kg"},
+  "0210.99.16.00": {type:"compound", rate:null, note:"165% but not less than $6.03/kg"},
+  "0210.99.19.00": {type:"percent", rate:2.5, note:""},
+
+  // ===== Chapter 3 — Fish, Crustaceans, Molluscs (verified 02 AUG 2026 from CBSA ch03-2026 PDF) =====
+  // Chapter is Free by default (see MFN_FREE_DEFAULT_CHAPTERS). Almost the
+  // entire chapter is Free — Canada doesn't protect fish/seafood the way it
+  // does supply-managed meat/dairy/poultry. The only exceptions are: fish
+  // livers/roes/milt (3%), most crustaceans — lobster/crab/Norway-lobster/
+  // "other" categories (5%, or 4% smoked lobster/crab-adjacent lines) while
+  // shrimp/prawns themselves stay Free, and smoked presentations of
+  // molluscs/other aquatic invertebrates (2-6.5%, rate varies by species).
+  // Fresh/frozen/live fish fillets, whole fish, and most shellfish "Other"
+  // (non-smoked) presentations are Free.
+  "0302.91.00.10": {type:"percent", rate:3, note:""},
+  "0302.91.00.90": {type:"percent", rate:3, note:""},
+  "0303.91.00.10": {type:"percent", rate:3, note:""},
+  "0303.91.00.90": {type:"percent", rate:3, note:""},
+  "0305.20.00.00": {type:"percent", rate:3, note:""},
+  "0306.11.00.00": {type:"percent", rate:5, note:""},
+  "0306.12.10.00": {type:"percent", rate:4, note:""},
+  "0306.14.90.10": {type:"percent", rate:5, note:""},
+  "0306.14.90.20": {type:"percent", rate:5, note:""},
+  "0306.14.90.30": {type:"percent", rate:5, note:""},
+  "0306.14.90.90": {type:"percent", rate:5, note:""},
+  "0306.15.00.00": {type:"percent", rate:5, note:""},
+  "0306.19.00.00": {type:"percent", rate:5, note:""},
+  "0306.31.00.00": {type:"percent", rate:5, note:""},
+  "0306.33.00.00": {type:"percent", rate:5, note:""},
+  "0306.34.00.00": {type:"percent", rate:5, note:""},
+  "0306.39.00.00": {type:"percent", rate:5, note:""},
+  "0306.91.00.00": {type:"percent", rate:5, note:""},
+  "0306.92.10.00": {type:"percent", rate:4, note:""},
+  "0306.93.00.00": {type:"percent", rate:5, note:""},
+  "0306.94.00.00": {type:"percent", rate:5, note:""},
+  "0306.99.00.00": {type:"percent", rate:5, note:""},
+  "0307.11.10.00": {type:"percent", rate:3, note:""},
+  "0307.12.10.00": {type:"percent", rate:2, note:""},
+  "0307.19.10.00": {type:"percent", rate:2, note:""},
+  "0307.22.10.00": {type:"percent", rate:4, note:""},
+  "0307.29.10.00": {type:"percent", rate:4, note:""},
+  "0307.32.10.00": {type:"percent", rate:4, note:""},
+  "0307.39.10.00": {type:"percent", rate:4, note:""},
+  "0307.60.10.00": {type:"percent", rate:4, note:""},
+  "0307.72.10.00": {type:"percent", rate:6.5, note:""},
+  "0307.79.10.00": {type:"percent", rate:6.5, note:""},
+  "0307.83.10.00": {type:"percent", rate:4, note:""},
+  "0307.84.10.00": {type:"percent", rate:4, note:""},
+  "0307.87.10.00": {type:"percent", rate:4, note:""},
+  "0307.88.10.00": {type:"percent", rate:4, note:""},
+  "0307.92.10.00": {type:"percent", rate:4, note:""},
+  "0307.99.10.00": {type:"percent", rate:4, note:""},
+  "0308.12.10.00": {type:"percent", rate:4, note:""},
+  "0308.19.10.00": {type:"percent", rate:4, note:""},
+  "0308.22.10.00": {type:"percent", rate:4, note:""},
+  "0308.29.10.00": {type:"percent", rate:4, note:""},
+  "0308.30.10.00": {type:"percent", rate:4, note:""},
+  "0308.90.10.00": {type:"percent", rate:4, note:""},
+  "0309.90.10.00": {type:"percent", rate:5, note:""},
+  "0309.90.21.00": {type:"percent", rate:4, note:""},
+  "0309.90.91.00": {type:"percent", rate:4, note:""},
 
   "0701.90.00.20": {type:"specific", rate:null, note:"$4.94/tonne"},
   "0902.40.10.00": {type:"free", rate:null, note:""},
@@ -929,7 +1096,7 @@ const MFN_RATES = {
 // Chapters 73/76 are Free except the specific finished-goods exceptions listed
 // above in MFN_RATES. Codes not in MFN_RATES for these chapters fall back to Free.
 const MFN_FREE_CHAPTERS = ["72"];
-const MFN_FREE_DEFAULT_CHAPTERS = ["73", "76", "01"]; // free unless explicit exception above
+const MFN_FREE_DEFAULT_CHAPTERS = ["73", "76", "01", "02", "03"]; // free unless explicit exception above
 
 function getMfnRate(code){
   if(!code) return null;
