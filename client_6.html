@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Duty &amp; Tariff Estimator | Hemisphere</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+  :root{
+    --brown-deep:#3F2A1E;
+    --brown-mid:#5A3D2A;
+    --brown-soft:#F3ECE5;
+    --teal:#5FCFC4;
+    --teal-deep:#3AA89C;
+    --teal-soft:#E4F7F4;
+    --paper:#FAF8F5;
+    --ink:#232323;
+    --ink-faint:#6B6558;
+    --success:#2F6B4F;
+    --success-soft:#E7F0EB;
+    --flag:#B8542E;
+    --flag-soft:#F7E9E1;
+    --line:#E6DFD5;
+  }
+
+  *{ box-sizing:border-box; }
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    line-height:1.55;
+  }
+  .mono{ font-family:'IBM Plex Mono',monospace; }
+
+  header{
+    background:var(--brown-deep);
+    color:#fff;
+    padding:18px 32px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+  }
+  .brand{
+    display:flex;
+    align-items:baseline;
+    gap:10px;
+  }
+  .brand-name{ font-family:'Montserrat',sans-serif; font-weight:800; font-size:20px; letter-spacing:0.5px; text-transform:uppercase; }
+  .brand-tag{ font-size:13px; color:#D9CFC3; }
+  header a{ color:#fff; text-decoration:none; font-size:13.5px; font-weight:600; letter-spacing:0.03em; text-transform:uppercase; border:1px solid var(--teal); background:var(--teal); color:var(--brown-deep); padding:9px 18px; border-radius:6px; transition:opacity 0.15s; }
+  header a:hover{ opacity:0.85; }
+
+  main{ max-width:880px; margin:0 auto; padding:56px 24px 80px; }
+
+  .hero-head{ margin-bottom:36px; }
+  .hero-head h1{
+    font-family:'Montserrat',sans-serif;
+    font-weight:800;
+    text-transform:uppercase;
+    font-size:clamp(28px, 3.6vw, 38px);
+    line-height:1.2;
+    letter-spacing:0.2px;
+    margin:0 0 12px;
+    color:var(--brown-deep);
+  }
+  .hero-head p{ font-size:17px; color:var(--ink-faint); margin:0; max-width:52ch; }
+
+  .card{
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:28px;
+  }
+
+  .field-row{
+    display:grid;
+    grid-template-columns:2fr 1fr 1fr;
+    gap:16px;
+  }
+  @media (max-width:640px){ .field-row{ grid-template-columns:1fr; } }
+
+  .field label{
+    display:block;
+    font-size:13px;
+    font-weight:600;
+    color:var(--brown-mid);
+    margin-bottom:6px;
+  }
+  .field input, .field select{
+    width:100%;
+    padding:12px 14px;
+    border:1.5px solid var(--line);
+    border-radius:8px;
+    font-family:'Inter',sans-serif;
+    font-size:15px;
+    background:#fff;
+    color:var(--ink);
+  }
+  .field input:focus, .field select:focus{
+    outline:none;
+    border-color:var(--teal);
+    box-shadow:0 0 0 3px var(--teal-soft);
+  }
+
+  .calc-btn{
+    margin-top:20px;
+    width:100%;
+    padding:15px;
+    background:var(--brown-deep);
+    color:#fff;
+    border:none;
+    border-radius:8px;
+    font-family:'Inter',sans-serif;
+    font-weight:600;
+    font-size:16px;
+    cursor:pointer;
+    transition:background 0.15s;
+  }
+  .calc-btn:hover{ background:var(--brown-mid); }
+  .calc-btn:focus-visible{ outline:3px solid var(--teal); outline-offset:2px; }
+
+  #results{ margin-top:32px; display:none; }
+  #results.show{ display:block; }
+
+  .result-hero{
+    background:var(--brown-deep);
+    color:#fff;
+    border-radius:14px;
+    padding:32px 28px;
+    text-align:center;
+  }
+  .result-hero .label{ font-size:13px; letter-spacing:0.06em; text-transform:uppercase; color:#D9CFC3; margin-bottom:8px; }
+  .result-hero .amount{ font-family:'Montserrat',sans-serif; font-weight:700; font-size:clamp(36px,6vw,52px); color:#fff; }
+  .result-hero .sub{ font-size:14px; color:#E3D9CB; margin-top:6px; }
+
+  .breakdown-bar{
+    display:flex;
+    height:14px;
+    border-radius:7px;
+    overflow:hidden;
+    margin:22px 0 10px;
+    background:rgba(255,255,255,0.12);
+  }
+  .breakdown-bar div{ height:100%; }
+  .breakdown-legend{
+    display:flex;
+    flex-wrap:wrap;
+    gap:14px 22px;
+    justify-content:center;
+    font-size:13px;
+    color:#E3D9CB;
+  }
+  .breakdown-legend span{ display:inline-flex; align-items:center; gap:6px; }
+  .swatch{ width:10px; height:10px; border-radius:3px; display:inline-block; }
+
+  .info-cards{ display:grid; gap:14px; margin-top:24px; }
+  .info-card{
+    border-radius:10px;
+    padding:16px 18px;
+    font-size:14.5px;
+    line-height:1.5;
+    border:1px solid transparent;
+  }
+  .info-card.clear{ background:var(--success-soft); border-color:#CFE3D8; color:#1F4C39; }
+  .info-card.flag{ background:var(--flag-soft); border-color:#EACBBB; color:#7A3A22; }
+  .info-card.neutral{ background:var(--teal-soft); border-color:#D3DFE9; color:var(--brown-mid); }
+  .info-card b{ display:block; margin-bottom:3px; font-size:13.5px; text-transform:uppercase; letter-spacing:0.03em; }
+
+  .cta{
+    margin-top:28px;
+    background:var(--teal-soft);
+    border:1px solid #E4CE9F;
+    border-radius:12px;
+    padding:24px 26px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:20px;
+    flex-wrap:wrap;
+  }
+  .cta div h3{ font-family:'Montserrat',sans-serif; font-weight:800; text-transform:uppercase; letter-spacing:0.2px; font-size:17px; margin:0 0 4px; color:var(--brown-deep); }
+  .cta div p{ margin:0; font-size:14px; color:var(--ink-faint); max-width:44ch; }
+  .cta a{
+    background:var(--brown-deep);
+    color:#fff;
+    text-decoration:none;
+    font-weight:600;
+    font-size:14.5px;
+    padding:13px 22px;
+    border-radius:8px;
+    white-space:nowrap;
+    transition:background 0.15s;
+  }
+  .cta a:hover{ background:var(--brown-mid); }
+
+  .no-match{
+    text-align:center;
+    color:var(--ink-faint);
+    padding:40px 20px;
+    font-size:15px;
+  }
+
+  footer{
+    max-width:880px;
+    margin:0 auto;
+    padding:0 24px 60px;
+    font-size:12.5px;
+    color:var(--ink-faint);
+    line-height:1.6;
+  }
+  footer p{ margin:0; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <span class="brand-name">HEMISPHERE</span>
+    <span class="brand-tag">Duty &amp; Tariff Estimator</span>
+  </div>
+  <a href="https://www.gohemisphere.ca/contact">Talk to a Broker</a>
+</header>
+
+<main>
+  <div class="hero-head">
+    <h1>What will this shipment actually cost?</h1>
+    <p>Enter a product and its origin to estimate Canadian import duty — including any current trade surtaxes that might apply.</p>
+  </div>
+
+  <div class="card">
+    <div class="field-row">
+      <div class="field">
+        <label for="q">HS code or product description</label>
+        <input type="text" id="q" placeholder="e.g. aluminum windows, or 7610.10.00.20">
+      </div>
+      <div class="field">
+        <label for="origin">Country of origin</label>
+        <select id="origin">
+          <option value="">Select origin…</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="value">Shipment value</label>
+        <input type="number" id="value" placeholder="e.g. 10000" min="0">
+      </div>
+    </div>
+    <button class="calc-btn" onclick="runEstimate()">Estimate my duty</button>
+  </div>
+
+  <div id="results"></div>
+</main>
+
+<footer>
+  <p>This is an estimate for general informational purposes only, based on publicly available CBSA tariff, surtax, and trade-remedy data. It is not a binding tariff classification, valuation, or duty determination, and does not replace advice from a licensed customs broker. Actual duty owed depends on your specific product's classification, origin qualification, and value for duty as determined by the Canada Border Services Agency. For a precise, defensible number — <a href="https://www.gohemisphere.ca/contact" style="color:var(--brown-mid);">talk to a Hemisphere broker</a>.</p>
+</footer>
+
+<script src="data.js"></script>
+<script>
+function formatMoney(n){
+  return '$' + n.toLocaleString('en-CA', {minimumFractionDigits:2, maximumFractionDigits:2});
+}
+
+// Every real country that appears across current SIMA cases, plus US/China
+// as guaranteed baseline entries since they're the most common origins for
+// surtax purposes even when a specific SIMA case doesn't name them. Same
+// approach as the internal tool's origin filter — one list, drawn from the
+// actual data, not a hand-picked guess. "Other" stays as a fallback for
+// origins outside that list, where base duty and safeguard status can still
+// apply even though no SIMA case will match.
+function populateOriginDropdown(){
+  const select = document.getElementById('origin');
+  const countries = new Set(["United States", "China"]);
+  SIMA_CASES.forEach(c => c.measures.forEach(m => countries.add(m.country)));
+  [...countries].sort().forEach(country => {
+    const opt = document.createElement('option');
+    opt.value = country;
+    opt.textContent = country;
+    select.appendChild(opt);
+  });
+  const otherOpt = document.createElement('option');
+  otherOpt.value = 'Other';
+  otherOpt.textContent = 'Other / not listed';
+  select.appendChild(otherOpt);
+}
+populateOriginDropdown();
+
+// Translates a SIMA antiDumping/countervailing rate object into a plain
+// "up to X%" client-facing line. Handles three shapes: a flat percent, a
+// percent that varies by the exporting country (shows the origin-specific
+// rate when we can match it, otherwise the full range), and a specific
+// per-unit charge (CNY/kg etc) which can't be expressed as a % without a
+// known weight — described in words instead of a fabricated number.
+function describeSimaRate(rateObj, origin){
+  if(!rateObj) return null;
+  if(rateObj.type === 'percent'){
+    if(rateObj.countryRates){
+      const match = rateObj.countryRates.find(cr => cr.countries.includes(origin));
+      if(match) return `up to ${match.rate}%`;
+      const rates = rateObj.countryRates.map(cr => cr.rate);
+      return `up to ${Math.min(...rates)}%–${Math.max(...rates)}%, depending on the exporter`;
+    }
+    return `up to ${rateObj.rate}%`;
+  }
+  if(rateObj.type === 'specific'){
+    return `an additional charge assessed per ${rateObj.perUnitLabel || rateObj.perUnit} (not a flat percentage)`;
+  }
+  return null;
+}
+
+function findTariffDataMatch(query){
+  const nq = normCode(query);
+  if(!nq) return null;
+  const matches = TARIFF_DATA.filter(item => normCode(item.code) === nq);
+  return matches.length === 1 ? matches[0] : null;
+}
+
+function runEstimate(){
+  const q = document.getElementById('q').value.trim();
+  const origin = document.getElementById('origin').value;
+  const value = parseFloat(document.getElementById('value').value) || 0;
+  const resultsEl = document.getElementById('results');
+
+  if(!q || !value){
+    resultsEl.className = 'show';
+    resultsEl.innerHTML = '<div class="card no-match">Enter a product and a shipment value to get an estimate.</div>';
+    return;
+  }
+
+  // Resolve to a single specific code where possible — same disambiguation
+  // approach as the internal tool: only compute a number when the match is
+  // unambiguous, otherwise flag for human review rather than guess.
+  const nq = normCode(q);
+  const codeSet = new Set();
+  TARIFF_DATA.forEach(item => {
+    const nc = normCode(item.code);
+    if(nc.startsWith(nq) || nq.startsWith(nc)) codeSet.add(item.code);
+  });
+  // Filter to cases that actually name the selected origin — now that the
+  // dropdown lists real countries (not just 3 generic buckets), we can be
+  // precise here instead of showing every case that matches the HS code
+  // regardless of whether it applies to this shipment's actual origin.
+  // "Other / not listed" and no-selection skip this filter, since we can't
+  // rule anything in or out for an origin outside the known list.
+  const simaMatchesAll = findSimaMatches(q);
+  const simaMatches = (origin && origin !== 'Other')
+    ? simaMatchesAll.filter(c => c.measures.some(m => m.country === origin))
+    : simaMatchesAll;
+  const surtaxMatches = findSurtaxMatches(q).filter(o => surtaxAppliesToCountry(o, origin));
+  const safeguardMatches = findSafeguardMatches(q);
+  simaMatchesAll.forEach(c => c.hsCodes.forEach(code => {
+    const nc = normCode(code);
+    if(nc.startsWith(nq) || nq.startsWith(nc)) codeSet.add(code);
+  }));
+  surtaxMatches.forEach(o => o.hsCodes.forEach(code => {
+    const nc = normCode(code);
+    if(nc.startsWith(nq) || nq.startsWith(nc)) codeSet.add(code);
+  }));
+
+  const rawCodes = [...codeSet];
+  const distinctCodes = rawCodes.filter(code => {
+    const nc = normCode(code);
+    return !rawCodes.some(other => {
+      if(other === code) return false;
+      const nOther = normCode(other);
+      return nOther.length > nc.length && nOther.startsWith(nc);
+    });
+  });
+
+  if(distinctCodes.length === 0){
+    resultsEl.className = 'show';
+    resultsEl.innerHTML = '<div class="card no-match">We don\'t have that product in our estimator yet. <a href="https://www.gohemisphere.ca/contact" style="color:var(--brown-mid);">Contact a broker</a> for an exact rate.</div>';
+    return;
+  }
+  if(distinctCodes.length > 1){
+    resultsEl.className = 'show';
+    resultsEl.innerHTML = '<div class="card no-match">That description matches more than one tariff classification — try a more specific description, or the exact HS code if you know it.</div>';
+    return;
+  }
+
+  const matchedCode = distinctCodes[0];
+  const mfn = getMfnRate(matchedCode);
+  const mfnRate = mfn && mfn.type === 'percent' ? mfn.rate : (mfn && mfn.type === 'free' ? 0 : null);
+
+  let total = value;
+  const segments = []; // {label, amount, color}
+
+  if(mfnRate !== null){
+    const amt = value * (mfnRate/100);
+    total += amt;
+    segments.push({label: `Base duty (${mfnRate}%)`, amount: amt, color: 'var(--brown-mid)'});
+  }
+
+  let surtaxNote = null;
+  if(surtaxMatches.length){
+    const order = surtaxMatches[0];
+    if(order.type === 'flat'){
+      const amt = value * (order.rate/100);
+      total += amt;
+      segments.push({label: `Surtax (${order.rate}%)`, amount: amt, color: 'var(--teal)'});
+    } else {
+      surtaxNote = `A quota-based trade measure (${order.regNo}) may apply depending on current import volumes — this requires broker review.`;
+    }
+  }
+
+  const simaFlag = simaMatches.length > 0;
+  const safeguardFlag = safeguardMatches.length > 0;
+
+  // Render
+  const barSegments = segments.map(s => {
+    const pct = (s.amount / total * 100).toFixed(1);
+    return `<div style="width:${pct}%; background:${s.color};"></div>`;
+  }).join('') + `<div style="flex:1; background:rgba(255,255,255,0.12);"></div>`;
+
+  const legend = segments.map(s =>
+    `<span><span class="swatch" style="background:${s.color};"></span>${s.label}: ${formatMoney(s.amount)}</span>`
+  ).join('');
+
+  let cardsHtml = '';
+  if(mfnRate !== null){
+    cardsHtml += `<div class="info-card clear"><b>Base duty</b>${mfnRate === 0 ? 'This product enters Canada duty-free under the standard rate.' : `Standard rate for this product: ${mfnRate}%.`}</div>`;
+  } else {
+    cardsHtml += `<div class="info-card neutral"><b>Base duty</b>We don't have a confirmed rate for this exact code yet — a broker can confirm the precise classification and rate.</div>`;
+  }
+  if(surtaxMatches.length && surtaxMatches[0].type === 'flat'){
+    cardsHtml += `<div class="info-card flag"><b>Trade surtax likely applies</b>A surtax of ${surtaxMatches[0].rate}% (${surtaxMatches[0].name}) currently applies to goods like this from the selected origin. Confirm with us before you rely on this estimate — exact scope can depend on product specifications.</div>`;
+  } else if(surtaxNote){
+    cardsHtml += `<div class="info-card flag"><b>Possible surtax</b>${surtaxNote}</div>`;
+  }
+  if(simaMatches.length){
+    simaMatches.forEach(c => {
+      if(!c.residualRates) return;
+      const adDesc = describeSimaRate(c.residualRates.antiDumping, origin);
+      const cvdDesc = describeSimaRate(c.residualRates.countervailing, origin);
+      const parts = [];
+      if(adDesc) parts.push(`an anti-dumping duty of ${adDesc}`);
+      if(cvdDesc) parts.push(`a countervailing duty of ${cvdDesc}`);
+      if(parts.length){
+        cardsHtml += `<div class="info-card flag"><b>Possible anti-dumping / countervailing duty</b>This type of product (${c.product.toLowerCase()}) may be subject to ${parts.join(' and ')}, depending on its exact specifications and manufacturer. This can substantially change your landed cost — confirm with us before you rely on this estimate.</div>`;
+      }
+    });
+  }
+  if(safeguardFlag){
+    safeguardMatches.forEach(m => {
+      cardsHtml += `<div class="info-card flag"><b>Possible import surge surtax</b>A temporary additional surtax of ${m.rate}% may currently apply to this product category. These measures are time-limited and can change status quickly — consult us for the current rate before you ship.</div>`;
+    });
+  }
+  if(!surtaxMatches.length && !simaFlag && !safeguardFlag){
+    cardsHtml += `<div class="info-card clear"><b>No trade measures flagged</b>No active surtax, anti-dumping, or safeguard measures matched this product and origin.</div>`;
+  }
+
+  resultsEl.className = 'show';
+  resultsEl.innerHTML = `
+    <div class="result-hero">
+      <div class="label">Estimated Landed Cost</div>
+      <div class="amount">${formatMoney(total)}</div>
+      <div class="sub">on a ${formatMoney(value)} shipment</div>
+      ${segments.length ? `<div class="breakdown-bar">${barSegments}</div><div class="breakdown-legend">${legend}</div>` : ''}
+    </div>
+    <div class="info-cards">${cardsHtml}</div>
+    <div class="cta">
+      <div>
+        <h3>Want a number you can rely on?</h3>
+        <p>This estimate doesn't account for GST/HST, brokerage fees, or your exact product specifications.</p>
+      </div>
+      <a href="https://www.gohemisphere.ca/contact">Talk to a Broker</a>
+    </div>
+  `;
+}
+
+document.getElementById('q').addEventListener('keydown', e => { if(e.key === 'Enter') runEstimate(); });
+document.getElementById('value').addEventListener('keydown', e => { if(e.key === 'Enter') runEstimate(); });
+</script>
+</body>
+</html>
