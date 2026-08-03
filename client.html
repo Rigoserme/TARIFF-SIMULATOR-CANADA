@@ -377,7 +377,11 @@ function runEstimate(){
   // safely collapse to one rate this way, since it may span dozens of
   // different classifications; that still relies on the exact-list
   // matching above and correctly reports ambiguity when it's too broad.
-  if(nq.length === 10 && getMfnRate(q)){
+  // The raw query and an already-matched code can be the same code in two
+  // different string formats (e.g. "2005400000" vs "2005.40.00.00") — only
+  // add it if it isn't already represented, or distinctCodes would see two
+  // "different" codes and falsely report an ambiguous match.
+  if(nq.length === 10 && getMfnRate(q) && ![...codeSet].some(c => normCode(c) === nq)){
     codeSet.add(q);
   }
 
