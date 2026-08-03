@@ -357,6 +357,29 @@ function runEstimate(){
     const nc = normCode(code);
     if(nc.startsWith(nq) || nq.startsWith(nc)) codeSet.add(code);
   }));
+  // Safeguard hsCodes were previously never added here, so a code flagged
+  // ONLY by a safeguard measure (no TARIFF_DATA/SIMA/surtax entry) would
+  // silently fall through to "we don't have that product" before the
+  // safeguard card ever got a chance to render. Match index.html's logic.
+  safeguardMatches.forEach(m => m.hsCodes.forEach(code => {
+    const nc = normCode(code);
+    if(nc.startsWith(nq) || nq.startsWith(nc)) codeSet.add(code);
+  }));
+  // Beyond those three finite, enumerable lists, MFN_RATES itself may
+  // already have a verified duty answer for the EXACT code typed — either
+  // an explicit entry, or a chapter-wide Free pattern we've fully
+  // researched (see MFN_FREE_CHAPTERS / MFN_FREE_DEFAULT_CHAPTERS in
+  // data.js). This is the piece that makes "duty for all chapters" actually
+  // work as more chapters get added — otherwise a code like a dairy or fish
+  // classification with no case attached would never resolve here even
+  // though its rate is fully known. Only trusted for a FULLY-PRECISE
+  // 10-digit code — a partial/heading-level query (e.g. "0406") can't
+  // safely collapse to one rate this way, since it may span dozens of
+  // different classifications; that still relies on the exact-list
+  // matching above and correctly reports ambiguity when it's too broad.
+  if(nq.length === 10 && getMfnRate(q)){
+    codeSet.add(q);
+  }
 
   const rawCodes = [...codeSet];
   const distinctCodes = rawCodes.filter(code => {
@@ -420,6 +443,8 @@ function runEstimate(){
   let cardsHtml = '';
   if(mfnRate !== null){
     cardsHtml += `<div class="info-card clear"><b>Base duty</b>${mfnRate === 0 ? 'This product enters Canada duty-free under the standard rate.' : `Standard rate for this product: ${mfnRate}%.`}</div>`;
+  } else if(mfn && (mfn.type === 'compound' || mfn.type === 'specific')){
+    cardsHtml += `<div class="info-card neutral"><b>Base duty</b>This product has a per-unit duty rather than a flat percentage: ${mfn.note}. This can't be calculated from shipment value alone — a broker needs the exact quantity or weight to confirm the duty amount.</div>`;
   } else {
     cardsHtml += `<div class="info-card neutral"><b>Base duty</b>We don't have a confirmed rate for this exact code yet — a broker can confirm the precise classification and rate.</div>`;
   }
