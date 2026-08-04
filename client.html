@@ -81,6 +81,7 @@
   }
   @media (max-width:640px){ .field-row{ grid-template-columns:1fr; } }
 
+  .field{ position:relative; }
   .field label{
     display:block;
     font-size:13px;
@@ -202,6 +203,31 @@
     font-size:15px;
   }
 
+  .suggest-list{
+    display:none;
+    position:absolute;
+    top:calc(100% + 4px);
+    left:0;
+    right:0;
+    background:#fff;
+    border:1.5px solid var(--line);
+    border-radius:8px;
+    box-shadow:0 8px 24px rgba(63,42,30,0.12);
+    max-height:260px;
+    overflow-y:auto;
+    z-index:20;
+  }
+  .suggest-list.show{ display:block; }
+  .suggest-item{
+    padding:10px 14px;
+    cursor:pointer;
+    border-bottom:1px solid var(--line);
+  }
+  .suggest-item:last-child{ border-bottom:none; }
+  .suggest-item:hover, .suggest-item.active{ background:var(--teal-soft); }
+  .suggest-item .suggest-code{ font-family:'IBM Plex Mono',monospace; font-size:12.5px; font-weight:600; color:var(--brown-deep); }
+  .suggest-item .suggest-desc{ font-size:12.5px; color:var(--ink-faint); margin-top:2px; }
+
   footer{
     max-width:880px;
     margin:0 auto;
@@ -233,7 +259,8 @@
     <div class="field-row">
       <div class="field">
         <label for="q">HS code or product description</label>
-        <input type="text" id="q" placeholder="e.g. aluminum windows, or 7610.10.00.20">
+        <input type="text" id="q" placeholder="e.g. aluminum windows, or 7610.10.00.20" autocomplete="off">
+        <div class="suggest-list" id="qSuggest"></div>
       </div>
       <div class="field">
         <label for="origin">Country of origin</label>
@@ -285,6 +312,46 @@ function populateOriginDropdown(){
   select.appendChild(otherOpt);
 }
 populateOriginDropdown();
+
+// Type-ahead code search — only has data for Chapter 4 so far (see
+// CODE_DESCRIPTIONS in data.js). Purely a picking aid: selecting a
+// suggestion just fills the exact code into the search box, it doesn't
+// bypass the normal matching/ambiguity logic in runEstimate() below.
+const qInput = document.getElementById('q');
+const qSuggest = document.getElementById('qSuggest');
+
+function renderSuggestions(matches){
+  if(!matches.length){
+    qSuggest.classList.remove('show');
+    qSuggest.innerHTML = '';
+    return;
+  }
+  qSuggest.innerHTML = matches.map(m =>
+    `<div class="suggest-item" data-code="${m.code}"><div class="suggest-code">${m.code}</div><div class="suggest-desc">${m.description}</div></div>`
+  ).join('');
+  qSuggest.classList.add('show');
+}
+
+qInput.addEventListener('input', () => {
+  const val = qInput.value.trim();
+  if(val.length < 3){
+    renderSuggestions([]);
+    return;
+  }
+  renderSuggestions(searchCodesByPrefix(val, 8));
+});
+
+qSuggest.addEventListener('click', e => {
+  const item = e.target.closest('.suggest-item');
+  if(!item) return;
+  qInput.value = item.dataset.code;
+  renderSuggestions([]);
+  qInput.focus();
+});
+
+document.addEventListener('click', e => {
+  if(e.target !== qInput && !qSuggest.contains(e.target)) renderSuggestions([]);
+});
 
 // Translates a SIMA antiDumping/countervailing rate object into a plain
 // "up to X%" client-facing line. Handles three shapes: a flat percent, a
@@ -422,8 +489,14 @@ function runEstimate(){
   }
 
   const matchedCode = distinctCodes[0];
-  const mfn = getMfnRate(matchedCode);
+  // getApplicableRate() auto-resolves the best rate for this code + selected
+  // origin (preferential Free/special rate if the origin's trade treaty
+  // covers this code, otherwise plain MFN) — currently only has preferential
+  // data for Chapter 4, everything else transparently falls back to MFN.
+  const applicable = getApplicableRate(matchedCode, origin);
+  const mfn = applicable.rate;
   const mfnRate = mfn && mfn.type === 'percent' ? mfn.rate : (mfn && mfn.type === 'free' ? 0 : null);
+  const isPreferential = applicable.source === 'preferential';
 
   let total = value;
   const segments = []; // {label, amount, color}
@@ -461,7 +534,8 @@ function runEstimate(){
 
   let cardsHtml = '';
   if(mfnRate !== null){
-    cardsHtml += `<div class="info-card clear"><b>Base duty</b>${mfnRate === 0 ? 'This product enters Canada duty-free under the standard rate.' : `Standard rate for this product: ${mfnRate}%.`}</div>`;
+    const preferentialNote = isPreferential ? ` — preferential rate under Canada's trade agreement with the selected origin (treaty code ${applicable.treaty})` : '';
+    cardsHtml += `<div class="info-card clear"><b>Base duty</b>${mfnRate === 0 ? `This product enters Canada duty-free${isPreferential ? preferentialNote : ' under the standard rate'}.` : `Rate for this product${preferentialNote}: ${mfnRate}%.`}</div>`;
   } else if(mfn && (mfn.type === 'compound' || mfn.type === 'specific')){
     cardsHtml += `<div class="info-card neutral"><b>Base duty</b>This product has a per-unit duty rather than a flat percentage: ${mfn.note}. This can't be calculated from shipment value alone — a broker needs the exact quantity or weight to confirm the duty amount.</div>`;
   } else {

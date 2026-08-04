@@ -1602,3 +1602,638 @@ function splitScopeNote(note){
   if(!match) return { summary: note, details: null };
   return { summary: note.slice(0, match.index).trim(), details: note.slice(match.index).trim() };
 }
+
+const COUNTRY_TREATIES = {
+  "Afghanistan": ["GPT", "LDCT"],
+  "Albania": [],
+  "Algeria": [],
+  "American Samoa": [],
+  "Andorra": ["CEUT"],
+  "Angola": ["GPT", "LDCT"],
+  "Anguilla": ["GPT", "CCCT"],
+  "Antigua and Barbuda": ["CCCT"],
+  "Argentina": [],
+  "Armenia": [],
+  "Aruba": [],
+  "Ascension Island": ["GPT"],
+  "Australia": ["AUT", "CPTPT"],
+  "Austria": ["CEUT"],
+  "Azerbaijan": [],
+  "Bahamas": ["CCCT"],
+  "Bahrain": [],
+  "Bangladesh": ["GPT", "LDCT"],
+  "Barbados": ["CCCT"],
+  "Belarus": [],
+  "Belgium": ["CEUT"],
+  "Belize": ["CCCT"],
+  "Benin": ["GPT", "LDCT"],
+  "Bermuda": ["CCCT"],
+  "Bhutan": ["GPT", "LDCT"],
+  "Bolivia": ["GPT"],
+  "Bonaire, Sint Eustatius and Saba": [],
+  "Bosnia and Herzegovina": [],
+  "Botswana": [],
+  "Brazil": [],
+  "British Indian Ocean Territory": ["GPT"],
+  "Brunei": ["CPTPT"],
+  "Bulgaria": ["CEUT"],
+  "Burkina Faso": ["GPT", "LDCT"],
+  "Burma": ["GPT", "LDCT"],
+  "Burundi": ["GPT", "LDCT"],
+  "Cambodia": ["GPT", "LDCT"],
+  "Cameroon": ["GPT"],
+  "Canary Islands": ["GPT", "CEUT"],
+  "Cape Verde": ["GPT"],
+  "Cayman Islands": ["CCCT"],
+  "Central African Republic": ["GPT", "LDCT"],
+  "Ceuta and Melilla": ["GPT", "CEUT"],
+  "Chad": ["GPT", "LDCT"],
+  "Channel Islands": ["UKT"],
+  "Chile": ["CT", "CPTPT"],
+  "China": [],
+  "Christmas Island": ["GPT"],
+  "Cocos (Keeling) Islands": ["GPT"],
+  "Colombia": ["COLT"],
+  "Comoros": ["GPT", "LDCT"],
+  "Congo": ["GPT"],
+  "Cook Islands": ["GPT"],
+  "Costa Rica": ["CRT"],
+  "Cote d'Ivoire": ["GPT"],
+  "Croatia": ["CEUT"],
+  "Cuba": [],
+  "Curacao": [],
+  "Cyprus": ["CEUT"],
+  "Czech Republic": ["CEUT"],
+  "Democratic Republic of Congo": ["GPT", "LDCT"],
+  "Denmark": ["CEUT"],
+  "Djibouti": ["GPT", "LDCT"],
+  "Dominica": ["CCCT"],
+  "Dominican Republic": [],
+  "Ecuador": [],
+  "Egypt": ["GPT"],
+  "El Salvador": ["GPT"],
+  "Equatorial Guinea": [],
+  "Eritrea": ["GPT", "LDCT"],
+  "Estonia": ["CEUT"],
+  "Ethiopia": ["GPT", "LDCT"],
+  "Falkland Islands": ["GPT"],
+  "Faroe Islands": [],
+  "Fiji": [],
+  "Finland": ["CEUT"],
+  "France": ["CEUT"],
+  "French Guiana": ["CEUT"],
+  "French Polynesia": [],
+  "French Southern and Antartic Territories": ["GPT"],
+  "Gabon": [],
+  "Gambia": ["GPT", "LDCT"],
+  "Georgia": [],
+  "Germany": ["CEUT"],
+  "Ghana": ["GPT"],
+  "Gibraltar": ["UKT"],
+  "Greece": ["CEUT"],
+  "Greenland": [],
+  "Grenada": ["CCCT"],
+  "Guadeloupe": ["CEUT"],
+  "Guam": [],
+  "Guatemala": [],
+  "Guinea": ["GPT", "LDCT"],
+  "Guinea-Bissau": ["GPT", "LDCT"],
+  "Guyana": ["CCCT"],
+  "Haiti": ["GPT", "LDCT"],
+  "Honduras": ["GPT", "HNT"],
+  "Hong Kong": [],
+  "Hungary": ["CEUT"],
+  "Iceland": ["IT"],
+  "India": [],
+  "Indonesia": [],
+  "Iran": [],
+  "Iraq": [],
+  "Ireland": ["CEUT"],
+  "Isle of Man": ["UKT"],
+  "Israel": ["CIAT"],
+  "Italy": ["CEUT"],
+  "Jamaica": ["CCCT"],
+  "Japan": ["CPTPT"],
+  "Jordan": ["JT"],
+  "Kazakhstan": [],
+  "Kenya": ["GPT"],
+  "Kiribati": ["GPT", "LDCT"],
+  "Kosovo": [],
+  "Kuwait": [],
+  "Kyrgyzstan": ["GPT"],
+  "Laos": ["GPT", "LDCT"],
+  "Latvia": ["CEUT"],
+  "Lebanon": ["GPT"],
+  "Lesotho": ["GPT", "LDCT"],
+  "Liberia": ["GPT", "LDCT"],
+  "Libya": [],
+  "Liechtenstein": ["SLT"],
+  "Lithuania": ["CEUT"],
+  "Luxembourg": ["CEUT"],
+  "Macao": [],
+  "Macedonia": [],
+  "Madagascar": ["GPT", "LDCT"],
+  "Malawi": ["GPT", "LDCT"],
+  "Malaysia": ["CPTPT"],
+  "Maldives": [],
+  "Mali": ["GPT", "LDCT"],
+  "Malta": ["CEUT"],
+  "Mariana Islands": [],
+  "Marshall Islands": [],
+  "Martinique": ["CEUT"],
+  "Mauritania": ["GPT", "LDCT"],
+  "Mauritius": [],
+  "Mayotte": ["CEUT"],
+  "Mexico": ["MXT", "CPTPT"],
+  "Micronesia": ["GPT"],
+  "Moldova": [],
+  "Monaco": ["CEUT"],
+  "Mongolia": ["GPT"],
+  "Montenegro": [],
+  "Montserrat": ["GPT", "CCCT"],
+  "Morocco": ["GPT"],
+  "Mozambique": ["GPT", "LDCT"],
+  "Namibia": [],
+  "Nauru": [],
+  "Nepal": ["GPT", "LDCT"],
+  "Netherlands": ["CEUT"],
+  "New Caledonia and Dependencies": [],
+  "New Zealand": ["NZT", "CPTPT"],
+  "Nicaragua": ["GPT"],
+  "Niger": ["GPT", "LDCT"],
+  "Nigeria": ["GPT"],
+  "Niue": ["GPT"],
+  "Norfolk Island": ["GPT"],
+  "Norway": ["NT"],
+  "Oman": [],
+  "Pakistan": ["GPT"],
+  "Palau": [],
+  "Panama": ["PAT"],
+  "Papua New Guinea": ["GPT"],
+  "Paraguay": [],
+  "Peru": ["PT", "CPTPT"],
+  "Philippines": ["GPT"],
+  "Pitcairn": ["GPT"],
+  "Poland": ["CEUT"],
+  "Portugal": ["CEUT"],
+  "Puerto Rico": ["UST"],
+  "Qatar": [],
+  "Reunion": ["CEUT"],
+  "Romania": ["CEUT"],
+  "Russia": [],
+  "Rwanda": ["GPT", "LDCT"],
+  "Saint Barthelemy": ["CEUT"],
+  "Saint Helena and Dependencies": ["GPT"],
+  "Saint Kitts and Nevis": ["CCCT"],
+  "Saint Lucia": ["CCCT"],
+  "Saint Martin": ["CEUT"],
+  "Saint Pierre and Miquelon": [],
+  "Saint Vincent and the Grenadines": ["CCCT"],
+  "Samoa": ["GPT"],
+  "San Marino": ["CEUT"],
+  "Sao Tome and Principe": ["GPT", "LDCT"],
+  "Saudi Arabia": [],
+  "Senegal": ["GPT", "LDCT"],
+  "Serbia": [],
+  "Seychelles": [],
+  "Sierra Leone": ["GPT", "LDCT"],
+  "Singapore": ["CPTPT"],
+  "Sint Maarten": [],
+  "Slovakia": ["CEUT"],
+  "Slovenia": ["CEUT"],
+  "Solomon Islands": ["GPT", "LDCT"],
+  "Somalia": ["GPT", "LDCT"],
+  "South Africa": [],
+  "South Georgia and the South Sandwich Islands": [],
+  "South Korea": ["KRT"],
+  "South Sudan": ["GPT", "LDCT"],
+  "Spain": ["CEUT"],
+  "Sri Lanka": ["GPT"],
+  "Sudan": ["GPT", "LDCT"],
+  "Suriname": [],
+  "Swaziland": ["GPT"],
+  "Sweden": ["CEUT"],
+  "Switzerland": ["SLT"],
+  "Syria": ["GPT"],
+  "Taiwan": [],
+  "Tajikistan": ["GPT"],
+  "Tanzania": ["GPT", "LDCT"],
+  "Thailand": [],
+  "Timor-Leste": ["GPT", "LDCT"],
+  "Togo": ["GPT", "LDCT"],
+  "Tokelau Islands": ["GPT"],
+  "Tonga": [],
+  "Trinidad and Tobago": ["CCCT"],
+  "Tristan Da Cunha": ["GPT"],
+  "Tunisia": ["GPT"],
+  "Turkey": [],
+  "Turkmenistan": [],
+  "Turks and Caicos Islands": ["CCCT"],
+  "Tuvalu": [],
+  "Uganda": ["GPT", "LDCT"],
+  "Ukraine": ["GPT", "UAT"],
+  "United Arab Emirates": [],
+  "United Kingdom": ["UKT"],
+  "United States of America": ["UST"],
+  "Uruguay": [],
+  "Uzbekistan": ["GPT"],
+  "Vanuatu": ["GPT"],
+  "Vatican (Holy See)": [],
+  "Venezuela": [],
+  "Vietnam": ["CPTPT"],
+  "Virgin Islands, British": ["CCCT"],
+  "Virgin Islands, U.S.A.": [],
+  "Wallis and Futuna": [],
+  "Yemen": ["GPT", "LDCT"],
+  "Zambia": ["GPT", "LDCT"],
+  "Zimbabwe": ["GPT"],
+};
+
+// ===== Chapter 4 code descriptions (for type-ahead search) =====
+const CODE_DESCRIPTIONS_CH04 = {
+  "0401.10.10.00": "Milk and cream, not concentrated nor containing added sugar > Of a fat content, by weight, not exceeding 1% > Within access commitment",
+  "0401.10.20.00": "Milk and cream, not concentrated nor containing added sugar > Of a fat content, by weight, not exceeding 1% > Over access commitment",
+  "0401.20.10.00": "Milk and cream, not concentrated nor containing added sugar > Of a fat content, by weight, exceeding 1% but not exceeding 6% > Within access commitment",
+  "0401.20.20.00": "Milk and cream, not concentrated nor containing added sugar > Of a fat content, by weight, exceeding 1% but not exceeding 6% > Over access commitment",
+  "0401.40.10.00": "Milk and cream, not concentrated nor containing added sugar > Of a fat content, by weight, exceeding 6% but not exceeding 10% > Within access commitment",
+  "0401.40.20.00": "Milk and cream, not concentrated nor containing added sugar > Of a fat content, by weight, exceeding 6% but not exceeding 10% > Over access commitment",
+  "0401.50.10.00": "Milk and cream, not concentrated nor containing added sugar > Of a fat content, by weight, exceeding 10% > Within access commitment",
+  "0401.50.20.00": "Milk and cream, not concentrated nor containing added sugar > Of a fat content, by weight, exceeding 10% > Over access commitment",
+  "0402.10.10.00": "Milk and cream, concentrated or containing added sugar > In powder/granules/solid form, fat content not exceeding 1.5% > Within access commitment",
+  "0402.10.20.00": "Milk and cream, concentrated or containing added sugar > In powder/granules/solid form, fat content not exceeding 1.5% > Over access commitment",
+  "0402.21.11.00": "Milk and cream, concentrated > Powder/granules, fat content exceeding 1.5%, not containing added sugar > Milk > Within access commitment",
+  "0402.21.12.00": "Milk and cream, concentrated > Powder/granules, fat content exceeding 1.5%, not containing added sugar > Milk > Over access commitment",
+  "0402.21.21.00": "Milk and cream, concentrated > Powder/granules, fat content exceeding 1.5%, not containing added sugar > Cream > Within access commitment",
+  "0402.21.22.00": "Milk and cream, concentrated > Powder/granules, fat content exceeding 1.5%, not containing added sugar > Cream > Over access commitment",
+  "0402.29.11.00": "Milk and cream, concentrated > Powder/granules, fat content exceeding 1.5%, other > Milk > Within access commitment",
+  "0402.29.12.00": "Milk and cream, concentrated > Powder/granules, fat content exceeding 1.5%, other > Milk > Over access commitment",
+  "0402.29.21.00": "Milk and cream, concentrated > Powder/granules, fat content exceeding 1.5%, other > Cream > Within access commitment",
+  "0402.29.22.00": "Milk and cream, concentrated > Powder/granules, fat content exceeding 1.5%, other > Cream > Over access commitment",
+  "0402.91.10.00": "Milk and cream, concentrated > Other, not containing added sugar > Within access commitment",
+  "0402.91.20.00": "Milk and cream, concentrated > Other, not containing added sugar > Over access commitment",
+  "0402.99.10.00": "Milk and cream, concentrated > Other > Within access commitment",
+  "0402.99.20.00": "Milk and cream, concentrated > Other > Over access commitment",
+  "0403.20.10.00": "Yogurt, buttermilk, kephir > Yogurt containing chocolate/spices/fruit etc., put up for retail sale",
+  "0403.20.21.00": "Yogurt, buttermilk, kephir > Yogurt containing chocolate/spices/fruit etc., not for retail, within access commitment",
+  "0403.20.29.10": "Yogurt, buttermilk, kephir > Yogurt, other, within access commitment > Certified organic",
+  "0403.20.29.20": "Yogurt, buttermilk, kephir > Yogurt, other, within access commitment > Not certified organic",
+  "0403.20.31.00": "Yogurt, buttermilk, kephir > Yogurt containing chocolate/spices/fruit etc., not for retail, over access commitment",
+  "0403.20.39.10": "Yogurt, buttermilk, kephir > Yogurt, other, over access commitment > Certified organic",
+  "0403.20.39.20": "Yogurt, buttermilk, kephir > Yogurt, other, over access commitment > Not certified organic",
+  "0403.90.11.00": "Yogurt, buttermilk, kephir > Other > Powdered buttermilk, within access commitment",
+  "0403.90.12.00": "Yogurt, buttermilk, kephir > Other > Powdered buttermilk, over access commitment",
+  "0403.90.91.00": "Yogurt, buttermilk, kephir > Other > Other, within access commitment",
+  "0403.90.92.00": "Yogurt, buttermilk, kephir > Other > Other, over access commitment",
+  "0404.10.10.00": "Whey and modified whey > Whey protein concentrate",
+  "0404.10.21.00": "Whey and modified whey > Powdered whey, within access commitment",
+  "0404.10.22.00": "Whey and modified whey > Powdered whey, over access commitment",
+  "0404.10.90.10": "Whey and modified whey > Other > Condensed or evaporated",
+  "0404.10.90.20": "Whey and modified whey > Other > Modified whey",
+  "0404.10.90.90": "Whey and modified whey > Other > Other",
+  "0404.90.10.11": "Natural milk constituent products, other > Within access commitment > Blended dairy powder, >50% skimmed milk powder",
+  "0404.90.10.12": "Natural milk constituent products, other > Within access commitment > Blended dairy powder, >50% whey powder",
+  "0404.90.10.19": "Natural milk constituent products, other > Within access commitment > Blended dairy powder, other",
+  "0404.90.10.90": "Natural milk constituent products, other > Within access commitment > Other",
+  "0404.90.20.11": "Natural milk constituent products, other > Over access commitment > Blended dairy powder, >50% skimmed milk powder",
+  "0404.90.20.12": "Natural milk constituent products, other > Over access commitment > Blended dairy powder, >50% whey powder",
+  "0404.90.20.19": "Natural milk constituent products, other > Over access commitment > Blended dairy powder, other",
+  "0404.90.20.90": "Natural milk constituent products, other > Over access commitment > Other",
+  "0405.10.10.00": "Butter and other fats/oils derived from milk; dairy spreads > Butter > Within access commitment",
+  "0405.10.20.00": "Butter and other fats/oils derived from milk; dairy spreads > Butter > Over access commitment",
+  "0405.20.10.00": "Butter and other fats/oils derived from milk; dairy spreads > Dairy spreads > Within access commitment",
+  "0405.20.20.00": "Butter and other fats/oils derived from milk; dairy spreads > Dairy spreads > Over access commitment",
+  "0405.90.10.00": "Butter and other fats/oils derived from milk; dairy spreads > Other > Within access commitment",
+  "0405.90.20.00": "Butter and other fats/oils derived from milk; dairy spreads > Other > Over access commitment",
+  "0406.10.10.10": "Cheese and curd > Fresh (unripened/uncured) cheese and curd > Within access commitment > Cream cheese, excl whey/buttermilk",
+  "0406.10.10.90": "Cheese and curd > Fresh (unripened/uncured) cheese and curd > Within access commitment > Other",
+  "0406.10.20.00": "Cheese and curd > Fresh (unripened/uncured) cheese and curd > Over access commitment",
+  "0406.20.11.10": "Cheese and curd > Grated/powdered cheese > Cheddar and Cheddar types, within access commitment > Cheddar",
+  "0406.20.11.20": "Cheese and curd > Grated/powdered cheese > Cheddar and Cheddar types, within access commitment > Cheddar types",
+  "0406.20.12.00": "Cheese and curd > Grated/powdered cheese > Cheddar and Cheddar types, over access commitment",
+  "0406.20.91.10": "Cheese and curd > Grated/powdered cheese > Other, within access commitment > Parmesan",
+  "0406.20.91.20": "Cheese and curd > Grated/powdered cheese > Other, within access commitment > Romano",
+  "0406.20.91.90": "Cheese and curd > Grated/powdered cheese > Other, within access commitment > Other",
+  "0406.20.92.00": "Cheese and curd > Grated/powdered cheese > Other, over access commitment",
+  "0406.30.10.11": "Cheese and curd > Processed cheese, not grated/powdered > Within access commitment > Cheddar",
+  "0406.30.10.12": "Cheese and curd > Processed cheese, not grated/powdered > Within access commitment > Cheddar types",
+  "0406.30.10.20": "Cheese and curd > Processed cheese, not grated/powdered > Within access commitment > Gruyere",
+  "0406.30.10.30": "Cheese and curd > Processed cheese, not grated/powdered > Within access commitment > Swiss",
+  "0406.30.10.90": "Cheese and curd > Processed cheese, not grated/powdered > Within access commitment > Other",
+  "0406.30.20.00": "Cheese and curd > Processed cheese, not grated/powdered > Over access commitment",
+  "0406.40.10.00": "Cheese and curd > Blue-veined cheese (Penicillium roqueforti) > Within access commitment",
+  "0406.40.20.00": "Cheese and curd > Blue-veined cheese (Penicillium roqueforti) > Over access commitment",
+  "0406.90.11.10": "Cheese and curd > Other cheese > Cheddar and Cheddar types, within access commitment > Cheddar",
+  "0406.90.11.21": "Cheese and curd > Other cheese > Cheddar and Cheddar types, within access commitment > Colby/Monterey Jack/Farmer/Brick",
+  "0406.90.11.29": "Cheese and curd > Other cheese > Cheddar and Cheddar types, within access commitment > Other",
+  "0406.90.12.00": "Cheese and curd > Other cheese > Cheddar and Cheddar types, over access commitment",
+  "0406.90.21.10": "Cheese and curd > Other cheese > Camembert and Camembert types, within access commitment > Camembert",
+  "0406.90.21.20": "Cheese and curd > Other cheese > Camembert and Camembert types, within access commitment > Camembert types",
+  "0406.90.22.00": "Cheese and curd > Other cheese > Camembert and Camembert types, over access commitment",
+  "0406.90.31.10": "Cheese and curd > Other cheese > Brie and Brie types, within access commitment > Brie",
+  "0406.90.31.20": "Cheese and curd > Other cheese > Brie and Brie types, within access commitment > Brie types",
+  "0406.90.32.00": "Cheese and curd > Other cheese > Brie and Brie types, over access commitment",
+  "0406.90.41.10": "Cheese and curd > Other cheese > Gouda and Gouda types, within access commitment > Gouda",
+  "0406.90.41.20": "Cheese and curd > Other cheese > Gouda and Gouda types, within access commitment > Edam",
+  "0406.90.41.90": "Cheese and curd > Other cheese > Gouda and Gouda types, within access commitment > Other",
+  "0406.90.42.00": "Cheese and curd > Other cheese > Gouda and Gouda types, over access commitment",
+  "0406.90.51.10": "Cheese and curd > Other cheese > Provolone and Provolone types, within access commitment > Provolone",
+  "0406.90.51.20": "Cheese and curd > Other cheese > Provolone and Provolone types, within access commitment > Provolone types",
+  "0406.90.52.00": "Cheese and curd > Other cheese > Provolone and Provolone types, over access commitment",
+  "0406.90.61.00": "Cheese and curd > Other cheese > Mozzarella and Mozzarella types, within access commitment",
+  "0406.90.62.00": "Cheese and curd > Other cheese > Mozzarella and Mozzarella types, over access commitment",
+  "0406.90.71.10": "Cheese and curd > Other cheese > Swiss/Emmental types, within access commitment > Swiss/Emmental",
+  "0406.90.71.20": "Cheese and curd > Other cheese > Swiss/Emmental types, within access commitment > Samsoe",
+  "0406.90.71.30": "Cheese and curd > Other cheese > Swiss/Emmental types, within access commitment > Jarlberg",
+  "0406.90.71.40": "Cheese and curd > Other cheese > Swiss/Emmental types, within access commitment > Greve",
+  "0406.90.71.90": "Cheese and curd > Other cheese > Swiss/Emmental types, within access commitment > Other",
+  "0406.90.72.00": "Cheese and curd > Other cheese > Swiss/Emmental types, over access commitment",
+  "0406.90.81.10": "Cheese and curd > Other cheese > Gruyere and Gruyere types, within access commitment > Gruyere",
+  "0406.90.81.20": "Cheese and curd > Other cheese > Gruyere and Gruyere types, within access commitment > Gruyere types",
+  "0406.90.82.00": "Cheese and curd > Other cheese > Gruyere and Gruyere types, over access commitment",
+  "0406.90.91.10": "Cheese and curd > Other cheese > Havarti types, within access commitment > Havarti",
+  "0406.90.91.20": "Cheese and curd > Other cheese > Havarti types, within access commitment > Havarti types",
+  "0406.90.92.00": "Cheese and curd > Other cheese > Havarti and Havarti types, over access commitment",
+  "0406.90.93.10": "Cheese and curd > Other cheese > Parmesan types, within access commitment > Parmesan",
+  "0406.90.93.20": "Cheese and curd > Other cheese > Parmesan types, within access commitment > Parmesan types",
+  "0406.90.94.00": "Cheese and curd > Other cheese > Parmesan and Parmesan types, over access commitment",
+  "0406.90.95.10": "Cheese and curd > Other cheese > Romano types, within access commitment > Romano",
+  "0406.90.95.20": "Cheese and curd > Other cheese > Romano types, within access commitment > Romano types",
+  "0406.90.96.00": "Cheese and curd > Other cheese > Romano and Romano types, over access commitment",
+  "0406.90.98.10": "Cheese and curd > Other cheese > Other, within access commitment > Feta",
+  "0406.90.98.20": "Cheese and curd > Other cheese > Other, within access commitment > Muenster",
+  "0406.90.98.30": "Cheese and curd > Other cheese > Other, within access commitment > Other, of partly skimmed milk",
+  "0406.90.98.40": "Cheese and curd > Other cheese > Other, within access commitment > Other, of skimmed milk",
+  "0406.90.98.90": "Cheese and curd > Other cheese > Other, within access commitment > Other",
+  "0406.90.99.00": "Cheese and curd > Other cheese > Other, over access commitment",
+  "0407.11.11.00": "Birds' eggs in shell > Fertilized for incubation > Gallus domesticus > Hatching, for broilers > Within access commitment",
+  "0407.11.12.00": "Birds' eggs in shell > Fertilized for incubation > Gallus domesticus > Hatching, for broilers > Over access commitment",
+  "0407.11.91.00": "Birds' eggs in shell > Fertilized for incubation > Gallus domesticus > Other, within access commitment",
+  "0407.11.92.00": "Birds' eggs in shell > Fertilized for incubation > Gallus domesticus > Other, over access commitment",
+  "0407.19.00.10": "Birds' eggs in shell > Fertilized for incubation > Other > Hatching, of turkeys",
+  "0407.19.00.90": "Birds' eggs in shell > Fertilized for incubation > Other > Other",
+  "0407.21.10.10": "Birds' eggs in shell > Other fresh eggs > Gallus domesticus, within access commitment > White, regular, retail/table",
+  "0407.21.10.20": "Birds' eggs in shell > Other fresh eggs > Gallus domesticus, within access commitment > Organic/specialty, retail/table",
+  "0407.21.10.30": "Birds' eggs in shell > Other fresh eggs > Gallus domesticus, within access commitment > For breaking purposes only",
+  "0407.21.20.00": "Birds' eggs in shell > Other fresh eggs > Gallus domesticus, over access commitment",
+  "0407.29.00.00": "Birds' eggs in shell > Other fresh eggs > Other",
+  "0407.90.11.00": "Birds' eggs in shell > Other > Gallus domesticus, within access commitment",
+  "0407.90.12.00": "Birds' eggs in shell > Other > Gallus domesticus, over access commitment",
+  "0407.90.90.00": "Birds' eggs in shell > Other > Other",
+  "0408.11.10.00": "Birds' eggs not in shell, egg yolks > Egg yolks, dried > Within access commitment",
+  "0408.11.20.00": "Birds' eggs not in shell, egg yolks > Egg yolks, dried > Over access commitment",
+  "0408.19.10.00": "Birds' eggs not in shell, egg yolks > Egg yolks, other > Within access commitment",
+  "0408.19.20.00": "Birds' eggs not in shell, egg yolks > Egg yolks, other > Over access commitment",
+  "0408.91.10.00": "Birds' eggs not in shell, egg yolks > Other, dried > Within access commitment",
+  "0408.91.20.00": "Birds' eggs not in shell, egg yolks > Other, dried > Over access commitment",
+  "0408.99.10.10": "Birds' eggs not in shell, egg yolks > Other > Within access commitment > Frozen",
+  "0408.99.10.90": "Birds' eggs not in shell, egg yolks > Other > Within access commitment > Other",
+  "0408.99.20.00": "Birds' eggs not in shell, egg yolks > Other > Over access commitment",
+  "0409.00.00.10": "Natural honey > In containers of a weight of 5kg or less",
+  "0409.00.00.21": "Natural honey > In containers exceeding 5kg > Extra white",
+  "0409.00.00.22": "Natural honey > In containers exceeding 5kg > White",
+  "0409.00.00.23": "Natural honey > In containers exceeding 5kg > Extra light amber (Golden)",
+  "0409.00.00.24": "Natural honey > In containers exceeding 5kg > Light amber",
+  "0409.00.00.25": "Natural honey > In containers exceeding 5kg > Dark amber",
+  "0409.00.00.26": "Natural honey > In containers exceeding 5kg > Dark",
+  "0409.00.00.29": "Natural honey > In containers exceeding 5kg > Other",
+  "0410.10.10.00": "Insects and other edible animal products nes > Insects > Non-living, fresh/chilled/frozen",
+  "0410.10.90.00": "Insects and other edible animal products nes > Insects > Other",
+  "0410.90.00.00": "Insects and other edible animal products nes > Other"
+};
+
+// ===== Chapter 4 preferential-Free treaty lists (verbatim from CBSA PDF) =====
+// Structural pattern: within-access TRQ lines get a long list of Free treaty
+// treatments (supply-managed TRQs are still subject to preferential access
+// for the in-quota rate); over-access TRQ lines get NO preferential list at
+// all — trade agreements do not override supply-management overage
+// penalties, so over-access always pays the punitive rate regardless of
+// origin. Non-TRQ lines (honey, insects, some egg/yogurt lines) follow the
+// same general-Free-list pattern.
+const PREF_FREE_CH04 = {
+  "0401.10.10.00": ["CCCT","LDCT","UST","CT","CRT","PT","JT","CEUT","UAT","CPTPT","UKT"],
+  "0401.20.10.00": ["CCCT","LDCT","UST","CT","PT","JT","CEUT","UAT","CPTPT","UKT"],
+  "0401.40.10.00": ["CCCT","LDCT","UST","CT","PT","COLT","JT","CEUT","UAT","CPTPT","UKT"],
+  "0401.50.10.00": ["CCCT","LDCT","UST","CT","PT","COLT","JT","CEUT","UAT","CPTPT","UKT"],
+  "0402.10.10.00": ["AUT","NZT","CCCT","LDCT","UST","CT","CRT","PT","COLT","JT","PAT","CEUT","UAT","CPTPT","UKT"],
+  "0402.21.11.00": ["AUT","NZT","CCCT","LDCT","UST","CT","PT","COLT","JT","PAT","CEUT","UAT","CPTPT","UKT"],
+  "0402.21.21.00": ["CCCT","LDCT","UST","CT","PT","COLT","JT","PAT","CEUT","UAT","CPTPT","UKT"],
+  "0402.29.11.00": ["AUT","NZT","CCCT","LDCT","UST","CT","PT","COLT","JT","PAT","CEUT","UAT","CPTPT","UKT"],
+  "0402.29.21.00": ["CCCT","LDCT","UST","CT","PT","COLT","JT","PAT","CEUT","UAT","CPTPT","UKT"],
+  "0402.91.10.00": ["CCCT","LDCT","UST","CT","CRT","PT","COLT","JT","PAT","CEUT","UAT","CPTPT","UKT"],
+  "0402.99.10.00": ["CCCT","LDCT","UST","CT","CRT","PT","COLT","JT","PAT","CEUT","UAT","CPTPT","UKT"],
+  "0403.20.10.00": ["CCCT","LDCT","GPT","UST","MXT","CT","CRT","IT","NT","SLT","PT","COLT","JT","PAT","HNT","KRT","CEUT","UAT","CPTPT","UKT"],
+  "0403.20.21.00": ["CCCT","LDCT","UST","CT","CRT","IT","NT","SLT","PT","COLT","JT","PAT","HNT","CEUT","UAT","CPTPT","UKT"],
+  "0403.20.29.10": ["CCCT","LDCT","UST","CT","IT","NT","SLT","PT","COLT","JT","PAT","CEUT","UAT","CPTPT","UKT"],
+  "0403.20.29.20": ["CCCT","LDCT","UST","CT","IT","NT","SLT","PT","COLT","JT","PAT","CEUT","UAT","CPTPT","UKT"],
+  "0403.90.11.00": ["AUT","NZT","CCCT","LDCT","UST","CT","CRT","PT","COLT","JT","PAT","CEUT","UAT","CPTPT","UKT"],
+  "0403.90.91.00": ["CCCT","LDCT","UST","CT","CRT","IT","NT","SLT","PT","COLT","JT","CEUT","UAT","CPTPT","UKT"],
+  "0404.10.10.00": ["CCCT","LDCT","UST","CIAT","CT","CRT","PT","COLT","JT","PAT","HNT","KRT","CEUT","UAT","CPTPT","UKT"],
+  "0404.10.21.00": ["CCCT","LDCT","UST","CIAT","CT","CRT","PT","COLT","JT","PAT","CEUT","UAT","CPTPT","UKT"],
+  "0404.10.90.10": ["CCCT","LDCT","UST","CIAT","CT","CRT","PT","JT","PAT","HNT","KRT","CEUT","UAT","CPTPT","UKT"],
+  "0404.10.90.20": ["CCCT","LDCT","UST","CIAT","CT","CRT","PT","JT","PAT","HNT","KRT","CEUT","UAT","CPTPT","UKT"],
+  "0404.10.90.90": ["CCCT","LDCT","UST","CIAT","CT","CRT","PT","JT","PAT","HNT","KRT","CEUT","UAT","CPTPT","UKT"],
+  "0404.90.10.11": ["CCCT","LDCT","UST","CT","CRT","SLT","PT","COLT","JT","PAT","CEUT","UAT","CPTPT","UKT"],
+  "0404.90.10.12": ["CCCT","LDCT","UST","CT","CRT","SLT","PT","COLT","JT","PAT","CEUT","UAT","CPTPT","UKT"],
+  "0404.90.10.19": ["CCCT","LDCT","UST","CT","CRT","SLT","PT","COLT","JT","PAT","CEUT","UAT","CPTPT","UKT"],
+  "0404.90.10.90": ["CCCT","LDCT","UST","CT","CRT","SLT","PT","COLT","JT","PAT","CEUT","UAT","CPTPT","UKT"],
+  "0405.10.10.00": ["AUT","NZT","CCCT","LDCT","UST","CT","PT","COLT","JT","PAT","CEUT","UAT","CPTPT","UKT"],
+  "0405.20.10.00": ["CCCT","LDCT","UST","CT","SLT","PT","JT","CEUT","UAT","CPTPT","UKT"],
+  "0405.90.10.00": ["CCCT","LDCT","UST","CT","CRT","PT","JT","PAT","CEUT","UAT","CPTPT","UKT"],
+  "0406.10.10.10": ["NZT","CCCT","LDCT","UST","CT","IT","PT","COLT","JT","PAT","CEUT","UAT","CPTPT","UKT"],
+  "0406.10.10.90": ["NZT","CCCT","LDCT","UST","CT","IT","PT","COLT","JT","PAT","CEUT","UAT","CPTPT","UKT"],
+  "0406.20.11.10": ["AUT","NZT","CCCT","LDCT","UST","CT","CRT","PT","COLT","JT","PAT","CEUT","UAT","CPTPT","UKT"],
+  "0406.20.11.20": ["AUT","NZT","CCCT","LDCT","UST","CT","CRT","PT","COLT","JT","PAT","CEUT","UAT","CPTPT","UKT"],
+  "0406.20.91.10": ["NZT","CCCT","LDCT","UST","CT","PT","COLT","JT","PAT","CEUT","UAT","CPTPT","UKT"],
+  "0406.20.91.20": ["NZT","CCCT","LDCT","UST","CT","PT","COLT","JT","PAT","CEUT","UAT","CPTPT","UKT"],
+  "0406.20.91.90": ["NZT","CCCT","LDCT","UST","CT","PT","COLT","JT","PAT","CEUT","UAT","CPTPT","UKT"],
+  "0406.30.10.11": ["NZT","CCCT","LDCT","UST","CT","SLT","PT","COLT","JT","PAT","CEUT","UAT","CPTPT","UKT"],
+  "0406.30.10.12": ["NZT","CCCT","LDCT","UST","CT","SLT","PT","COLT","JT","PAT","CEUT","UAT","CPTPT","UKT"],
+  "0406.30.10.20": ["NZT","CCCT","LDCT","UST","CT","SLT","PT","COLT","JT","PAT","CEUT","UAT","CPTPT","UKT"],
+  "0406.30.10.30": ["NZT","CCCT","LDCT","UST","CT","SLT","PT","COLT","JT","PAT","CEUT","UAT","CPTPT","UKT"],
+  "0406.30.10.90": ["NZT","CCCT","LDCT","UST","CT","SLT","PT","COLT","JT","PAT","CEUT","UAT","CPTPT","UKT"],
+  "0406.40.10.00": ["NZT","CCCT","LDCT","UST","CT","CRT","PT","COLT","JT","PAT","CEUT","UAT","CPTPT","UKT"],
+  "0406.90.11.10": ["AUT","NZT","CCCT","LDCT","UST","CT","PT","COLT","JT","PAT","HNT","CEUT","UAT","CPTPT","UKT"],
+  "0406.90.11.21": ["AUT","NZT","CCCT","LDCT","UST","CT","PT","COLT","JT","PAT","HNT","CEUT","UAT","CPTPT","UKT"],
+  "0406.90.11.29": ["AUT","NZT","CCCT","LDCT","UST","CT","PT","COLT","JT","PAT","HNT","CEUT","UAT","CPTPT","UKT"],
+  "0406.90.21.10": ["NZT","CCCT","LDCT","UST","CT","PT","COLT","JT","PAT","CEUT","UAT","CPTPT","UKT"],
+  "0406.90.21.20": ["NZT","CCCT","LDCT","UST","CT","PT","COLT","JT","PAT","CEUT","UAT","CPTPT","UKT"],
+  "0406.90.31.10": ["NZT","CCCT","LDCT","UST","CT","PT","COLT","JT","PAT","CEUT","UAT","CPTPT","UKT"],
+  "0406.90.31.20": ["NZT","CCCT","LDCT","UST","CT","PT","COLT","JT","PAT","CEUT","UAT","CPTPT","UKT"],
+  "0406.90.41.10": ["NZT","CCCT","LDCT","UST","CT","PT","COLT","JT","PAT","CEUT","UAT","CPTPT","UKT"],
+  "0406.90.41.20": ["NZT","CCCT","LDCT","UST","CT","PT","COLT","JT","PAT","CEUT","UAT","CPTPT","UKT"],
+  "0406.90.41.90": ["NZT","CCCT","LDCT","UST","CT","PT","COLT","JT","PAT","CEUT","UAT","CPTPT","UKT"],
+  "0406.90.51.10": ["NZT","CCCT","LDCT","UST","CT","PT","COLT","JT","PAT","CEUT","UAT","CPTPT","UKT"],
+  "0406.90.51.20": ["NZT","CCCT","LDCT","UST","CT","PT","COLT","JT","PAT","CEUT","UAT","CPTPT","UKT"],
+  "0406.90.61.00": ["NZT","CCCT","LDCT","UST","CT","PT","COLT","JT","PAT","HNT","CEUT","UAT","CPTPT","UKT"],
+  "0406.90.71.10": ["NZT","CCCT","LDCT","UST","CT","SLT","PT","COLT","JT","PAT","CEUT","UAT","CPTPT","UKT"],
+  "0406.90.71.20": ["NZT","CCCT","LDCT","UST","CT","SLT","PT","COLT","JT","PAT","CEUT","UAT","CPTPT","UKT"],
+  "0406.90.71.30": ["NZT","CCCT","LDCT","UST","CT","SLT","PT","COLT","JT","PAT","CEUT","UAT","CPTPT","UKT"],
+  "0406.90.71.40": ["NZT","CCCT","LDCT","UST","CT","SLT","PT","COLT","JT","PAT","CEUT","UAT","CPTPT","UKT"],
+  "0406.90.71.90": ["NZT","CCCT","LDCT","UST","CT","SLT","PT","COLT","JT","PAT","CEUT","UAT","CPTPT","UKT"],
+  "0406.90.81.10": ["NZT","CCCT","LDCT","UST","CT","SLT","PT","COLT","JT","PAT","CEUT","UAT","CPTPT","UKT"],
+  "0406.90.81.20": ["NZT","CCCT","LDCT","UST","CT","SLT","PT","COLT","JT","PAT","CEUT","UAT","CPTPT","UKT"],
+  "0406.90.91.10": ["NZT","CCCT","LDCT","UST","CT","PT","COLT","JT","PAT","CEUT","UAT","CPTPT","UKT"],
+  "0406.90.91.20": ["NZT","CCCT","LDCT","UST","CT","PT","COLT","JT","PAT","CEUT","UAT","CPTPT","UKT"],
+  "0406.90.93.10": ["NZT","CCCT","LDCT","UST","CT","PT","COLT","JT","PAT","CEUT","UAT","CPTPT","UKT"],
+  "0406.90.93.20": ["NZT","CCCT","LDCT","UST","CT","PT","COLT","JT","PAT","CEUT","UAT","CPTPT","UKT"],
+  "0406.90.95.10": ["NZT","CCCT","LDCT","UST","CT","PT","COLT","JT","PAT","CEUT","UAT","CPTPT","UKT"],
+  "0406.90.95.20": ["NZT","CCCT","LDCT","UST","CT","PT","COLT","JT","PAT","CEUT","UAT","CPTPT","UKT"],
+  "0406.90.98.10": ["NZT","CCCT","LDCT","UST","CT","SLT","PT","COLT","JT","PAT","CEUT","UAT","CPTPT","UKT"],
+  "0406.90.98.20": ["NZT","CCCT","LDCT","UST","CT","SLT","PT","COLT","JT","PAT","CEUT","UAT","CPTPT","UKT"],
+  "0406.90.98.30": ["NZT","CCCT","LDCT","UST","CT","SLT","PT","COLT","JT","PAT","CEUT","UAT","CPTPT","UKT"],
+  "0406.90.98.40": ["NZT","CCCT","LDCT","UST","CT","SLT","PT","COLT","JT","PAT","CEUT","UAT","CPTPT","UKT"],
+  "0406.90.98.90": ["NZT","CCCT","LDCT","UST","CT","SLT","PT","COLT","JT","PAT","CEUT","UAT","CPTPT","UKT"],
+  "0407.11.11.00": ["CCCT","LDCT","UST","CT","CRT","PT","COLT","JT","PAT","CEUT","UAT","CPTPT","UKT"],
+  "0407.11.91.00": ["CCCT","LDCT","UST","CT","CRT","PT","COLT","JT","PAT","CEUT","UAT","CPTPT","UKT"],
+  "0407.19.00.10": ["CCCT","LDCT","UST","CIAT","CT","CRT","PT","COLT","JT","PAT","HNT","KRT","CEUT","UAT","CPTPT","UKT"],
+  "0407.19.00.90": ["CCCT","LDCT","UST","CIAT","CT","CRT","PT","COLT","JT","PAT","HNT","KRT","CEUT","UAT","CPTPT","UKT"],
+  "0407.21.10.10": ["CCCT","LDCT","UST","CT","CRT","PT","COLT","JT","PAT","CEUT","UAT","CPTPT","UKT"],
+  "0407.21.10.20": ["CCCT","LDCT","UST","CT","CRT","PT","COLT","JT","PAT","CEUT","UAT","CPTPT","UKT"],
+  "0407.21.10.30": ["CCCT","LDCT","UST","CT","CRT","PT","COLT","JT","PAT","CEUT","UAT","CPTPT","UKT"],
+  "0407.29.00.00": ["CCCT","LDCT","UST","CIAT","CT","CRT","PT","COLT","JT","PAT","HNT","KRT","CEUT","UAT","CPTPT","UKT"],
+  "0407.90.11.00": ["CCCT","LDCT","UST","CT","CRT","PT","COLT","JT","PAT","CEUT","UAT","CPTPT","UKT"],
+  "0407.90.90.00": ["CCCT","LDCT","UST","CIAT","CT","CRT","PT","COLT","JT","PAT","HNT","KRT","CEUT","UAT","CPTPT","UKT"],
+  "0408.11.10.00": ["CCCT","LDCT","UST","CT","PT","COLT","JT","CEUT","UAT","CPTPT","UKT"],
+  "0408.19.10.00": ["CCCT","LDCT","UST","CT","PT","COLT","JT","PAT","CEUT","UAT","CPTPT","UKT"],
+  "0408.91.10.00": ["CCCT","LDCT","UST","CT","PT","COLT","JT","CEUT","UAT","CPTPT","UKT"],
+  "0408.99.10.10": ["CCCT","LDCT","UST","CT","PT","COLT","JT","PAT","CEUT","UAT","CPTPT","UKT"],
+  "0408.99.10.90": ["CCCT","LDCT","UST","CT","PT","COLT","JT","PAT","CEUT","UAT","CPTPT","UKT"],
+  "0409.00.00.10": ["CCCT","LDCT","GPT","UST","MXT","CIAT","CT","CRT","IT","PT","COLT","JT","PAT","HNT","KRT","CEUT","UAT","CPTPT","UKT"],
+  "0409.00.00.21": ["CCCT","LDCT","GPT","UST","MXT","CIAT","CT","CRT","IT","PT","COLT","JT","PAT","HNT","KRT","CEUT","UAT","CPTPT","UKT"],
+  "0409.00.00.22": ["CCCT","LDCT","GPT","UST","MXT","CIAT","CT","CRT","IT","PT","COLT","JT","PAT","HNT","KRT","CEUT","UAT","CPTPT","UKT"],
+  "0409.00.00.23": ["CCCT","LDCT","GPT","UST","MXT","CIAT","CT","CRT","IT","PT","COLT","JT","PAT","HNT","KRT","CEUT","UAT","CPTPT","UKT"],
+  "0409.00.00.24": ["CCCT","LDCT","GPT","UST","MXT","CIAT","CT","CRT","IT","PT","COLT","JT","PAT","HNT","KRT","CEUT","UAT","CPTPT","UKT"],
+  "0409.00.00.25": ["CCCT","LDCT","GPT","UST","MXT","CIAT","CT","CRT","IT","PT","COLT","JT","PAT","HNT","KRT","CEUT","UAT","CPTPT","UKT"],
+  "0409.00.00.26": ["CCCT","LDCT","GPT","UST","MXT","CIAT","CT","CRT","IT","PT","COLT","JT","PAT","HNT","KRT","CEUT","UAT","CPTPT","UKT"],
+  "0409.00.00.29": ["CCCT","LDCT","GPT","UST","MXT","CIAT","CT","CRT","IT","PT","COLT","JT","PAT","HNT","KRT","CEUT","UAT","CPTPT","UKT"],
+  "0410.10.10.00": ["CCCT","LDCT","GPT","UST","MXT","CIAT","CT","CRT","PT","COLT","JT","PAT","HNT","KRT","CEUT","UAT","CPTPT","UKT"],
+  "0410.10.90.00": ["CCCT","LDCT","UST","MXT","CT","CRT","IT","PT","COLT","JT","PAT","HNT","KRT","CEUT","UAT","CPTPT","UKT"],
+  "0410.90.00.00": ["CCCT","LDCT","UST","MXT","CT","CRT","IT","PT","COLT","JT","PAT","HNT","KRT","CEUT","UAT","CPTPT","UKT"]
+};
+
+// ===== Special non-Free preferential rates (exceptions to the Free pattern above) =====
+const PREF_SPECIAL_CH04 = {
+  "0402.99.10.00": {"AUT": {type:"specific", note:"1.74¢/kg"}, "NZT": {type:"specific", note:"1.74¢/kg"}},
+  "0404.10.22.00": {"UST": {type:"compound", note:"75.5% but not less than $0.75/kg"}},
+  "0404.10.90.10": {"GPT": {type:"percent", rate:11}},
+  "0404.10.90.20": {"GPT": {type:"percent", rate:11}},
+  "0404.10.90.90": {"GPT": {type:"percent", rate:11}},
+  "0403.20.21.00": {"GPT": {type:"percent", rate:5}},
+  "0403.90.91.00": {"GPT": {type:"percent", rate:7.5}},
+  "0401.10.10.00": {"GPT": {type:"percent", rate:7.5}},
+  "0401.20.10.00": {"GPT": {type:"percent", rate:7.5}},
+  "0401.40.10.00": {"GPT": {type:"percent", rate:7.5}},
+  "0401.50.10.00": {"GPT": {type:"percent", rate:7.5}},
+  "0405.20.10.00": {"GPT": {type:"percent", rate:7}},
+  "0405.90.10.00": {"GPT": {type:"percent", rate:7.5}},
+  "0410.10.90.00": {"AUT": {type:"percent", rate:8.5}, "NZT": {type:"percent", rate:8.5}, "GPT": {type:"percent", rate:5}},
+  "0410.90.00.00": {"AUT": {type:"percent", rate:8.5}, "NZT": {type:"percent", rate:8.5}, "GPT": {type:"percent", rate:5}}
+};
+
+// ============================================================
+// PREFERENTIAL TARIFF RESOLUTION — Boss request #2 (02 AUG 2026)
+// Currently populated for Chapter 4 only (CODE_DESCRIPTIONS_CH04,
+// PREF_FREE_CH04, PREF_SPECIAL_CH04 above) as the working model. Chapters
+// 1/2/3/5/73/76 do NOT have this data yet — their MFN_RATES only cover
+// explicit exceptions, not full code+description+preferential enumeration,
+// so getApplicableRate() below will fall back to plain MFN for those.
+// COUNTRY_TREATIES is comprehensive (built from the official CBSA "List of
+// Countries and Applicable Tariff Treatments", 190+ countries) so the
+// country side of the lookup is accurate chapter-independent groundwork —
+// only the per-code preferential data needs to be built out chapter by
+// chapter going forward, same rhythm as the MFN_RATES work.
+// ============================================================
+
+// Merge all per-chapter description/preferential tables into one lookup.
+// As more chapters get this treatment, just add their generated objects
+// here with Object.assign — no other code needs to change.
+const CODE_DESCRIPTIONS = Object.assign({}, CODE_DESCRIPTIONS_CH04);
+const PREF_FREE = Object.assign({}, PREF_FREE_CH04);
+const PREF_SPECIAL = Object.assign({}, PREF_SPECIAL_CH04);
+
+// COUNTRY_TREATIES uses full CBSA-official country names, but the origin
+// dropdowns in client.html/index.html are built from SIMA_CASES' country
+// field, which uses shorter/different labels for a few countries. Without
+// this alias step, getApplicableRate() would silently miss COUNTRY_TREATIES
+// for these — most importantly "United States", the single most common
+// selected origin — and fall back to plain MFN instead of the correct
+// preferential rate.
+const COUNTRY_NAME_ALIASES = {
+  "United States": "United States of America",
+  "Chinese Taipei": "Taiwan",
+  "Türkiye": "Turkey"
+};
+
+/**
+ * Resolve the actual applicable duty rate for a code + country of origin,
+ * automatically picking the best preferential treaty rate if one applies —
+ * this is what lets the calculator use Country of Origin (which it already
+ * collects) instead of requiring a separate "which program applies" picker.
+ *
+ * Resolution order:
+ *   1. If the country has no treaties (or code has no PREF data), return MFN.
+ *   2. If any of the country's treaties has a special (non-Free) rate for
+ *      this code in PREF_SPECIAL, return the FIRST one found — special
+ *      rates are rare exceptions (e.g. AUT/NZT get a reduced specific rate
+ *      instead of Free on a few codes) and a code generally won't have more
+ *      than one country's special rate matter at once for a given search.
+ *   3. If any of the country's treaties appears in this code's PREF_FREE
+ *      list, return Free, citing which treaty earned it.
+ *   4. Otherwise, fall back to plain MFN — the country doesn't get
+ *      preferential treatment on this specific code (this happens more
+ *      than you'd expect — see e.g. MXT often missing from chapter 4
+ *      within-access dairy lines even though Mexico is a CUSMA partner;
+ *      supply-managed TRQ access is negotiated per-product, not blanket).
+ *
+ * Returns { rate: <mfnRateObject>, source: "mfn"|"preferential", treaty: <code|null> }
+ */
+function getApplicableRate(code, country){
+  const mfn = getMfnRate(code);
+  const resolvedCountry = COUNTRY_NAME_ALIASES[country] || country;
+  const treaties = COUNTRY_TREATIES[resolvedCountry] || [];
+  if(treaties.length === 0 || !mfn){
+    return { rate: mfn, source: "mfn", treaty: null };
+  }
+
+  const specialForCode = PREF_SPECIAL[code];
+  if(specialForCode){
+    for(const t of treaties){
+      if(specialForCode[t]){
+        return { rate: specialForCode[t], source: "preferential", treaty: t };
+      }
+    }
+  }
+
+  const freeListForCode = PREF_FREE[code];
+  if(freeListForCode){
+    for(const t of treaties){
+      if(freeListForCode.includes(t)){
+        return { rate: {type:"free", rate:null, note:""}, source: "preferential", treaty: t };
+      }
+    }
+  }
+
+  return { rate: mfn, source: "mfn", treaty: null };
+}
+
+/**
+ * Type-ahead search: given a partial code (e.g. "0406" or "0406.90"),
+ * return every known code+description starting with that prefix — this is
+ * boss request #1. Only returns matches for codes we actually have a
+ * description for (currently Chapter 4 only); an empty result for other
+ * chapters is correct/expected, not a bug, until they get the same
+ * treatment.
+ */
+function searchCodesByPrefix(query, maxResults){
+  const nq = normCode(query);
+  if(!nq) return [];
+  const limit = maxResults || 20;
+  const matches = [];
+  for(const code in CODE_DESCRIPTIONS){
+    if(normCode(code).startsWith(nq)){
+      matches.push({ code: code, description: CODE_DESCRIPTIONS[code] });
+      if(matches.length >= limit) break;
+    }
+  }
+  return matches;
+}
