@@ -348,7 +348,17 @@ function runEstimate(){
     ? simaMatchesAll.filter(c => c.measures.some(m => m.country === origin))
     : simaMatchesAll;
   const surtaxMatches = findSurtaxMatches(q).filter(o => surtaxAppliesToCountry(o, origin));
-  const safeguardMatches = findSafeguardMatches(q);
+  const safeguardMatchesAll = findSafeguardMatches(q);
+  // Safeguard measures apply globally EXCEPT specific exempt origins (e.g.
+  // mandatory FTA-partner exclusions like the US/Mexico/Chile/Israel, plus
+  // the GPT developing-country list) — the OPPOSITE structure from SIMA/
+  // surtax, which apply only to named origins rather than excluding named
+  // ones. This filter was previously missing entirely in client.html, so a
+  // legitimately-exempt US-origin shipment would incorrectly show the
+  // safeguard surtax warning. Matches index.html's existing logic exactly.
+  const safeguardMatches = (origin && origin !== 'Other')
+    ? safeguardMatchesAll.filter(m => !m.excludedOrigins.includes(origin))
+    : safeguardMatchesAll;
   simaMatchesAll.forEach(c => c.hsCodes.forEach(code => {
     const nc = normCode(code);
     if(nc.startsWith(nq) || nq.startsWith(nc)) codeSet.add(code);
@@ -377,12 +387,17 @@ function runEstimate(){
   // safely collapse to one rate this way, since it may span dozens of
   // different classifications; that still relies on the exact-list
   // matching above and correctly reports ambiguity when it's too broad.
-  // The raw query and an already-matched code can be the same code in two
-  // different string formats (e.g. "2005400000" vs "2005.40.00.00") — only
-  // add it if it isn't already represented, or distinctCodes would see two
-  // "different" codes and falsely report an ambiguous match.
-  if(nq.length === 10 && getMfnRate(q) && ![...codeSet].some(c => normCode(c) === nq)){
-    codeSet.add(q);
+  //
+  // IMPORTANT: only add if this code isn't already represented in codeSet
+  // under a different literal format. Without this check, typing a code
+  // WITHOUT dots that's also already found via SIMA/surtax/safeguard/
+  // TARIFF_DATA (which store codes WITH dots) would add both "2005.40.00.00"
+  // and "2005400000" as if they were two different codes — same normalized
+  // value, but the ambiguity filter compares string identity, so it would
+  // falsely report "matches more than one tariff classification."
+  if(nq.length === 10 && getMfnRate(q)){
+    const alreadyPresent = [...codeSet].some(c => normCode(c) === nq);
+    if(!alreadyPresent) codeSet.add(q);
   }
 
   const rawCodes = [...codeSet];
