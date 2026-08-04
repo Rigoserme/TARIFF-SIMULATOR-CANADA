@@ -1555,7 +1555,12 @@ function surtaxAppliesToCountry(order, country){
     case "US":         return country === "United States";
     case "China":      return country === "China";
     case "any":         return true;
-    case "exclude-US": return country !== "United States";
+    // Note: "exclude-US" is a slight misnomer kept for backward compatibility
+    // with the case label — SOR/2025-148's own text excludes Canada, US, AND
+    // Mexico (all three CUSMA partners), not just the US. Previously this
+    // only checked for the US, so Mexico/Canada-origin goods incorrectly
+    // showed this surtax as applicable.
+    case "exclude-US": return country !== "United States" && country !== "Canada" && country !== "Mexico";
     // For orders that key off where the RAW MATERIAL was melted/poured or
     // smelted/cast — a fact that is independent of the finished good's
     // country of origin. These must show regardless of which finished-goods
