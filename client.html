@@ -555,7 +555,7 @@ function runEstimate(){
       if(adDesc) parts.push(`an anti-dumping duty of ${adDesc}`);
       if(cvdDesc) parts.push(`a countervailing duty of ${cvdDesc}`);
       if(parts.length){
-        cardsHtml += `<div class="info-card flag"><b>Possible anti-dumping / countervailing duty</b>This type of product (${c.product.toLowerCase()}) may be subject to ${parts.join(' and ')}, depending on its exact specifications and manufacturer. This can substantially change your landed cost — confirm with us before you rely on this estimate.</div>`;
+        cardsHtml += `<div class="info-card flag"><b>Possible anti-dumping / countervailing duty</b>This type of product (${c.product.toLowerCase()}) may be subject to ${parts.join(' and ')}, depending on its exact specifications and manufacturer. This can substantially change your import cost — confirm with us before you rely on this estimate.</div>`;
       }
     });
   }
@@ -565,13 +565,13 @@ function runEstimate(){
     });
   }
   if(!surtaxMatches.length && !simaFlag && !safeguardFlag){
-    cardsHtml += `<div class="info-card clear"><b>No trade measures flagged</b>No active surtax, anti-dumping, or safeguard measures matched this product and origin.</div>`;
+    cardsHtml += `<div class="info-card clear"><b>No trade measures flagged</b>No SIMA, surtax, safeguard, or retaliatory measures found for this tariff item and selected origin.</div>`;
   }
 
   resultsEl.className = 'show';
   resultsEl.innerHTML = `
     <div class="result-hero">
-      <div class="label">Estimated Landed Cost</div>
+      <div class="label">Estimated Import Cost</div>
       <div class="amount">${formatMoney(total)}</div>
       <div class="sub">on a ${formatMoney(value)} shipment</div>
       ${segments.length ? `<div class="breakdown-bar">${barSegments}</div><div class="breakdown-legend">${legend}</div>` : ''}
