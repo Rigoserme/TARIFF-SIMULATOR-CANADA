@@ -22,6 +22,8 @@
     --flag:#B8542E;
     --flag-soft:#F7E9E1;
     --line:#E6DFD5;
+    --tax:#C99A3E;
+    --tax-soft:#FAF1DF;
   }
 
   *{ box-sizing:border-box; }
@@ -79,7 +81,8 @@
     grid-template-columns:2fr 1fr 1fr;
     gap:16px;
   }
-  @media (max-width:640px){ .field-row{ grid-template-columns:1fr; } }
+  .field-row-3{ grid-template-columns:1fr 1fr 1fr; }
+  @media (max-width:640px){ .field-row, .field-row-3{ grid-template-columns:1fr; } }
 
   .field{ position:relative; }
   .field label{
@@ -155,6 +158,28 @@
   }
   .breakdown-legend span{ display:inline-flex; align-items:center; gap:6px; }
   .swatch{ width:10px; height:10px; border-radius:3px; display:inline-block; }
+
+  .commercial-note{
+    font-size:11.5px;
+    color:#B6A796;
+    margin-top:14px;
+    padding-top:12px;
+    border-top:1px solid rgba(255,255,255,0.1);
+  }
+
+  .proj-card{
+    margin-top:14px;
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:16px 20px;
+    font-size:13.5px;
+    color:var(--brown-mid);
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .proj-card .dot{ color:var(--teal); font-size:16px; }
 
   .info-cards{ display:grid; gap:14px; margin-top:24px; }
   .info-card{
@@ -272,6 +297,45 @@
         <label for="value">Shipment value</label>
         <input type="number" id="value" placeholder="e.g. 10000" min="0">
       </div>
+    </div>
+    <div class="field-row" style="grid-template-columns:1fr 1fr; margin-top:16px;">
+      <div class="field">
+        <label for="importType">Import type</label>
+        <select id="importType">
+          <option value="commercial">Commercial</option>
+          <option value="personal">Personal / casual</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="frequency">Import frequency</label>
+        <select id="frequency">
+          <option value="once">One-time shipment</option>
+          <option value="recurring">Recurring shipment</option>
+        </select>
+      </div>
+    </div>
+    <div class="field" id="provinceField" style="display:none; margin-top:16px;">
+      <label for="province">Province of import</label>
+      <select id="province">
+        <option value="">Select province…</option>
+        <option value="Alberta">Alberta</option>
+        <option value="British Columbia">British Columbia</option>
+        <option value="Manitoba">Manitoba</option>
+        <option value="New Brunswick">New Brunswick</option>
+        <option value="Newfoundland and Labrador">Newfoundland and Labrador</option>
+        <option value="Northwest Territories">Northwest Territories</option>
+        <option value="Nova Scotia">Nova Scotia</option>
+        <option value="Nunavut">Nunavut</option>
+        <option value="Ontario">Ontario</option>
+        <option value="Prince Edward Island">Prince Edward Island</option>
+        <option value="Quebec">Quebec</option>
+        <option value="Saskatchewan">Saskatchewan</option>
+        <option value="Yukon">Yukon</option>
+      </select>
+    </div>
+    <div class="field" id="freqCountField" style="display:none; margin-top:16px;">
+      <label for="freqCount">Shipments per month</label>
+      <input type="number" id="freqCount" placeholder="e.g. 4" min="1">
     </div>
     <button class="calc-btn" onclick="runEstimate()">Estimate my duty</button>
   </div>
@@ -392,6 +456,11 @@ function runEstimate(){
   if(!q || !value){
     resultsEl.className = 'show';
     resultsEl.innerHTML = '<div class="card no-match">Enter a product and a shipment value to get an estimate.</div>';
+    return;
+  }
+  if(document.getElementById('importType').value === 'personal' && !document.getElementById('province').value){
+    resultsEl.className = 'show';
+    resultsEl.innerHTML = '<div class="card no-match">Select your province to estimate personal import tax — it changes the rate.</div>';
     return;
   }
 
@@ -519,6 +588,55 @@ function runEstimate(){
     }
   }
 
+  // Sales tax (GST/HST/PST/QST/RST) — estimated on the duty-paid value
+  // (shipment value + duty + flat surtax, i.e. `total` as computed above),
+  // not goods value alone, matching how CBSA actually calculates GST at
+  // import. Commercial imports only ever have the 5% federal GST collected
+  // at the border, and that's true regardless of destination province — the
+  // provincial portion of HST/PST is self-assessed by the importer (and
+  // typically fully recoverable via Input Tax Credits for a GST/HST-
+  // registered business making taxable supplies), so it's deliberately not
+  // shown as an upfront cost, and province isn't even asked for. Personal/
+  // casual imports get the full province-specific rate instead, since CBSA
+  // collects that in full at the border for non-commercial importers — that
+  // path genuinely needs a province to compute anything. See
+  // PROVINCE_TAX_RATES in data.js.
+  const province = document.getElementById('province').value;
+  const importType = document.getElementById('importType').value;
+  const isCommercial = importType === 'commercial';
+  let taxTotal = 0;
+  let taxApplied = false;
+  if(isCommercial){
+    const amt = total * 0.05;
+    taxTotal += amt;
+    segments.push({label: 'GST (5%)', amount: amt, color: 'var(--tax)'});
+    total += taxTotal;
+    taxApplied = true;
+  } else if(province){
+    (PROVINCE_TAX_RATES[province] || []).forEach(t => {
+      const amt = total * (t.rate/100);
+      taxTotal += amt;
+      segments.push({label: `${t.label} (${t.rate}%)`, amount: amt, color: 'var(--tax)'});
+    });
+    total += taxTotal;
+    taxApplied = true;
+  }
+
+  // Recurring-shipment cost projection — pure multiplication, no new rate
+  // data, just applies the fully-computed per-shipment total (duty + tax)
+  // across an expected monthly volume. Available whenever tax was actually
+  // applied (always true for Commercial, only true for Personal once a
+  // province is picked).
+  let projHtml = '';
+  if(taxApplied && document.getElementById('frequency').value === 'recurring'){
+    const count = parseFloat(document.getElementById('freqCount').value) || 0;
+    if(count > 0){
+      const monthly = total * count;
+      const annual = monthly * 12;
+      projHtml = `<div class="proj-card"><span class="dot">●</span><div>${count} shipment${count === 1 ? '' : 's'}/month at this size ≈ ${formatMoney(monthly)}/mo, ${formatMoney(annual)}/yr</div></div>`;
+    }
+  }
+
   const simaFlag = simaMatches.length > 0;
   const safeguardFlag = safeguardMatches.length > 0;
 
@@ -575,12 +693,14 @@ function runEstimate(){
       <div class="amount">${formatMoney(total)}</div>
       <div class="sub">on a ${formatMoney(value)} shipment</div>
       ${segments.length ? `<div class="breakdown-bar">${barSegments}</div><div class="breakdown-legend">${legend}</div>` : ''}
+      ${isCommercial ? `<div class="commercial-note">GST only shown — provincial portion is self-assessed, not collected at the border for commercial imports.</div>` : ''}
     </div>
+    ${projHtml}
     <div class="info-cards">${cardsHtml}</div>
     <div class="cta">
       <div>
         <h3>Want a number you can rely on?</h3>
-        <p>This estimate doesn't account for GST/HST, brokerage fees, or your exact product specifications.</p>
+        <p>This estimate doesn't account for brokerage fees, PST exemptions on specific goods, or your exact product specifications.</p>
       </div>
       <a href="https://www.gohemisphere.ca/contact">Talk to a Broker</a>
     </div>
@@ -589,6 +709,32 @@ function runEstimate(){
 
 document.getElementById('q').addEventListener('keydown', e => { if(e.key === 'Enter') runEstimate(); });
 document.getElementById('value').addEventListener('keydown', e => { if(e.key === 'Enter') runEstimate(); });
+
+document.getElementById('frequency').addEventListener('change', () => {
+  document.getElementById('freqCountField').style.display =
+    document.getElementById('frequency').value === 'recurring' ? 'block' : 'none';
+});
+
+// Province only matters for Personal imports — Commercial is always flat 5%
+// GST nationwide, so asking for a province there would just be a field that
+// visibly does nothing. Shown (and required) only when Personal is
+// selected; hidden and cleared otherwise so Commercial stays a single,
+// unambiguous number with nothing extra to pick.
+const importTypeSelect = document.getElementById('importType');
+const provinceField = document.getElementById('provinceField');
+const provinceSelect = document.getElementById('province');
+function toggleProvinceField(){
+  if(importTypeSelect.value === 'personal'){
+    provinceField.style.display = 'block';
+    provinceSelect.required = true;
+  } else {
+    provinceField.style.display = 'none';
+    provinceSelect.required = false;
+    provinceSelect.value = '';
+  }
+}
+toggleProvinceField();
+importTypeSelect.addEventListener('change', toggleProvinceField);
 </script>
 </body>
 </html>
