@@ -7931,3 +7931,176 @@ Object.assign(PREF_SPECIAL, {
   "2403.91.90.20": {"CPTPT": {type:"percent", rate:2}},
   "2404.11.10.00": {"CPTPT": {type:"percent", rate:2}}
 });
+
+// ===== Chapter 25 — Salt; Sulphur; Earths and Stone; Plastering Materials,
+// Lime and Cement (verified 06 AUG 2026 from CBSA Ch.25, user-provided markdown) =====
+// Free-by-default chapter, ONE exception: 2501.00.10.00 (table salt made by
+// admixture, containing 90%+ pure NaCl) carries 2.5% MFN but is Free for every
+// listed treaty, so it needs an explicit MFN_RATES entry AND a PREF_FREE entry
+// (unlike the Chapter 1/2/3 exceptions, which get no preferential relief).
+// A handful of single-line headings (2503, 2512, 2514, 2515.12, 2515.20, 2521,
+// 2528) had their Free/Free rate block visually pushed onto the following
+// heading by a page-break in the source extraction, not attached to their own
+// line. Inferred Free with high confidence (matches the chapter's otherwise
+// unbroken 100%-Free-MFN / 100%-Free-preferential pattern) — flagging here
+// rather than treating as ambiguous, since every other line in the chapter
+// confirms the pattern directly and this is a formatting artifact, not a data
+// conflict.
+const CH25_FREE_DEFAULT = ["25"];
+MFN_FREE_DEFAULT_CHAPTERS.push(...CH25_FREE_DEFAULT);
+
+Object.assign(MFN_RATES, {
+  "2501.00.10.00": {type:"percent", rate:2.5, note:""}
+});
+
+Object.assign(CODE_DESCRIPTIONS, {
+  "2501.00.10.00": "Salt (including table salt and denatured salt) and pure sodium chloride, whether or not in aqueous solution or containing added anti-caking or free-flowing agents; sea water > Table salt made by an admixture of other ingredients when containing 90% or more of pure sodium chloride",
+  "2501.00.90.00": "Salt (including table salt and denatured salt) and pure sodium chloride, whether or not in aqueous solution or containing added anti-caking or free-flowing agents; sea water > Other",
+  "2502.00.00.00": "Unroasted iron pyrites",
+  "2503.00.00.00": "Sulphur of all kinds, other than sublimed sulphur, precipitated sulphur and colloidal sulphur",
+  "2504.10.00.00": "Natural graphite > In powder or in flakes",
+  "2504.90.00.00": "Natural graphite > Other",
+  "2505.10.00.10": "Natural sands of all kinds, whether or not coloured, other than metal bearing sands of Chapter 26 > Silica sand and quartz sands > Of a kind used in foundries",
+  "2505.10.00.30": "Natural sands of all kinds, whether or not coloured, other than metal bearing sands of Chapter 26 > Silica sand and quartz sands > Fracturing sand",
+  "2505.10.00.90": "Natural sands of all kinds, whether or not coloured, other than metal bearing sands of Chapter 26 > Silica sand and quartz sands > Other",
+  "2505.90.00.00": "Natural sands of all kinds, whether or not coloured, other than metal bearing sands of Chapter 26 > Other",
+  "2506.10.00.00": "Quartz (other than natural sands); quartzite, whether or not roughly trimmed or merely cut, by sawing or otherwise, into blocks or slabs of a rectangular (including square) shape > Quartz",
+  "2506.20.00.00": "Quartz (other than natural sands); quartzite, whether or not roughly trimmed or merely cut, by sawing or otherwise, into blocks or slabs of a rectangular (including square) shape > Quartzite",
+  "2507.00.00.00": "Kaolin and other kaolinic clays, whether or not calcined",
+  "2508.10.00.00": "Other clays (not including expanded clays of heading 68.06), andalusite, kyanite and sillimanite, whether or not calcined; mullite; chamotte or dinas earths > Bentonite",
+  "2508.30.00.00": "Other clays (not including expanded clays of heading 68.06), andalusite, kyanite and sillimanite, whether or not calcined; mullite; chamotte or dinas earths > Fire-clay",
+  "2508.40.00.10": "Other clays (not including expanded clays of heading 68.06), andalusite, kyanite and sillimanite, whether or not calcined; mullite; chamotte or dinas earths > Other clays > Common blue clay and other ball clays",
+  "2508.40.00.91": "Other clays (not including expanded clays of heading 68.06), andalusite, kyanite and sillimanite, whether or not calcined; mullite; chamotte or dinas earths > Other clays > Other > Of a kind used for animal litter",
+  "2508.40.00.99": "Other clays (not including expanded clays of heading 68.06), andalusite, kyanite and sillimanite, whether or not calcined; mullite; chamotte or dinas earths > Other clays > Other > Other",
+  "2508.50.00.00": "Other clays (not including expanded clays of heading 68.06), andalusite, kyanite and sillimanite, whether or not calcined; mullite; chamotte or dinas earths > Andalusite, kyanite and sillimanite",
+  "2508.60.00.00": "Other clays (not including expanded clays of heading 68.06), andalusite, kyanite and sillimanite, whether or not calcined; mullite; chamotte or dinas earths > Mullite",
+  "2508.70.00.00": "Other clays (not including expanded clays of heading 68.06), andalusite, kyanite and sillimanite, whether or not calcined; mullite; chamotte or dinas earths > Chamotte or dinas earths",
+  "2509.00.00.00": "Chalk",
+  "2510.10.00.00": "Natural calcium phosphates, natural aluminum calcium phosphates and phosphatic chalk > Unground",
+  "2510.20.00.00": "Natural calcium phosphates, natural aluminum calcium phosphates and phosphatic chalk > Ground",
+  "2511.10.00.00": "Natural barium sulphate (barytes); natural barium carbonate (witherite), whether or not calcined, other than barium oxide of heading 28.16 > Natural barium sulphate (barytes)",
+  "2511.20.00.00": "Natural barium sulphate (barytes); natural barium carbonate (witherite), whether or not calcined, other than barium oxide of heading 28.16 > Natural barium carbonate (witherite)",
+  "2512.00.00.00": "Siliceous fossil meals (for example, kieselguhr, tripolite and diatomite) and similar siliceous earths, whether or not calcined, of an apparent specific gravity of 1 or less",
+  "2513.10.00.00": "Pumice stone; emery; natural corundum, natural garnet and other natural abrasives, whether or not heat-treated > Pumice stone",
+  "2513.20.00.00": "Pumice stone; emery; natural corundum, natural garnet and other natural abrasives, whether or not heat-treated > Emery, natural corundum, natural garnet and other natural abrasives",
+  "2514.00.00.00": "Slate, whether or not roughly trimmed or merely cut, by sawing or otherwise, into blocks or slabs of a rectangular (including square) shape",
+  "2515.11.00.00": "Marble, travertine, ecaussine and other calcareous monumental or building stone of an apparent specific gravity of 2.5 or more, and alabaster > Marble and travertine > Crude or roughly trimmed",
+  "2515.12.00.00": "Marble, travertine, ecaussine and other calcareous monumental or building stone of an apparent specific gravity of 2.5 or more, and alabaster > Marble and travertine > Merely cut, by sawing or otherwise, into blocks or slabs of a rectangular (including square) shape",
+  "2515.20.00.00": "Marble, travertine, ecaussine and other calcareous monumental or building stone of an apparent specific gravity of 2.5 or more, and alabaster > Ecaussine and other calcareous monumental or building stone; alabaster",
+  "2516.11.00.00": "Granite, porphyry, basalt, sandstone and other monumental or building stone, whether or not roughly trimmed or merely cut, by sawing or otherwise, into blocks or slabs of a rectangular (including square) shape > Granite > Crude or roughly trimmed",
+  "2516.12.00.00": "Granite, porphyry, basalt, sandstone and other monumental or building stone, whether or not roughly trimmed or merely cut, by sawing or otherwise, into blocks or slabs of a rectangular (including square) shape > Granite > Merely cut, by sawing or otherwise, into blocks or slabs of a rectangular (including square) shape",
+  "2516.20.00.00": "Granite, porphyry, basalt, sandstone and other monumental or building stone, whether or not roughly trimmed or merely cut, by sawing or otherwise, into blocks or slabs of a rectangular (including square) shape > Sandstone",
+  "2516.90.00.00": "Granite, porphyry, basalt, sandstone and other monumental or building stone, whether or not roughly trimmed or merely cut, by sawing or otherwise, into blocks or slabs of a rectangular (including square) shape > Other monumental or building stone",
+  "2517.10.00.10": "Pebbles, gravel, broken or crushed stone, of a kind commonly used for concrete aggregates, for road metalling or for railway or other ballast, shingle and flint, whether or not heat-treated; macadam of slag, dross or similar industrial waste; tarred macadam; granules, chippings and powder, of stones of heading 25.15 or 25.16 > Pebbles, gravel, broken or crushed stone... > Pebbles or gravel",
+  "2517.10.00.20": "Pebbles, gravel, broken or crushed stone, of a kind commonly used for concrete aggregates, for road metalling or for railway or other ballast, shingle and flint, whether or not heat-treated; macadam of slag, dross or similar industrial waste; tarred macadam; granules, chippings and powder, of stones of heading 25.15 or 25.16 > Pebbles, gravel, broken or crushed stone... > Flint",
+  "2517.10.00.30": "Pebbles, gravel, broken or crushed stone, of a kind commonly used for concrete aggregates, for road metalling or for railway or other ballast, shingle and flint, whether or not heat-treated; macadam of slag, dross or similar industrial waste; tarred macadam; granules, chippings and powder, of stones of heading 25.15 or 25.16 > Pebbles, gravel, broken or crushed stone... > Limestone, other than of heading 25.21",
+  "2517.10.00.90": "Pebbles, gravel, broken or crushed stone, of a kind commonly used for concrete aggregates, for road metalling or for railway or other ballast, shingle and flint, whether or not heat-treated; macadam of slag, dross or similar industrial waste; tarred macadam; granules, chippings and powder, of stones of heading 25.15 or 25.16 > Pebbles, gravel, broken or crushed stone... > Other",
+  "2517.20.00.00": "Pebbles, gravel, broken or crushed stone...; macadam of slag, dross or similar industrial waste, whether or not incorporating the materials cited in subheading 2517.10; tarred macadam; granules, chippings and powder, of stones of heading 25.15 or 25.16 > Macadam of slag, dross or similar industrial waste, whether or not incorporating the materials cited in subheading 2517.10",
+  "2517.30.00.00": "Pebbles, gravel, broken or crushed stone...; macadam...; tarred macadam; granules, chippings and powder, of stones of heading 25.15 or 25.16 > Tarred macadam",
+  "2517.41.00.00": "Pebbles, gravel, broken or crushed stone...; granules, chippings and powder, of stones of heading 25.15 or 25.16, whether or not heat-treated > Of marble",
+  "2517.49.00.00": "Pebbles, gravel, broken or crushed stone...; granules, chippings and powder, of stones of heading 25.15 or 25.16, whether or not heat-treated > Other",
+  "2518.10.00.00": "Dolomite, whether or not calcined or sintered, including dolomite roughly trimmed or merely cut, by sawing or otherwise, into blocks or slabs of a rectangular (including square) shape > Dolomite, not calcined or sintered",
+  "2518.20.00.00": "Dolomite, whether or not calcined or sintered, including dolomite roughly trimmed or merely cut, by sawing or otherwise, into blocks or slabs of a rectangular (including square) shape > Calcined or sintered dolomite",
+  "2519.10.00.00": "Natural magnesium carbonate (magnesite); fused magnesia; dead burned (sintered) magnesia, whether or not containing small quantities of other oxides added before sintering; other magnesium oxide, whether or not pure > Natural magnesium carbonate (magnesite)",
+  "2519.90.00.10": "Natural magnesium carbonate (magnesite); fused magnesia; dead burned (sintered) magnesia; other magnesium oxide, whether or not pure > Other > Dead-burned (sintered)",
+  "2519.90.00.20": "Natural magnesium carbonate (magnesite); fused magnesia; dead burned (sintered) magnesia; other magnesium oxide, whether or not pure > Other > Caustic burned",
+  "2519.90.00.90": "Natural magnesium carbonate (magnesite); fused magnesia; dead burned (sintered) magnesia; other magnesium oxide, whether or not pure > Other > Other",
+  "2520.10.00.00": "Gypsum; anhydrite; plasters (consisting of calcined gypsum or calcium sulphate) whether or not coloured, with or without small quantities of accelerators or retarders > Gypsum; anhydrite",
+  "2520.20.00.00": "Gypsum; anhydrite; plasters (consisting of calcined gypsum or calcium sulphate) whether or not coloured, with or without small quantities of accelerators or retarders > Plasters",
+  "2521.00.00.00": "Limestone flux; limestone and other calcareous stone, of a kind used for the manufacture of lime or cement",
+  "2522.10.00.00": "Quicklime, slaked lime and hydraulic lime, other than calcium oxide and hydroxide of heading 28.25 > Quicklime",
+  "2522.20.00.00": "Quicklime, slaked lime and hydraulic lime, other than calcium oxide and hydroxide of heading 28.25 > Slaked lime",
+  "2522.30.00.00": "Quicklime, slaked lime and hydraulic lime, other than calcium oxide and hydroxide of heading 28.25 > Hydraulic lime",
+  "2523.10.00.00": "Portland cement, aluminous cement, slag cement, supersulphate cement and similar hydraulic cements, whether or not coloured or in the form of clinkers > Cement clinkers",
+  "2523.21.00.00": "Portland cement, aluminous cement, slag cement, supersulphate cement and similar hydraulic cements, whether or not coloured or in the form of clinkers > Portland cement > White cement, whether or not artificially coloured",
+  "2523.29.00.00": "Portland cement, aluminous cement, slag cement, supersulphate cement and similar hydraulic cements, whether or not coloured or in the form of clinkers > Portland cement > Other",
+  "2523.30.00.00": "Portland cement, aluminous cement, slag cement, supersulphate cement and similar hydraulic cements, whether or not coloured or in the form of clinkers > Aluminous cement",
+  "2523.90.00.30": "Portland cement, aluminous cement, slag cement, supersulphate cement and similar hydraulic cements, whether or not coloured or in the form of clinkers > Other hydraulic cements > Slag cement",
+  "2523.90.00.90": "Portland cement, aluminous cement, slag cement, supersulphate cement and similar hydraulic cements, whether or not coloured or in the form of clinkers > Other hydraulic cements > Other",
+  "2524.10.00.00": "Asbestos > Crocidolite",
+  "2524.90.00.00": "Asbestos > Other",
+  "2525.10.00.00": "Mica, including splittings; mica waste > Crude mica and mica rifted into sheets or splittings",
+  "2525.20.00.00": "Mica, including splittings; mica waste > Mica powder",
+  "2525.30.00.00": "Mica, including splittings; mica waste > Mica waste",
+  "2526.10.00.00": "Natural steatite, whether or not roughly trimmed or merely cut, by sawing or otherwise, into blocks or slabs of a rectangular (including square) shape; talc > Not crushed, not powdered",
+  "2526.20.00.00": "Natural steatite, whether or not roughly trimmed or merely cut, by sawing or otherwise, into blocks or slabs of a rectangular (including square) shape; talc > Crushed or powdered",
+  "2528.00.00.00": "Natural borates and concentrates thereof (whether or not calcined), but not including borates separated from natural brine; natural boric acid containing not more than 85% of H3BO3 calculated on the dry weight",
+  "2529.10.00.00": "Feldspar; leucite; nepheline and nepheline syenite; fluorspar > Feldspar",
+  "2529.21.00.00": "Feldspar; leucite; nepheline and nepheline syenite; fluorspar > Fluorspar > Containing by weight 97% or less of calcium fluoride",
+  "2529.22.00.00": "Feldspar; leucite; nepheline and nepheline syenite; fluorspar > Fluorspar > Containing by weight more than 97% of calcium fluoride",
+  "2529.30.00.00": "Feldspar; leucite; nepheline and nepheline syenite; fluorspar > Leucite; nepheline and nepheline syenite",
+  "2530.10.00.00": "Mineral substances not elsewhere specified or included > Vermiculite, perlite and chlorites, unexpanded",
+  "2530.20.00.00": "Mineral substances not elsewhere specified or included > Kieserite, epsomite (natural magnesium sulphates)",
+  "2530.90.00.00": "Mineral substances not elsewhere specified or included > Other"
+});
+
+Object.assign(PREF_FREE, {
+  "2501.00.10.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"]
+});
+
+// ===== Chapter 26 — Ores, Slag and Ash (verified 06 AUG 2026 from CBSA Ch.26,
+// user-provided markdown) =====
+// 100% Free chapter, every code, every treaty, zero exceptions found — same
+// pattern as Chapters 5/72/13/14. No PREF_FREE needed since MFN itself is
+// already Free for all 53 codes. Two single-line headings (2619.00.00,
+// 2620.60.00) had their rate block visually pushed onto the following
+// heading/subheading by the source extraction's page layout — inferred Free
+// with high confidence, consistent with every other line in the chapter.
+const CH26_ALL_FREE = ["26"];
+MFN_FREE_CHAPTERS.push(...CH26_ALL_FREE);
+
+Object.assign(CODE_DESCRIPTIONS, {
+  "2601.11.00.00": "Iron ores and concentrates, including roasted iron pyrites > Iron ores and concentrates, other than roasted iron pyrites > Non-agglomerated",
+  "2601.12.00.00": "Iron ores and concentrates, including roasted iron pyrites > Iron ores and concentrates, other than roasted iron pyrites > Agglomerated",
+  "2601.20.00.00": "Iron ores and concentrates, including roasted iron pyrites > Roasted iron pyrites",
+  "2602.00.00.00": "Manganese ores and concentrates, including ferruginous manganese ores and concentrates with a manganese content of 20% or more, calculated on the dry weight",
+  "2603.00.00.10": "Copper ores and concentrates > Copper content",
+  "2603.00.00.40": "Copper ores and concentrates > Silver content",
+  "2603.00.00.50": "Copper ores and concentrates > Gold content",
+  "2603.00.00.90": "Copper ores and concentrates > Other",
+  "2604.00.00.10": "Nickel ores and concentrates > Copper content",
+  "2604.00.00.20": "Nickel ores and concentrates > Nickel content",
+  "2604.00.00.90": "Nickel ores and concentrates > Other",
+  "2605.00.00.00": "Cobalt ores and concentrates",
+  "2606.00.00.10": "Aluminum ores and concentrates > Refractory grade",
+  "2606.00.00.90": "Aluminum ores and concentrates > Other",
+  "2607.00.00.20": "Lead ores and concentrates > Lead content",
+  "2607.00.00.40": "Lead ores and concentrates > Silver content",
+  "2607.00.00.50": "Lead ores and concentrates > Gold content",
+  "2607.00.00.90": "Lead ores and concentrates > Other",
+  "2608.00.00.30": "Zinc ores and concentrates > Zinc content",
+  "2608.00.00.40": "Zinc ores and concentrates > Silver content",
+  "2608.00.00.50": "Zinc ores and concentrates > Gold content",
+  "2608.00.00.90": "Zinc ores and concentrates > Other",
+  "2609.00.00.00": "Tin ores and concentrates",
+  "2610.00.00.00": "Chromium ores and concentrates",
+  "2611.00.00.00": "Tungsten ores and concentrates",
+  "2612.10.00.00": "Uranium or thorium ores and concentrates > Uranium ores and concentrates",
+  "2612.20.00.00": "Uranium or thorium ores and concentrates > Thorium ores and concentrates",
+  "2613.10.00.00": "Molybdenum ores and concentrates > Roasted",
+  "2613.90.00.00": "Molybdenum ores and concentrates > Other",
+  "2614.00.00.00": "Titanium ores and concentrates",
+  "2615.10.00.00": "Niobium, tantalum, vanadium or zirconium ores and concentrates > Zirconium ores and concentrates",
+  "2615.90.00.00": "Niobium, tantalum, vanadium or zirconium ores and concentrates > Other",
+  "2616.10.00.20": "Precious metal ores and concentrates > Silver ores and concentrates > Lead content",
+  "2616.10.00.40": "Precious metal ores and concentrates > Silver ores and concentrates > Silver content",
+  "2616.10.00.50": "Precious metal ores and concentrates > Silver ores and concentrates > Gold content",
+  "2616.10.00.90": "Precious metal ores and concentrates > Silver ores and concentrates > Other",
+  "2616.90.00.00": "Precious metal ores and concentrates > Other",
+  "2617.10.00.00": "Other ores and concentrates > Antimony ores and concentrates",
+  "2617.90.00.00": "Other ores and concentrates > Other",
+  "2618.00.00.00": "Granulated slag (slag sand) from the manufacture of iron or steel",
+  "2619.00.00.00": "Slag, dross (other than granulated slag), scalings and other waste from the manufacture of iron or steel",
+  "2620.11.00.00": "Slag, ash and residues (other than from the manufacture of iron or steel) containing metals, arsenic or their compounds > Containing mainly zinc > Hard zinc spelter",
+  "2620.19.00.00": "Slag, ash and residues (other than from the manufacture of iron or steel) containing metals, arsenic or their compounds > Containing mainly zinc > Other",
+  "2620.21.00.00": "Slag, ash and residues (other than from the manufacture of iron or steel) containing metals, arsenic or their compounds > Containing mainly lead > Leaded gasoline sludges and leaded anti-knock compound sludges",
+  "2620.29.00.00": "Slag, ash and residues (other than from the manufacture of iron or steel) containing metals, arsenic or their compounds > Containing mainly lead > Other",
+  "2620.30.00.00": "Slag, ash and residues (other than from the manufacture of iron or steel) containing metals, arsenic or their compounds > Containing mainly copper",
+  "2620.40.00.00": "Slag, ash and residues (other than from the manufacture of iron or steel) containing metals, arsenic or their compounds > Containing mainly aluminum",
+  "2620.60.00.00": "Slag, ash and residues (other than from the manufacture of iron or steel) containing metals, arsenic or their compounds > Containing arsenic, mercury, thallium or their mixtures, of a kind used for the extraction of arsenic or those metals or for the manufacture of their chemical compounds",
+  "2620.91.00.00": "Slag, ash and residues (other than from the manufacture of iron or steel) containing metals, arsenic or their compounds > Other > Containing antimony, beryllium, cadmium, chromium or their mixtures",
+  "2620.99.00.20": "Slag, ash and residues (other than from the manufacture of iron or steel) containing metals, arsenic or their compounds > Other > Other > Containing mainly nickel",
+  "2620.99.00.90": "Slag, ash and residues (other than from the manufacture of iron or steel) containing metals, arsenic or their compounds > Other > Other > Other",
+  "2621.10.00.00": "Other slag and ash, including seaweed ash (kelp); ash and residues from the incineration of municipal waste > Ash and residues from the incineration of municipal waste",
+  "2621.90.00.00": "Other slag and ash, including seaweed ash (kelp); ash and residues from the incineration of municipal waste > Other"
+});
