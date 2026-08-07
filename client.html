@@ -360,10 +360,28 @@ function formatMoney(n){
 // actual data, not a hand-picked guess. "Other" stays as a fallback for
 // origins outside that list, where base duty and safeguard status can still
 // apply even though no SIMA case will match.
+// Full CBSA country list (243 countries) with correct preferential-treaty
+// mapping already lives in COUNTRY_TREATIES/COUNTRY_NAME_ALIASES in data.js
+// — this just surfaces all of it instead of the ~40 countries that happen
+// to appear in an active SIMA case. Uses the canonical COUNTRY_TREATIES
+// name directly as both value and label (not the alias) — aliases exist so
+// alternate typed/pasted spellings still resolve correctly in
+// getApplicableRate(), not because they're the friendlier display form:
+// COUNTRY_NAME_ALIASES maps "Chinese Taipei"->"Taiwan" and "Türkiye"->
+// "Turkey", where the canonical name is actually the more recognizable one
+// for this audience, not the alias. "Other" stays as a fallback for
+// anything genuinely outside CBSA's list.
 function populateOriginDropdown(){
   const select = document.getElementById('origin');
-  const countries = new Set(["United States", "China"]);
-  SIMA_CASES.forEach(c => c.measures.forEach(m => countries.add(m.country)));
+  const countries = new Set(Object.keys(COUNTRY_TREATIES));
+  // Only union in a SIMA-case country name if it doesn't already resolve
+  // (directly or via alias) to something already in the set — otherwise
+  // "United States" (SIMA's usual form) would show up as a separate entry
+  // from "United States of America" (COUNTRY_TREATIES' canonical form).
+  SIMA_CASES.forEach(c => c.measures.forEach(m => {
+    const resolved = COUNTRY_NAME_ALIASES[m.country] || m.country;
+    if(!countries.has(resolved)) countries.add(m.country);
+  }));
   [...countries].sort().forEach(country => {
     const opt = document.createElement('option');
     opt.value = country;
