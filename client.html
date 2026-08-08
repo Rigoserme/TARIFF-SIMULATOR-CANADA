@@ -420,7 +420,7 @@ qInput.addEventListener('input', () => {
     renderSuggestions([]);
     return;
   }
-  renderSuggestions(searchCodesByPrefix(val, 8));
+  renderSuggestions(searchCodes(val, 8));
 });
 
 qSuggest.addEventListener('click', e => {
