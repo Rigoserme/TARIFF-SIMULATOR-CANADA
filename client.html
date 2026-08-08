@@ -243,6 +243,18 @@
     z-index:20;
   }
   .suggest-list.show{ display:block; }
+  .suggest-header{
+    padding:8px 14px;
+    font-size:11px;
+    font-weight:600;
+    letter-spacing:0.04em;
+    text-transform:uppercase;
+    color:var(--ink-faint);
+    background:var(--paper);
+    border-bottom:1px solid var(--line);
+    position:sticky;
+    top:0;
+  }
   .suggest-item{
     padding:10px 14px;
     cursor:pointer;
@@ -408,9 +420,11 @@ function renderSuggestions(matches){
     qSuggest.innerHTML = '';
     return;
   }
-  qSuggest.innerHTML = matches.map(m =>
+  const header = `<div class="suggest-header">Matching Tariff Descriptions</div>`;
+  const items = matches.map(m =>
     `<div class="suggest-item" data-code="${m.code}"><div class="suggest-code">${m.code}</div><div class="suggest-desc">${m.description}</div></div>`
   ).join('');
+  qSuggest.innerHTML = header + items;
   qSuggest.classList.add('show');
 }
 
