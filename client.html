@@ -134,79 +134,148 @@
     border-radius:14px;
     padding:32px 28px;
     text-align:center;
+    position:relative;
   }
-  .result-hero .label{ font-size:13px; letter-spacing:0.06em; text-transform:uppercase; color:#D9CFC3; margin-bottom:8px; }
-  .result-hero .amount{ font-family:'Montserrat',sans-serif; font-weight:700; font-size:clamp(36px,6vw,52px); color:#fff; }
-  .result-hero .sub{ font-size:14px; color:#E3D9CB; margin-top:6px; }
+  .result-hero .top-row{ display:flex; align-items:flex-start; justify-content:space-between; gap:16px; text-align:left; }
+  .result-hero .label-row{ display:flex; align-items:center; gap:10px; }
+  .result-hero .label-icon{
+    width:34px; height:34px; border-radius:9px;
+    background:rgba(255,255,255,0.12);
+    display:flex; align-items:center; justify-content:center;
+    color:#F3C98F; flex-shrink:0;
+  }
+  .result-hero .label-icon svg{ width:18px; height:18px; }
+  .result-hero .label{ font-size:14px; font-weight:600; color:#fff; text-align:left; }
+  .download-btn{
+    display:inline-flex; align-items:center; gap:7px;
+    background:transparent;
+    border:1px solid rgba(255,255,255,0.35);
+    color:#fff;
+    padding:9px 14px;
+    border-radius:8px;
+    font-family:'Inter',sans-serif;
+    font-size:13px;
+    font-weight:600;
+    cursor:pointer;
+    white-space:nowrap;
+    transition:background 0.15s;
+  }
+  .download-btn:hover{ background:rgba(255,255,255,0.1); }
+  .download-btn svg{ width:14px; height:14px; }
+  .result-hero .amount{ font-family:'Montserrat',sans-serif; font-weight:700; font-size:clamp(36px,6vw,52px); color:#fff; text-align:left; margin-top:14px; }
+  .result-hero .sub-row{ display:flex; align-items:center; gap:12px; flex-wrap:wrap; text-align:left; margin-top:6px; }
+  .result-hero .sub{ font-size:14px; color:#E3D9CB; }
+  .complete-badge{
+    display:inline-flex; align-items:center; gap:5px;
+    background:rgba(90,183,138,0.18);
+    color:#8FD9AE;
+    padding:4px 10px;
+    border-radius:20px;
+    font-size:12.5px;
+    font-weight:600;
+  }
+  .complete-badge svg{ width:13px; height:13px; }
 
   .breakdown-bar{
     display:flex;
-    height:14px;
-    border-radius:7px;
+    height:8px;
+    border-radius:4px;
     overflow:hidden;
-    margin:22px 0 10px;
+    margin-top:20px;
     background:rgba(255,255,255,0.12);
   }
   .breakdown-bar div{ height:100%; }
 
-  .charge-list{
-    text-align:left;
-    margin-top:18px;
-    border-top:1px solid rgba(255,255,255,0.12);
+  .charge-card{
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:14px;
+    margin-top:16px;
+    overflow:hidden;
   }
   .charge-line{
-    padding:10px 2px;
-    border-bottom:1px solid rgba(255,255,255,0.1);
+    border-bottom:1px solid var(--line);
   }
   .charge-line:last-child{ border-bottom:none; }
   .charge-row{
     display:flex;
-    align-items:center;
+    align-items:flex-start;
     justify-content:space-between;
     cursor:pointer;
-    gap:10px;
+    gap:14px;
+    padding:16px 18px;
   }
-  .charge-left{ display:flex; align-items:center; gap:7px; font-size:13.5px; color:#E3D9CB; min-width:0; }
-  .charge-left .swatch{ width:9px; height:9px; border-radius:3px; flex-shrink:0; }
-  .charge-icon{
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    width:16px; height:16px;
-    border-radius:50%;
-    border:1px solid rgba(255,255,255,0.35);
-    font-size:10px;
-    color:#E3D9CB;
+  .charge-left{ display:flex; align-items:flex-start; gap:13px; min-width:0; }
+  .charge-icon-badge{
+    width:38px; height:38px; border-radius:10px;
+    display:flex; align-items:center; justify-content:center;
     flex-shrink:0;
   }
-  .charge-line.warning .charge-icon{ border-color:#E8B98A; color:#F3C98F; }
-  .charge-right{ display:flex; align-items:center; gap:6px; font-size:13.5px; color:#fff; font-weight:600; white-space:nowrap; }
-  .charge-right .qual{ font-weight:400; color:#E3D9CB; font-style:italic; }
-  .charge-caret{ font-size:10px; color:#B6A796; transition:transform 0.15s; flex-shrink:0; }
+  .charge-icon-badge svg{ width:19px; height:19px; }
+  .charge-cat-duty{ background:#FBE9D8; color:#B8622E; }
+  .charge-cat-trade{ background:#DCEAFB; color:#2E6BB8; }
+  .charge-cat-tax-fed{ background:var(--success-soft); color:var(--success); }
+  .charge-cat-tax-prov{ background:#E9E1F5; color:#6E4FA8; }
+  .charge-text{ min-width:0; }
+  .charge-title-row{ display:flex; align-items:center; gap:6px; }
+  .charge-title{ font-weight:700; font-size:15px; color:var(--ink); }
+  .charge-hint{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:15px; height:15px; border-radius:50%;
+    border:1.3px solid var(--ink-faint);
+    color:var(--ink-faint);
+    font-size:10px;
+    flex-shrink:0;
+  }
+  .charge-line.warning .charge-hint{ border-color:var(--flag); color:var(--flag); }
+  .charge-subtitle{ font-size:13px; color:var(--ink-faint); margin-top:2px; }
+  .charge-right{ display:flex; align-items:center; gap:10px; flex-shrink:0; }
+  .charge-value{ font-weight:700; font-size:15.5px; color:var(--ink); white-space:nowrap; }
+  .charge-value.qual{ font-weight:600; font-size:13.5px; color:var(--success); }
+  .charge-line.warning .charge-value.qual{ color:var(--flag); }
+  .charge-caret{ color:var(--ink-faint); transition:transform 0.15s; flex-shrink:0; }
+  .charge-caret svg{ width:15px; height:15px; }
   .charge-line.open .charge-caret{ transform:rotate(180deg); }
   .charge-detail{
     display:none;
-    margin-top:10px;
-    padding:12px 14px;
-    background:rgba(255,255,255,0.06);
-    border-radius:8px;
-    font-size:13px;
-    color:#E3D9CB;
+    margin:0 18px 16px;
+    padding:14px 16px;
+    background:var(--paper);
+    border-radius:10px;
+    font-size:13.5px;
+    color:var(--ink);
     line-height:1.5;
   }
   .charge-line.open .charge-detail{ display:block; }
-  .charge-detail .q{ font-weight:600; color:#fff; margin-bottom:4px; font-size:12.5px; text-transform:uppercase; letter-spacing:0.02em; }
-  .charge-detail .body{ margin-bottom:8px; }
-  .charge-detail .kv{ display:grid; grid-template-columns:auto 1fr; gap:3px 10px; font-size:12.5px; }
-  .charge-detail .kv div:nth-child(odd){ color:#B6A796; }
-  .charge-detail .kv div:nth-child(even){ color:#fff; text-align:right; }
+  .charge-detail .q{ font-weight:700; color:var(--brown-deep); margin-bottom:4px; font-size:12.5px; text-transform:uppercase; letter-spacing:0.02em; }
+  .charge-detail .body{ margin-bottom:8px; color:var(--ink); }
+  .charge-detail .kv{ display:grid; grid-template-columns:auto 1fr; gap:4px 10px; font-size:13px; }
+  .charge-detail .kv div:nth-child(odd){ color:var(--ink-faint); }
+  .charge-detail .kv div:nth-child(even){ color:var(--ink); text-align:right; font-weight:600; }
   .charge-detail .caution{
     margin-top:8px;
     padding-top:8px;
-    border-top:1px solid rgba(255,255,255,0.12);
-    color:#F3C98F;
-    font-size:12px;
+    border-top:1px solid var(--line);
+    color:#8A5A1E;
+    font-size:12.5px;
   }
+
+  .disclaimer-bar{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-top:16px;
+    padding:14px 18px;
+    background:var(--teal-soft);
+    border:1px solid #D3DFE9;
+    border-radius:12px;
+    font-size:13px;
+    color:var(--brown-mid);
+  }
+  .disclaimer-bar svg{ width:18px; height:18px; color:var(--teal); flex-shrink:0; }
+  .disclaimer-bar a{ color:var(--brown-deep); font-weight:600; text-decoration:none; white-space:nowrap; margin-left:auto; }
+  .disclaimer-bar a:hover{ text-decoration:underline; }
+
 
   .commercial-note{
     font-size:11.5px;
@@ -323,6 +392,16 @@
     line-height:1.6;
   }
   footer p{ margin:0; }
+  @media print{
+    body{ background:#fff; }
+    header, .field-row, .field, .calc-btn, .charge-caret, .cta, .download-btn{ display:none !important; }
+    #q, .card, main{ box-shadow:none !important; border:none !important; }
+    .result-hero{ background:#fff !important; color:#000 !important; border:1.5px solid #000; }
+    .result-hero .label, .result-hero .amount, .result-hero .sub{ color:#000 !important; }
+    .result-hero .label-icon{ background:#eee !important; color:#000 !important; }
+    .charge-detail{ display:block !important; }
+    .disclaimer-bar{ background:#fff !important; border-color:#000; }
+  }
 </style>
 </head>
 <body>
@@ -412,6 +491,18 @@
 
 <script src="data.js"></script>
 <script>
+// Simple line-style SVG icons for the results UI — used instead of emoji so
+// rendering is consistent across devices/OSes rather than depending on the
+// user's emoji font. currentColor lets each icon inherit its badge's color.
+const ICON_SHIELD = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5l7.5 3v6c0 5-3.2 8.3-7.5 10-4.3-1.7-7.5-5-7.5-10v-6l7.5-3z"/></svg>';
+const ICON_SCALES = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v17M5 8l-3 6a3 3 0 006 0L5 8zM19 8l-3 6a3 3 0 006 0l-3-6zM5 8h14M8 20h8"/></svg>';
+const ICON_PERCENT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/><path d="M18.5 5.5L5.5 18.5"/></svg>';
+const ICON_BANK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5L12 4l9 5.5M4.5 9.5v9M9 9.5v9M15 9.5v9M19.5 9.5v9M2.5 18.5h19M2.5 9.5h19"/></svg>';
+const ICON_CHEVRON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>';
+const ICON_DOWNLOAD = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4.5-4.5M12 15l4.5-4.5M4 19h16"/></svg>';
+const ICON_CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.5 2.5L16 9.5"/></svg>';
+const ICON_DOCUMENT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h7l5 5v13a1 1 0 01-1 1H7a1 1 0 01-1-1V4a1 1 0 011-1z"/><path d="M14 3v5h5"/></svg>';
+
 function formatMoney(n){
   return '$' + n.toLocaleString('en-CA', {minimumFractionDigits:2, maximumFractionDigits:2});
 }
@@ -664,7 +755,8 @@ function runEstimate(){
     const amt = value * (mfnRate/100);
     total += amt;
     charges.push({
-      label: `Customs Duty (${mfnRate}%)`, amount: amt, warning: false, color: 'var(--brown-mid)',
+      label: `Customs Duty (${mfnRate}%)`, subtitle: isPreferential ? `Preferential rate under treaty ${applicable.treaty}` : 'Applicable MFN rate based on selected HS code',
+      amount: amt, warning: false, category: 'duty',
       explain: {
         headline: mfnRate === 0 ? 'Why $0?' : `Why ${mfnRate}%?`,
         body: isPreferential
@@ -675,7 +767,8 @@ function runEstimate(){
     });
   } else if(mfn && (mfn.type === 'compound' || mfn.type === 'specific')){
     charges.push({
-      label: 'Customs Duty', amount: null, qualifier: 'Needs quantity', warning: true, color: 'var(--brown-mid)',
+      label: 'Customs Duty', subtitle: 'Per-unit rate, not a flat percentage',
+      amount: null, qualifier: 'Needs quantity', warning: true, category: 'duty',
       explain: {
         headline: "Why can't this be calculated?",
         body: `This product has a per-unit duty rather than a flat percentage: ${mfn.note}. This can't be calculated from shipment value alone.`,
@@ -685,7 +778,8 @@ function runEstimate(){
     });
   } else {
     charges.push({
-      label: 'Customs Duty', amount: null, qualifier: 'Not yet confirmed', warning: true, color: 'var(--brown-mid)',
+      label: 'Customs Duty', subtitle: 'Rate not yet confirmed for this code',
+      amount: null, qualifier: 'Not yet confirmed', warning: true, category: 'duty',
       explain: {
         headline: 'Why is this unconfirmed?',
         body: "We don't have a verified rate for this exact code yet.",
@@ -701,7 +795,7 @@ function runEstimate(){
       const amt = value * (order.rate/100);
       total += amt;
       charges.push({
-        label: `Surtax (${order.rate}%)`, amount: amt, warning: true, color: 'var(--teal)',
+        label: `Surtax (${order.rate}%)`, subtitle: 'Additional duty from a trade measure', amount: amt, warning: true, category: 'trade',
         explain: {
           headline: 'Why is this showing?',
           body: `A Canadian surtax (${order.name}) may apply to this tariff item based on the selected country of origin.`,
@@ -711,7 +805,7 @@ function runEstimate(){
       });
     } else {
       charges.push({
-        label: 'Surtax', amount: null, qualifier: 'Quota-dependent', warning: true, color: 'var(--teal)',
+        label: 'Surtax', subtitle: 'Depends on current import quota', amount: null, qualifier: 'Quota-dependent', warning: true, category: 'trade',
         explain: {
           headline: 'Why is this showing?',
           body: `A quota-based trade measure (${order.regNo}) may apply depending on current import volumes.`,
@@ -732,7 +826,7 @@ function runEstimate(){
       if(cvdDesc) parts.push(`countervailing duty of ${cvdDesc}`);
       if(!parts.length) return;
       charges.push({
-        label: 'SIMA (Anti-dumping/Countervailing)', amount: null, qualifier: 'Screening indication', warning: true, color: 'var(--flag)',
+        label: 'SIMA (Anti-dumping/Countervailing)', subtitle: 'Anti-dumping / countervailing screening', amount: null, qualifier: 'Screening indication', warning: true, category: 'trade',
         explain: {
           headline: 'Why is this showing?',
           body: `Special Import Measures Act. This type of product (${c.product.toLowerCase()}) may be subject to ${parts.join(' and ')}, depending on its exact specifications and manufacturer.`,
@@ -747,7 +841,7 @@ function runEstimate(){
     safeguardMatches.forEach(m => {
       const potentialAmt = value * (m.rate/100);
       charges.push({
-        label: 'Safeguard Surtax', amount: null, qualifier: `Up to ${m.rate}%`, warning: true, color: 'var(--flag)',
+        label: 'Safeguard Surtax', subtitle: 'Temporary import surge measure', amount: null, qualifier: `Up to ${m.rate}%`, warning: true, category: 'trade',
         explain: {
           headline: 'Why is this showing?',
           body: 'A temporary additional surtax may currently apply to this product category due to an import surge safeguard measure.',
@@ -760,7 +854,7 @@ function runEstimate(){
 
   if(!surtaxMatches.length && !simaMatches.length && !safeguardMatches.length){
     charges.push({
-      label: 'Trade Measures', amount: null, qualifier: 'None flagged', warning: false, color: 'var(--success, #4CAF82)',
+      label: 'Trade Measures', subtitle: 'SIMA, surtaxes, safeguards, anti-dumping', amount: null, qualifier: 'None flagged', warning: false, category: 'trade',
       explain: {
         headline: 'What did we check?',
         body: 'No SIMA, surtax, safeguard, or retaliatory measures were found for this tariff item and selected origin.',
@@ -792,7 +886,7 @@ function runEstimate(){
     total += amt;
     taxApplied = true;
     charges.push({
-      label: 'GST (5%)', amount: amt, warning: false, color: 'var(--tax)',
+      label: 'GST (5%)', subtitle: 'Calculated on taxable value', amount: amt, warning: false, category: 'tax-fed',
       explain: {
         headline: 'Why 5%?',
         body: 'GST is payable on most goods imported into Canada. For commercial imports, only the 5% federal portion is collected at the border, calculated on the duty-paid value (shipment value plus duty) rather than goods value alone.',
@@ -800,7 +894,7 @@ function runEstimate(){
       }
     });
     charges.push({
-      label: 'HST/PST/QST', amount: null, qualifier: 'Self-assessed', warning: false, color: 'var(--tax)',
+      label: 'HST/PST/QST', subtitle: 'Provincial portion', amount: null, qualifier: 'Self-assessed', warning: false, category: 'tax-prov',
       explain: {
         headline: 'Why is this not included?',
         body: "The provincial portion of HST/PST is self-assessed by the importer, not collected at the border for commercial imports — and it's typically fully recoverable via Input Tax Credits if you're GST/HST-registered and make taxable supplies.",
@@ -813,7 +907,7 @@ function runEstimate(){
       total += amt;
       taxApplied = true;
       charges.push({
-        label: `${t.label} (${t.rate}%)`, amount: amt, warning: false, color: 'var(--tax)',
+        label: `${t.label} (${t.rate}%)`, subtitle: 'Provincial portion', amount: amt, warning: false, category: 'tax-prov',
         explain: {
           headline: `Why ${t.rate}%?`,
           body: `${t.label} applies to personal/casual imports at the full provincial rate for ${province}, calculated on the duty-paid value (shipment value plus duty) rather than goods value alone.`,
@@ -852,26 +946,41 @@ function runEstimate(){
   // (visual proportion of the total); qualifier-only charges (SIMA,
   // quota surtax, safeguard, self-assessed provincial tax) show their
   // qualifier text in the list below instead of a bar slice.
+  const CATEGORY_META = {
+    duty:     { cls: 'charge-cat-duty',    barColor: '#B8622E', icon: ICON_SHIELD },
+    trade:    { cls: 'charge-cat-trade',   barColor: '#2E6BB8', icon: ICON_SCALES },
+    'tax-fed':{ cls: 'charge-cat-tax-fed', barColor: '#2F6B4F', icon: ICON_PERCENT },
+    'tax-prov':{ cls: 'charge-cat-tax-prov', barColor: '#6E4FA8', icon: ICON_BANK }
+  };
+
   const barSegments = charges.filter(c => c.amount !== null).map(c => {
     const pct = total > 0 ? (c.amount / total * 100).toFixed(1) : 0;
-    return `<div style="width:${pct}%; background:${c.color};"></div>`;
+    return `<div style="width:${pct}%; background:${CATEGORY_META[c.category].barColor};"></div>`;
   }).join('') + `<div style="flex:1; background:rgba(255,255,255,0.12);"></div>`;
 
   const chargeRows = charges.map((c, i) => {
+    const meta = CATEGORY_META[c.category];
     const rightHtml = c.amount !== null
-      ? formatMoney(c.amount)
-      : `<span class="qual">${c.qualifier || ''}</span>`;
+      ? `<span class="charge-value">${formatMoney(c.amount)}</span>`
+      : `<span class="charge-value qual">${c.qualifier || ''}</span>`;
     const kvHtml = (c.explain.kv || []).map(([k,v]) => `<div>${k}</div><div>${v}</div>`).join('');
     return `
       <div class="charge-line${c.warning ? ' warning' : ''}" data-idx="${i}">
         <div class="charge-row">
           <div class="charge-left">
-            ${c.amount !== null ? `<span class="swatch" style="background:${c.color};"></span>` : ''}
-            <span>${c.label}</span>
-            ${c.warning ? '<span>⚠️</span>' : ''}
-            <span class="charge-icon">ⓘ</span>
+            <div class="charge-icon-badge ${meta.cls}">${meta.icon}</div>
+            <div class="charge-text">
+              <div class="charge-title-row">
+                <span class="charge-title">${c.label}</span>
+                <span class="charge-hint">?</span>
+              </div>
+              <div class="charge-subtitle">${c.subtitle || ''}</div>
+            </div>
           </div>
-          <div class="charge-right">${rightHtml}<span class="charge-caret">▾</span></div>
+          <div class="charge-right">
+            ${rightHtml}
+            <span class="charge-caret">${ICON_CHEVRON}</span>
+          </div>
         </div>
         <div class="charge-detail">
           <div class="q">${c.explain.headline}</div>
@@ -885,13 +994,27 @@ function runEstimate(){
   resultsEl.className = 'show';
   resultsEl.innerHTML = `
     <div class="result-hero">
-      <div class="label">Estimated Import Cost</div>
+      <div class="top-row">
+        <div class="label-row">
+          <div class="label-icon">${ICON_DOCUMENT}</div>
+          <div class="label">Estimated Import Cost</div>
+        </div>
+        <button class="download-btn" id="downloadReportBtn" type="button">${ICON_DOWNLOAD} Download Report</button>
+      </div>
       <div class="amount">${formatMoney(total)}</div>
-      <div class="sub">on a ${formatMoney(value)} shipment</div>
+      <div class="sub-row">
+        <div class="sub">on a ${formatMoney(value)} shipment</div>
+        <div class="complete-badge">${ICON_CHECK} Estimate complete</div>
+      </div>
       ${charges.some(c => c.amount !== null) ? `<div class="breakdown-bar">${barSegments}</div>` : ''}
-      <div class="charge-list">${chargeRows}</div>
     </div>
+    <div class="charge-card">${chargeRows}</div>
     ${projHtml}
+    <div class="disclaimer-bar">
+      ${ICON_SHIELD}
+      <div>These are estimates only and do not include freight, insurance, or brokerage fees.</div>
+      <a href="https://www.gohemisphere.ca/contact">Learn more ›</a>
+    </div>
     <div class="cta">
       <div>
         <h3>Want a number you can rely on?</h3>
@@ -900,6 +1023,9 @@ function runEstimate(){
       <a href="https://www.gohemisphere.ca/contact">Get a Hemisphere Import Quote</a>
     </div>
   `;
+
+  const downloadBtn = document.getElementById('downloadReportBtn');
+  if(downloadBtn) downloadBtn.addEventListener('click', () => window.print());
 }
 
 // Expand/collapse for the "why am I seeing this?" charge explanations —
