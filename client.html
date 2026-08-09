@@ -148,16 +148,65 @@
     background:rgba(255,255,255,0.12);
   }
   .breakdown-bar div{ height:100%; }
-  .breakdown-legend{
+
+  .charge-list{
+    text-align:left;
+    margin-top:18px;
+    border-top:1px solid rgba(255,255,255,0.12);
+  }
+  .charge-line{
+    padding:10px 2px;
+    border-bottom:1px solid rgba(255,255,255,0.1);
+  }
+  .charge-line:last-child{ border-bottom:none; }
+  .charge-row{
     display:flex;
-    flex-wrap:wrap;
-    gap:14px 22px;
+    align-items:center;
+    justify-content:space-between;
+    cursor:pointer;
+    gap:10px;
+  }
+  .charge-left{ display:flex; align-items:center; gap:7px; font-size:13.5px; color:#E3D9CB; min-width:0; }
+  .charge-left .swatch{ width:9px; height:9px; border-radius:3px; flex-shrink:0; }
+  .charge-icon{
+    display:inline-flex;
+    align-items:center;
     justify-content:center;
+    width:16px; height:16px;
+    border-radius:50%;
+    border:1px solid rgba(255,255,255,0.35);
+    font-size:10px;
+    color:#E3D9CB;
+    flex-shrink:0;
+  }
+  .charge-line.warning .charge-icon{ border-color:#E8B98A; color:#F3C98F; }
+  .charge-right{ display:flex; align-items:center; gap:6px; font-size:13.5px; color:#fff; font-weight:600; white-space:nowrap; }
+  .charge-right .qual{ font-weight:400; color:#E3D9CB; font-style:italic; }
+  .charge-caret{ font-size:10px; color:#B6A796; transition:transform 0.15s; flex-shrink:0; }
+  .charge-line.open .charge-caret{ transform:rotate(180deg); }
+  .charge-detail{
+    display:none;
+    margin-top:10px;
+    padding:12px 14px;
+    background:rgba(255,255,255,0.06);
+    border-radius:8px;
     font-size:13px;
     color:#E3D9CB;
+    line-height:1.5;
   }
-  .breakdown-legend span{ display:inline-flex; align-items:center; gap:6px; }
-  .swatch{ width:10px; height:10px; border-radius:3px; display:inline-block; }
+  .charge-line.open .charge-detail{ display:block; }
+  .charge-detail .q{ font-weight:600; color:#fff; margin-bottom:4px; font-size:12.5px; text-transform:uppercase; letter-spacing:0.02em; }
+  .charge-detail .body{ margin-bottom:8px; }
+  .charge-detail .kv{ display:grid; grid-template-columns:auto 1fr; gap:3px 10px; font-size:12.5px; }
+  .charge-detail .kv div:nth-child(odd){ color:#B6A796; }
+  .charge-detail .kv div:nth-child(even){ color:#fff; text-align:right; }
+  .charge-detail .caution{
+    margin-top:8px;
+    padding-top:8px;
+    border-top:1px solid rgba(255,255,255,0.12);
+    color:#F3C98F;
+    font-size:12px;
+  }
 
   .commercial-note{
     font-size:11.5px;
@@ -283,7 +332,7 @@
     <span class="brand-name">HEMISPHERE</span>
     <span class="brand-tag">Duty &amp; Tariff Estimator</span>
   </div>
-  <a href="https://www.gohemisphere.ca/contact">Talk to a Broker</a>
+  <a href="https://www.gohemisphere.ca/contact">Get a Hemisphere Import Quote</a>
 </header>
 
 <main>
@@ -321,8 +370,10 @@
       <div class="field">
         <label for="frequency">Import frequency</label>
         <select id="frequency">
-          <option value="once">One-time shipment</option>
-          <option value="recurring">Recurring shipment</option>
+          <option value="once">One-time</option>
+          <option value="weekly">Weekly</option>
+          <option value="monthly">Monthly</option>
+          <option value="custom">Custom</option>
         </select>
       </div>
     </div>
@@ -347,7 +398,7 @@
     </div>
     <div class="field" id="freqCountField" style="display:none; margin-top:16px;">
       <label for="freqCount">Shipments per month</label>
-      <input type="number" id="freqCount" placeholder="e.g. 4" min="1">
+      <input type="number" id="freqCount" placeholder="e.g. 6" min="1">
     </div>
     <button class="calc-btn" onclick="runEstimate()">Estimate my duty</button>
   </div>
@@ -600,24 +651,122 @@ function runEstimate(){
   const isPreferential = applicable.source === 'preferential';
 
   let total = value;
-  const segments = []; // {label, amount, color}
+  // Each charge answers "why am I seeing this number?" — not a generic
+  // definition, but the specific inputs (code, origin, rate, treaty, order
+  // number) that produced THIS result. `amount` is a real dollar figure
+  // added to `total`; charges with `amount: null` show a qualifier instead
+  // (e.g. "Screening indication") and aren't part of the bar/total, matching
+  // how SIMA has never been computed into the total — exporter-specific
+  // rates and per-unit charges can't safely become a single dollar amount.
+  const charges = [];
 
   if(mfnRate !== null){
     const amt = value * (mfnRate/100);
     total += amt;
-    segments.push({label: `Base duty (${mfnRate}%)`, amount: amt, color: 'var(--brown-mid)'});
+    charges.push({
+      label: `Customs Duty (${mfnRate}%)`, amount: amt, warning: false, color: 'var(--brown-mid)',
+      explain: {
+        headline: mfnRate === 0 ? 'Why $0?' : `Why ${mfnRate}%?`,
+        body: isPreferential
+          ? `The selected origin qualifies for a preferential tariff rate under Canada's trade agreement (treaty code ${applicable.treaty}), which sets this item's duty to ${mfnRate}%.`
+          : `The selected tariff item carries a Most-Favoured-Nation (MFN) rate of ${mfnRate}%, which applies regardless of origin unless a trade agreement provides a lower rate.`,
+        kv: [['HS Code', matchedCode], ['Origin', origin || '—'], ['Tariff treatment', isPreferential ? `Preferential (${applicable.treaty})` : 'MFN'], ['Rate', `${mfnRate}%`]]
+      }
+    });
+  } else if(mfn && (mfn.type === 'compound' || mfn.type === 'specific')){
+    charges.push({
+      label: 'Customs Duty', amount: null, qualifier: 'Needs quantity', warning: true, color: 'var(--brown-mid)',
+      explain: {
+        headline: "Why can't this be calculated?",
+        body: `This product has a per-unit duty rather than a flat percentage: ${mfn.note}. This can't be calculated from shipment value alone.`,
+        kv: [['HS Code', matchedCode], ['Rate type', mfn.type === 'compound' ? 'Compound (percent + minimum)' : 'Specific (per unit)']],
+        caution: 'A broker needs the exact quantity or weight to confirm the duty amount.'
+      }
+    });
+  } else {
+    charges.push({
+      label: 'Customs Duty', amount: null, qualifier: 'Not yet confirmed', warning: true, color: 'var(--brown-mid)',
+      explain: {
+        headline: 'Why is this unconfirmed?',
+        body: "We don't have a verified rate for this exact code yet.",
+        kv: [['HS Code', matchedCode]],
+        caution: 'A broker can confirm the precise classification and rate.'
+      }
+    });
   }
 
-  let surtaxNote = null;
   if(surtaxMatches.length){
     const order = surtaxMatches[0];
     if(order.type === 'flat'){
       const amt = value * (order.rate/100);
       total += amt;
-      segments.push({label: `Surtax (${order.rate}%)`, amount: amt, color: 'var(--teal)'});
+      charges.push({
+        label: `Surtax (${order.rate}%)`, amount: amt, warning: true, color: 'var(--teal)',
+        explain: {
+          headline: 'Why is this showing?',
+          body: `A Canadian surtax (${order.name}) may apply to this tariff item based on the selected country of origin.`,
+          kv: [['Regulation', order.regNo], ['Potential rate', `${order.rate}%`], ['Estimated amount', formatMoney(amt)]],
+          caution: 'Applicability depends on the specific measure and its conditions — confirm with a broker before relying on this.'
+        }
+      });
     } else {
-      surtaxNote = `A quota-based trade measure (${order.regNo}) may apply depending on current import volumes — this requires broker review.`;
+      charges.push({
+        label: 'Surtax', amount: null, qualifier: 'Quota-dependent', warning: true, color: 'var(--teal)',
+        explain: {
+          headline: 'Why is this showing?',
+          body: `A quota-based trade measure (${order.regNo}) may apply depending on current import volumes.`,
+          kv: [['Regulation', order.regNo]],
+          caution: 'This requires broker review — the rate depends on whether the applicable quota has been filled.'
+        }
+      });
     }
+  }
+
+  if(simaMatches.length){
+    simaMatches.forEach(c => {
+      if(!c.residualRates) return;
+      const adDesc = describeSimaRate(c.residualRates.antiDumping, origin);
+      const cvdDesc = describeSimaRate(c.residualRates.countervailing, origin);
+      const parts = [];
+      if(adDesc) parts.push(`anti-dumping duty of ${adDesc}`);
+      if(cvdDesc) parts.push(`countervailing duty of ${cvdDesc}`);
+      if(!parts.length) return;
+      charges.push({
+        label: 'SIMA (Anti-dumping/Countervailing)', amount: null, qualifier: 'Screening indication', warning: true, color: 'var(--flag)',
+        explain: {
+          headline: 'Why is this showing?',
+          body: `Special Import Measures Act. This type of product (${c.product.toLowerCase()}) may be subject to ${parts.join(' and ')}, depending on its exact specifications and manufacturer.`,
+          kv: [['Origin', origin || '—'], ['Potential rate', [adDesc, cvdDesc].filter(Boolean).join('; ')]],
+          caution: 'This result is a screening indication, not a determination of liability — confirm with a broker before relying on this.'
+        }
+      });
+    });
+  }
+
+  if(safeguardMatches.length){
+    safeguardMatches.forEach(m => {
+      const potentialAmt = value * (m.rate/100);
+      charges.push({
+        label: 'Safeguard Surtax', amount: null, qualifier: `Up to ${m.rate}%`, warning: true, color: 'var(--flag)',
+        explain: {
+          headline: 'Why is this showing?',
+          body: 'A temporary additional surtax may currently apply to this product category due to an import surge safeguard measure.',
+          kv: [['Potential rate', `${m.rate}%`], ['Potential amount', formatMoney(potentialAmt)]],
+          caution: 'These measures are time-limited and can change status quickly — consult a broker for the current rate before you ship.'
+        }
+      });
+    });
+  }
+
+  if(!surtaxMatches.length && !simaMatches.length && !safeguardMatches.length){
+    charges.push({
+      label: 'Trade Measures', amount: null, qualifier: 'None flagged', warning: false, color: 'var(--success, #4CAF82)',
+      explain: {
+        headline: 'What did we check?',
+        body: 'No SIMA, surtax, safeguard, or retaliatory measures were found for this tariff item and selected origin.',
+        kv: []
+      }
+    });
   }
 
   // Sales tax (GST/HST/PST/QST/RST) — estimated on the duty-paid value
@@ -633,90 +782,105 @@ function runEstimate(){
   // collects that in full at the border for non-commercial importers — that
   // path genuinely needs a province to compute anything. See
   // PROVINCE_TAX_RATES in data.js.
+  const dutyPaidValue = total;
   const province = document.getElementById('province').value;
   const importType = document.getElementById('importType').value;
   const isCommercial = importType === 'commercial';
-  let taxTotal = 0;
   let taxApplied = false;
   if(isCommercial){
-    const amt = total * 0.05;
-    taxTotal += amt;
-    segments.push({label: 'GST (5%)', amount: amt, color: 'var(--tax)'});
-    total += taxTotal;
+    const amt = dutyPaidValue * 0.05;
+    total += amt;
     taxApplied = true;
+    charges.push({
+      label: 'GST (5%)', amount: amt, warning: false, color: 'var(--tax)',
+      explain: {
+        headline: 'Why 5%?',
+        body: 'GST is payable on most goods imported into Canada. For commercial imports, only the 5% federal portion is collected at the border, calculated on the duty-paid value (shipment value plus duty) rather than goods value alone.',
+        kv: [['Rate', '5%'], ['Calculated on', formatMoney(dutyPaidValue)]]
+      }
+    });
+    charges.push({
+      label: 'HST/PST/QST', amount: null, qualifier: 'Self-assessed', warning: false, color: 'var(--tax)',
+      explain: {
+        headline: 'Why is this not included?',
+        body: "The provincial portion of HST/PST is self-assessed by the importer, not collected at the border for commercial imports — and it's typically fully recoverable via Input Tax Credits if you're GST/HST-registered and make taxable supplies.",
+        kv: []
+      }
+    });
   } else if(province){
     (PROVINCE_TAX_RATES[province] || []).forEach(t => {
-      const amt = total * (t.rate/100);
-      taxTotal += amt;
-      segments.push({label: `${t.label} (${t.rate}%)`, amount: amt, color: 'var(--tax)'});
+      const amt = dutyPaidValue * (t.rate/100);
+      total += amt;
+      taxApplied = true;
+      charges.push({
+        label: `${t.label} (${t.rate}%)`, amount: amt, warning: false, color: 'var(--tax)',
+        explain: {
+          headline: `Why ${t.rate}%?`,
+          body: `${t.label} applies to personal/casual imports at the full provincial rate for ${province}, calculated on the duty-paid value (shipment value plus duty) rather than goods value alone.`,
+          kv: [['Province', province], ['Rate', `${t.rate}%`], ['Calculated on', formatMoney(dutyPaidValue)]]
+        }
+      });
     });
-    total += taxTotal;
-    taxApplied = true;
   }
 
   // Recurring-shipment cost projection — pure multiplication, no new rate
   // data, just applies the fully-computed per-shipment total (duty + tax)
-  // across an expected monthly volume. Available whenever tax was actually
+  // across an expected volume. Weekly/Monthly compute directly with no
+  // extra input (52 or 12 shipments/year); Custom keeps the flexible
+  // shipments-per-month field for cadences that don't fit either — a
+  // business importing e.g. 7 times a month isn't well served by only
+  // "Weekly" or "Monthly" as options. Available whenever tax was actually
   // applied (always true for Commercial, only true for Personal once a
   // province is picked).
   let projHtml = '';
-  if(taxApplied && document.getElementById('frequency').value === 'recurring'){
-    const count = parseFloat(document.getElementById('freqCount').value) || 0;
-    if(count > 0){
-      const monthly = total * count;
-      const annual = monthly * 12;
-      projHtml = `<div class="proj-card"><span class="dot">●</span><div>${count} shipment${count === 1 ? '' : 's'}/month at this size ≈ ${formatMoney(monthly)}/mo, ${formatMoney(annual)}/yr</div></div>`;
+  const freq = document.getElementById('frequency').value;
+  if(taxApplied && freq !== 'once'){
+    let annual = null, freqLabel = '';
+    if(freq === 'weekly'){ annual = total * 52; freqLabel = 'Weekly shipments'; }
+    else if(freq === 'monthly'){ annual = total * 12; freqLabel = 'Monthly shipments'; }
+    else if(freq === 'custom'){
+      const count = parseFloat(document.getElementById('freqCount').value) || 0;
+      if(count > 0){ annual = total * count * 12; freqLabel = `${count} shipment${count === 1 ? '' : 's'}/month`; }
+    }
+    if(annual !== null){
+      const monthly = annual / 12;
+      projHtml = `<div class="proj-card"><span class="dot">●</span><div>${freqLabel} at this size ≈ ${formatMoney(monthly)}/mo, ${formatMoney(annual)}/yr</div></div>`;
     }
   }
 
-  const simaFlag = simaMatches.length > 0;
-  const safeguardFlag = safeguardMatches.length > 0;
-
-  // Render
-  const barSegments = segments.map(s => {
-    const pct = (s.amount / total * 100).toFixed(1);
-    return `<div style="width:${pct}%; background:${s.color};"></div>`;
+  // Render — bar segments only from charges with a real dollar amount
+  // (visual proportion of the total); qualifier-only charges (SIMA,
+  // quota surtax, safeguard, self-assessed provincial tax) show their
+  // qualifier text in the list below instead of a bar slice.
+  const barSegments = charges.filter(c => c.amount !== null).map(c => {
+    const pct = total > 0 ? (c.amount / total * 100).toFixed(1) : 0;
+    return `<div style="width:${pct}%; background:${c.color};"></div>`;
   }).join('') + `<div style="flex:1; background:rgba(255,255,255,0.12);"></div>`;
 
-  const legend = segments.map(s =>
-    `<span><span class="swatch" style="background:${s.color};"></span>${s.label}: ${formatMoney(s.amount)}</span>`
-  ).join('');
-
-  let cardsHtml = '';
-  if(mfnRate !== null){
-    const preferentialNote = isPreferential ? ` — preferential rate under Canada's trade agreement with the selected origin (treaty code ${applicable.treaty})` : '';
-    cardsHtml += `<div class="info-card clear"><b>Base duty</b>${mfnRate === 0 ? `This product enters Canada duty-free${isPreferential ? preferentialNote : ' under the standard rate'}.` : `Rate for this product${preferentialNote}: ${mfnRate}%.`}</div>`;
-  } else if(mfn && (mfn.type === 'compound' || mfn.type === 'specific')){
-    cardsHtml += `<div class="info-card neutral"><b>Base duty</b>This product has a per-unit duty rather than a flat percentage: ${mfn.note}. This can't be calculated from shipment value alone — a broker needs the exact quantity or weight to confirm the duty amount.</div>`;
-  } else {
-    cardsHtml += `<div class="info-card neutral"><b>Base duty</b>We don't have a confirmed rate for this exact code yet — a broker can confirm the precise classification and rate.</div>`;
-  }
-  if(surtaxMatches.length && surtaxMatches[0].type === 'flat'){
-    cardsHtml += `<div class="info-card flag"><b>Trade surtax likely applies</b>A surtax of ${surtaxMatches[0].rate}% (${surtaxMatches[0].name}) currently applies to goods like this from the selected origin. Confirm with us before you rely on this estimate — exact scope can depend on product specifications.</div>`;
-  } else if(surtaxNote){
-    cardsHtml += `<div class="info-card flag"><b>Possible surtax</b>${surtaxNote}</div>`;
-  }
-  if(simaMatches.length){
-    simaMatches.forEach(c => {
-      if(!c.residualRates) return;
-      const adDesc = describeSimaRate(c.residualRates.antiDumping, origin);
-      const cvdDesc = describeSimaRate(c.residualRates.countervailing, origin);
-      const parts = [];
-      if(adDesc) parts.push(`an anti-dumping duty of ${adDesc}`);
-      if(cvdDesc) parts.push(`a countervailing duty of ${cvdDesc}`);
-      if(parts.length){
-        cardsHtml += `<div class="info-card flag"><b>Possible anti-dumping / countervailing duty</b>This type of product (${c.product.toLowerCase()}) may be subject to ${parts.join(' and ')}, depending on its exact specifications and manufacturer. This can substantially change your import cost — confirm with us before you rely on this estimate.</div>`;
-      }
-    });
-  }
-  if(safeguardFlag){
-    safeguardMatches.forEach(m => {
-      cardsHtml += `<div class="info-card flag"><b>Possible import surge surtax</b>A temporary additional surtax of ${m.rate}% may currently apply to this product category. These measures are time-limited and can change status quickly — consult us for the current rate before you ship.</div>`;
-    });
-  }
-  if(!surtaxMatches.length && !simaFlag && !safeguardFlag){
-    cardsHtml += `<div class="info-card clear"><b>No trade measures flagged</b>No SIMA, surtax, safeguard, or retaliatory measures found for this tariff item and selected origin.</div>`;
-  }
+  const chargeRows = charges.map((c, i) => {
+    const rightHtml = c.amount !== null
+      ? formatMoney(c.amount)
+      : `<span class="qual">${c.qualifier || ''}</span>`;
+    const kvHtml = (c.explain.kv || []).map(([k,v]) => `<div>${k}</div><div>${v}</div>`).join('');
+    return `
+      <div class="charge-line${c.warning ? ' warning' : ''}" data-idx="${i}">
+        <div class="charge-row">
+          <div class="charge-left">
+            ${c.amount !== null ? `<span class="swatch" style="background:${c.color};"></span>` : ''}
+            <span>${c.label}</span>
+            ${c.warning ? '<span>⚠️</span>' : ''}
+            <span class="charge-icon">ⓘ</span>
+          </div>
+          <div class="charge-right">${rightHtml}<span class="charge-caret">▾</span></div>
+        </div>
+        <div class="charge-detail">
+          <div class="q">${c.explain.headline}</div>
+          <div class="body">${c.explain.body}</div>
+          ${kvHtml ? `<div class="kv">${kvHtml}</div>` : ''}
+          ${c.explain.caution ? `<div class="caution">⚠️ ${c.explain.caution}</div>` : ''}
+        </div>
+      </div>`;
+  }).join('');
 
   resultsEl.className = 'show';
   resultsEl.innerHTML = `
@@ -724,27 +888,36 @@ function runEstimate(){
       <div class="label">Estimated Import Cost</div>
       <div class="amount">${formatMoney(total)}</div>
       <div class="sub">on a ${formatMoney(value)} shipment</div>
-      ${segments.length ? `<div class="breakdown-bar">${barSegments}</div><div class="breakdown-legend">${legend}</div>` : ''}
-      ${isCommercial ? `<div class="commercial-note">GST only shown — provincial portion is self-assessed, not collected at the border for commercial imports.</div>` : ''}
+      ${charges.some(c => c.amount !== null) ? `<div class="breakdown-bar">${barSegments}</div>` : ''}
+      <div class="charge-list">${chargeRows}</div>
     </div>
     ${projHtml}
-    <div class="info-cards">${cardsHtml}</div>
     <div class="cta">
       <div>
         <h3>Want a number you can rely on?</h3>
         <p>This estimate doesn't account for brokerage fees, PST exemptions on specific goods, or your exact product specifications.</p>
       </div>
-      <a href="https://www.gohemisphere.ca/contact">Talk to a Broker</a>
+      <a href="https://www.gohemisphere.ca/contact">Get a Hemisphere Import Quote</a>
     </div>
   `;
 }
+
+// Expand/collapse for the "why am I seeing this?" charge explanations —
+// event delegation since the charge list is fully regenerated on every
+// estimate, so per-element listeners would leak/duplicate. Click, not
+// hover, so this works on mobile.
+document.getElementById('results').addEventListener('click', e => {
+  const row = e.target.closest('.charge-row');
+  if(!row) return;
+  row.closest('.charge-line').classList.toggle('open');
+});
 
 document.getElementById('q').addEventListener('keydown', e => { if(e.key === 'Enter') runEstimate(); });
 document.getElementById('value').addEventListener('keydown', e => { if(e.key === 'Enter') runEstimate(); });
 
 document.getElementById('frequency').addEventListener('change', () => {
   document.getElementById('freqCountField').style.display =
-    document.getElementById('frequency').value === 'recurring' ? 'block' : 'none';
+    document.getElementById('frequency').value === 'custom' ? 'block' : 'none';
 });
 
 // Province only matters for Personal imports — Commercial is always flat 5%
