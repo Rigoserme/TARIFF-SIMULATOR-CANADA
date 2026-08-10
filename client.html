@@ -288,6 +288,87 @@
   .disclaimer-bar svg{ width:18px; height:18px; color:var(--teal); flex-shrink:0; }
   .disclaimer-bar a{ color:var(--brown-deep); font-weight:600; text-decoration:none; white-space:nowrap; margin-left:auto; }
   .disclaimer-bar a:hover{ text-decoration:underline; }
+  .disclaimer-bar a.js-toggle{ cursor:pointer; background:none; border:none; font:inherit; }
+
+  .brokerage-panel{
+    display:none;
+    margin-top:16px;
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:22px;
+  }
+  .brokerage-panel.show{ display:block; }
+  .brokerage-panel h4{
+    font-family:'Montserrat',sans-serif;
+    font-weight:800;
+    font-size:15px;
+    color:var(--brown-deep);
+    margin:0 0 4px;
+  }
+  .brokerage-panel .bp-intro{ font-size:13px; color:var(--ink-faint); margin:0 0 16px; }
+  .bp-type-row{ display:flex; gap:10px; margin-bottom:18px; }
+  .bp-type-btn{
+    flex:1;
+    padding:10px 12px;
+    border:1.5px solid var(--line);
+    border-radius:9px;
+    background:#fff;
+    font-family:'Inter',sans-serif;
+    font-size:13px;
+    font-weight:600;
+    color:var(--ink-faint);
+    cursor:pointer;
+    text-align:center;
+  }
+  .bp-type-btn.active{ border-color:var(--brown-mid); background:var(--paper); color:var(--brown-deep); }
+  .bp-line{
+    display:flex;
+    justify-content:space-between;
+    padding:8px 0;
+    border-bottom:1px solid var(--line);
+    font-size:13.5px;
+  }
+  .bp-line:last-of-type{ border-bottom:none; }
+  .bp-line .bp-label{ color:var(--ink); }
+  .bp-line .bp-val{ font-weight:600; color:var(--ink); }
+  .bp-total-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    margin-top:14px;
+    padding-top:14px;
+    border-top:2px solid var(--brown-deep);
+  }
+  .bp-total-row .bp-total-label{ font-family:'Montserrat',sans-serif; font-weight:800; font-size:14px; color:var(--brown-deep); }
+  .bp-total-row .bp-total-val{ font-family:'Montserrat',sans-serif; font-weight:800; font-size:22px; color:var(--brown-deep); }
+  .bp-usd{ text-align:right; font-size:12.5px; color:var(--ink-faint); margin-top:2px; }
+  .bp-note{ font-size:11.5px; color:var(--ink-faint); margin-top:14px; line-height:1.5; }
+  .bp-quote-form{ margin-top:20px; padding-top:20px; border-top:1px solid var(--line); }
+  .bp-quote-form .field{ margin-bottom:12px; }
+  .bp-submit-btn{
+    width:100%;
+    padding:13px;
+    border:none;
+    border-radius:9px;
+    background:var(--brown-deep);
+    color:#fff;
+    font-family:'Inter',sans-serif;
+    font-weight:700;
+    font-size:14px;
+    cursor:pointer;
+    margin-top:6px;
+  }
+  .bp-submit-btn:hover{ background:var(--brown-mid); }
+  .bp-unavailable{
+    background:var(--flag-soft);
+    border:1px solid #EACBBB;
+    color:#7A3A22;
+    padding:12px 14px;
+    border-radius:9px;
+    font-size:13px;
+    margin-top:10px;
+  }
 
 
   .commercial-note{
@@ -518,6 +599,152 @@ const ICON_DOCUMENT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor
 
 function formatMoney(n){
   return '$' + n.toLocaleString('en-CA', {minimumFractionDigits:2, maximumFractionDigits:2});
+}
+
+// Tally form URL for the "Request Official Quote" flow. Tally supports
+// pre-filling a form via URL query params when the form has a matching
+// Hidden Field
+// configured for each param name (Tally docs: Hidden Fields > populate
+// from URL). Every param name built in the submit handler below
+// (client_type, shipment_value_cad, entry_fee, aci_fee, carm_fee,
+// account_setup_fee, bond_fee, hst_on_goods, hst_on_fees,
+// disbursement_fee, grand_total_cad, grand_total_usd, name, email, phone)
+// needs a Hidden Field of that exact name added in the Tally form builder,
+// or that value just won't show up pre-filled. The client still fills in
+// nothing extra beyond what's already there and hits Tally's own submit —
+// this just means the breakdown is already populated when they land on it,
+// matching "auto created when the email is generated."
+const TALLY_FORM_URL = 'https://tally.so/r/GxE6jp';
+
+// Computes Hemisphere's own brokerage fees (separate from the customs
+// duty/tax already computed by runEstimate()) using the schedule and
+// constants confirmed by Rigo — see ENTRY_FEE_SCHEDULE and
+// BROKERAGE_FEE_CONSTANTS in data.js for the source rules. Reads duty and
+// goods-tax from window.__brokerageInputs (set at the end of runEstimate())
+// rather than recomputing them, so this never drifts from what's actually
+// shown in the main results above it.
+function computeBrokerageFees(clientType){
+  const inputs = window.__brokerageInputs;
+  if(!inputs) return null;
+  const entryFee = lookupEntryFee(inputs.value);
+  if(entryFee === null) return { overLimit: true };
+
+  const c = BROKERAGE_FEE_CONSTANTS;
+  const isSetup = clientType === 'setup';
+  const aciFee = c.aciFee;
+  const carmFee = c.carmFee;
+  // Account Setup and Bond Fee only apply when setting up an ongoing
+  // account — one-timers ship under Hemisphere's own bond, not their own.
+  const accountSetupFee = isSetup ? c.accountSetupFee : 0;
+  const bondFee = isSetup ? Math.max(c.bondFeeRate * (inputs.duty + inputs.taxOnGoods), c.bondFeeMinimum) : 0;
+  const hstOnGoods = inputs.taxOnGoods;
+  const feesSubtotal = entryFee + aciFee + carmFee + accountSetupFee + bondFee;
+  const hstOnFees = feesSubtotal * c.hstOnFeesRate;
+  const preDisbursement = feesSubtotal + hstOnGoods + hstOnFees;
+  const disbursementFee = preDisbursement * c.disbursementFeeRate;
+  const grandTotalCAD = preDisbursement + disbursementFee;
+  const grandTotalUSD = grandTotalCAD * c.usdConversionRate;
+
+  return {
+    overLimit: false, isSetup, entryFee, aciFee, carmFee, accountSetupFee, bondFee,
+    hstOnGoods, hstOnFees, disbursementFee, grandTotalCAD, grandTotalUSD
+  };
+}
+
+function wireBrokerageTypeButtons(){
+  document.querySelectorAll('.bp-type-btn').forEach(btn => {
+    btn.addEventListener('click', () => renderBrokeragePanel(btn.dataset.type));
+  });
+}
+
+function renderBrokeragePanel(clientType){
+  const panel = document.getElementById('brokeragePanel');
+  const fees = computeBrokerageFees(clientType);
+
+  if(!fees){
+    panel.innerHTML = '<div class="bp-unavailable">Run an estimate above first to see brokerage fees.</div>';
+    return;
+  }
+
+  const typeRow = `
+    <div class="bp-type-row">
+      <button type="button" class="bp-type-btn${clientType === 'onetime' ? ' active' : ''}" data-type="onetime">One-time shipment</button>
+      <button type="button" class="bp-type-btn${clientType === 'setup' ? ' active' : ''}" data-type="setup">Setting up an account</button>
+    </div>`;
+
+  if(fees.overLimit){
+    panel.innerHTML = `
+      <h4>Brokerage Fee Estimate</h4>
+      <p class="bp-intro">Hemisphere's own brokerage fees, on top of the duty and tax shown above.</p>
+      ${typeRow}
+      <div class="bp-unavailable">Shipments over $25,000 CAD fall outside our standard fee schedule and need a manual quote — use "Get a Hemisphere Import Quote" below to reach us directly.</div>
+    `;
+    wireBrokerageTypeButtons();
+    return;
+  }
+
+  const lines = [['Entry Fee', fees.entryFee], ['ACI Fee', fees.aciFee], ['CARM Fee', fees.carmFee]];
+  if(fees.isSetup){
+    lines.push(['Account Set Up', fees.accountSetupFee]);
+    lines.push(['Bond Fee', fees.bondFee]);
+  }
+  lines.push(['HST on Goods', fees.hstOnGoods]);
+  lines.push(['HST on Fees (13%)', fees.hstOnFees]);
+  lines.push(['Disbursement Fee (3%)', fees.disbursementFee]);
+  const linesHtml = lines.map(([label, amt]) => `<div class="bp-line"><span class="bp-label">${label}</span><span class="bp-val">${formatMoney(amt)}</span></div>`).join('');
+
+  panel.innerHTML = `
+    <h4>Brokerage Fee Estimate</h4>
+    <p class="bp-intro">Hemisphere's own brokerage fees, on top of the duty and tax shown above.</p>
+    ${typeRow}
+    ${linesHtml}
+    <div class="bp-total-row">
+      <span class="bp-total-label">Grand Total (CAD)</span>
+      <span class="bp-total-val">${formatMoney(fees.grandTotalCAD)}</span>
+    </div>
+    <div class="bp-usd">≈ ${formatMoney(fees.grandTotalUSD)} USD</div>
+    <div class="bp-note">This is an estimate of Hemisphere's own brokerage fees, separate from the customs duty and tax shown above. Final fees are confirmed by a broker.</div>
+    <div class="bp-quote-form">
+      <h4>Get this as an official quote</h4>
+      <p class="bp-intro">We'll review this and reply with a confirmed quote.</p>
+      <div class="field"><label for="bpName">Name</label><input type="text" id="bpName" placeholder="Your name"></div>
+      <div class="field"><label for="bpEmail">Email</label><input type="email" id="bpEmail" placeholder="you@example.com"></div>
+      <div class="field"><label for="bpPhone">Phone (optional)</label><input type="tel" id="bpPhone" placeholder="(xxx) xxx-xxxx"></div>
+      <div id="bpValidationMsg" class="bp-unavailable" style="display:none;">Please enter your name and email so we can reply with your quote.</div>
+      <button type="button" class="bp-submit-btn" id="bpSubmitBtn">Request Official Quote</button>
+    </div>
+  `;
+
+  wireBrokerageTypeButtons();
+
+  document.getElementById('bpSubmitBtn').addEventListener('click', () => {
+    const name = document.getElementById('bpName').value.trim();
+    const email = document.getElementById('bpEmail').value.trim();
+    const msg = document.getElementById('bpValidationMsg');
+    if(!name || !email){
+      msg.style.display = 'block';
+      return;
+    }
+    msg.style.display = 'none';
+    const inputs = window.__brokerageInputs;
+    const params = new URLSearchParams({
+      client_type: fees.isSetup ? 'Setting up an account' : 'One-time shipment',
+      shipment_value_cad: inputs.value.toFixed(2),
+      entry_fee: fees.entryFee.toFixed(2),
+      aci_fee: fees.aciFee.toFixed(2),
+      carm_fee: fees.carmFee.toFixed(2),
+      account_setup_fee: fees.accountSetupFee.toFixed(2),
+      bond_fee: fees.bondFee.toFixed(2),
+      hst_on_goods: fees.hstOnGoods.toFixed(2),
+      hst_on_fees: fees.hstOnFees.toFixed(2),
+      disbursement_fee: fees.disbursementFee.toFixed(2),
+      grand_total_cad: fees.grandTotalCAD.toFixed(2),
+      grand_total_usd: fees.grandTotalUSD.toFixed(2),
+      name, email,
+      phone: document.getElementById('bpPhone').value.trim()
+    });
+    window.open(`${TALLY_FORM_URL}?${params.toString()}`, '_blank');
+  });
 }
 
 // Every real country that appears across current SIMA cases, plus US/China
@@ -1057,8 +1284,9 @@ function runEstimate(){
     <div class="disclaimer-bar">
       ${ICON_SHIELD}
       <div>These are estimates only and do not include freight, insurance, or brokerage fees.</div>
-      <a href="https://www.gohemisphere.ca/contact">Learn more ›</a>
+      <a class="js-toggle" id="brokerageToggleLink">Learn more ›</a>
     </div>
+    <div class="brokerage-panel" id="brokeragePanel"></div>
     <div class="cta">
       <div>
         <h3>Want a number you can rely on?</h3>
@@ -1070,6 +1298,27 @@ function runEstimate(){
 
   const downloadBtn = document.getElementById('downloadReportBtn');
   if(downloadBtn) downloadBtn.addEventListener('click', () => window.print());
+
+  // Brokerage fee estimate panel — stores the inputs this specific estimate
+  // needs (shipment value, and the duty + tax already computed above) so
+  // renderBrokeragePanel() can compute Bond Fee correctly without
+  // recomputing duty/tax itself. See lookupEntryFee()/BROKERAGE_FEE_CONSTANTS
+  // in data.js for the actual fee schedule and rules.
+  const dutyCharge = charges.find(c => c.category === 'duty');
+  const taxCharges = charges.filter(c => c.category === 'tax-fed' || c.category === 'tax-prov');
+  window.__brokerageInputs = {
+    value,
+    duty: dutyCharge && dutyCharge.amount !== null ? dutyCharge.amount : 0,
+    taxOnGoods: taxCharges.reduce((sum, c) => sum + (c.amount || 0), 0)
+  };
+  document.getElementById('brokerageToggleLink').addEventListener('click', () => {
+    const panel = document.getElementById('brokeragePanel');
+    panel.classList.toggle('show');
+    if(panel.classList.contains('show') && !panel.dataset.rendered){
+      renderBrokeragePanel('onetime');
+      panel.dataset.rendered = '1';
+    }
+  });
 }
 
 // Two independent toggles per charge line: the small "?" hint opens a short

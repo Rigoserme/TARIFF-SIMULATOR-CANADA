@@ -13407,3 +13407,83 @@ Object.assign(CODE_DESCRIPTIONS, {
   "5310.90.00.00": "Woven fabrics of jute or of other textile bast fibres of heading 53.03 > Other",
   "5311.00.00.00": "Woven fabrics of other vegetable textile fibres; woven fabrics of paper yarn"
 });
+
+// ===== Brokerage fee schedule — added 10 AUG 2026 =====
+// Source: BROKERAGE SCHEDULE: ONE TIMERS (internal doc), confirmed by Rigo
+// as the same schedule used for both one-timer and new-account-setup
+// clients — this is Hemisphere's own service fee, not a government rate,
+// so accuracy here matters as much as (arguably more than) the tariff data
+// itself. Tiered by "Value for Duty $CAD" per the schedule's own column
+// header — uses the shipment's CAD value directly (the same `value` input
+// the main duty/tax calculator already uses), not the duty-paid total.
+// Entries above $25,000 aren't covered by the schedule; lookupEntryFee()
+// returns null in that case rather than guessing, matching the project's
+// established "don't fabricate a number when the source doesn't provide
+// one" convention.
+const ENTRY_FEE_SCHEDULE = [
+  {upTo:50,    fee:10},
+  {upTo:100,   fee:40},
+  {upTo:250,   fee:50},
+  {upTo:500,   fee:65},
+  {upTo:750,   fee:70},
+  {upTo:1000,  fee:85},
+  {upTo:1250,  fee:100},
+  {upTo:1500,  fee:100},
+  {upTo:2000,  fee:150},
+  {upTo:2500,  fee:150},
+  {upTo:3000,  fee:185},
+  {upTo:3500,  fee:190},
+  {upTo:5000,  fee:200},
+  {upTo:6000,  fee:220},
+  {upTo:7000,  fee:250},
+  {upTo:8000,  fee:275},
+  {upTo:9000,  fee:285},
+  {upTo:10000, fee:300},
+  {upTo:11000, fee:385},
+  {upTo:12000, fee:450},
+  {upTo:13000, fee:500},
+  {upTo:14000, fee:550},
+  {upTo:20000, fee:685},
+  {upTo:25000, fee:950}
+];
+
+function lookupEntryFee(valueForDutyCAD){
+  for(const tier of ENTRY_FEE_SCHEDULE){
+    if(valueForDutyCAD <= tier.upTo) return tier.fee;
+  }
+  return null; // beyond schedule — needs a manual quote, not a guess
+}
+
+// Other Hemisphere brokerage fees confirmed by Rigo 10 AUG 2026:
+// - ACI (Advance Commercial Information): flat $15 per shipment.
+// - CARM (CBSA Assessment and Revenue Management): flat $3.50 per shipment.
+// - Account Setup: flat $100, only for new-account-setup clients (not
+//   charged to one-timers, who by definition aren't setting up an account).
+// - Bond Fee: 25% of (duty + GST/tax outlay for this shipment), with a
+//   $100 flat minimum if that computed amount is less than $100. Only for
+//   new-account-setup clients — one-timers ship under Hemisphere's own
+//   bond, not their own.
+// - HST on Fees: flat 13% (Ontario HST) on the sum of Entry Fee + ACI +
+//   CARM + Account Setup + Bond Fee — this is tax on HEMISPHERE'S OWN
+//   SERVICES, billed from Ontario regardless of the shipment's destination
+//   province, and is a separate calculation from whatever GST/HST/PST
+//   already applies to the goods themselves via the main duty/tax
+//   calculator.
+// - Disbursement Fee: 3% of every other computed line above (Entry Fee +
+//   ACI + CARM + Account Setup + Bond Fee + HST on Goods + HST on Fees),
+//   computed last, applied whenever this fee schedule is used.
+// - USD conversion: always CAD × 0.9 for the fee-schedule grand total
+//   specifically — a fixed simplification rate Hemisphere uses for this
+//   purpose, separate from and not to be confused with whatever real
+//   market FX rate might apply to converting the underlying goods value
+//   itself.
+const BROKERAGE_FEE_CONSTANTS = {
+  aciFee: 15,
+  carmFee: 3.50,
+  accountSetupFee: 100,
+  bondFeeRate: 0.25,
+  bondFeeMinimum: 100,
+  hstOnFeesRate: 0.13,
+  disbursementFeeRate: 0.03,
+  usdConversionRate: 0.9
+};
