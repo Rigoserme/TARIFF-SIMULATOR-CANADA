@@ -13371,3 +13371,39 @@ Object.assign(PREF_FREE, {
   "5204.20.00.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
   "5207.10.00.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"]
 });
+
+// ===== Chapter 53 — Other Vegetable Textile Fibres; Paper Yarn and Woven
+// Fabrics of Paper Yarn (verified 09 AUG 2026 from CBSA Ch.53, user-provided
+// markdown, full read) =====
+// 100% Free chapter, every code, every treaty — no dutiable exception found
+// anywhere. Same treatment as Ch.50/51, the raw-textile-material chapters
+// right before it: added to MFN_FREE_CHAPTERS. Same reordered-treaty-list
+// formatting quirk as Ch.50-52 (CCCT listed last) — no functional difference.
+const CH53_ALL_FREE = ["53"];
+MFN_FREE_CHAPTERS.push(...CH53_ALL_FREE);
+
+Object.assign(CODE_DESCRIPTIONS, {
+  "5301.10.00.00": "Flax, raw or processed but not spun; flax tow and waste (including yarn waste and garnetted stock) > Flax, raw or retted",
+  "5301.21.00.00": "Flax, raw or processed but not spun; flax tow and waste (including yarn waste and garnetted stock) > Flax, broken, scutched, hackled or otherwise processed, but not spun > Broken or scutched",
+  "5301.29.00.00": "Flax, raw or processed but not spun; flax tow and waste (including yarn waste and garnetted stock) > Flax, broken, scutched, hackled or otherwise processed, but not spun > Other",
+  "5301.30.00.00": "Flax, raw or processed but not spun; flax tow and waste (including yarn waste and garnetted stock) > Flax tow and waste",
+  "5302.10.00.00": "True hemp (Cannabis sativa L.), raw or processed but not spun; tow and waste of true hemp (including yarn waste and garnetted stock) > True hemp, raw or retted",
+  "5302.90.00.00": "True hemp (Cannabis sativa L.), raw or processed but not spun; tow and waste of true hemp (including yarn waste and garnetted stock) > Other",
+  "5303.10.00.00": "Jute and other textile bast fibres (excluding flax, true hemp and ramie), raw or processed but not spun; tow and waste of these fibres (including yarn waste and garnetted stock) > Jute and other textile bast fibres, raw or retted",
+  "5303.90.00.00": "Jute and other textile bast fibres (excluding flax, true hemp and ramie), raw or processed but not spun; tow and waste of these fibres (including yarn waste and garnetted stock) > Other",
+  "5305.00.00.00": "Coconut, abaca (Manila hemp or Musa textilis Nee), ramie and other vegetable textile fibres, not elsewhere specified or included, raw or processed but not spun; tow, noils and waste of these fibres (including yarn waste and garnetted stock)",
+  "5306.10.00.00": "Flax yarn > Single",
+  "5306.20.00.00": "Flax yarn > Multiple (folded) or cabled",
+  "5307.10.00.00": "Yarn of jute or of other textile bast fibres of heading 53.03 > Single",
+  "5307.20.00.00": "Yarn of jute or of other textile bast fibres of heading 53.03 > Multiple (folded) or cabled",
+  "5308.10.00.00": "Yarn of other vegetable textile fibres; paper yarn > Coir yarn",
+  "5308.20.00.00": "Yarn of other vegetable textile fibres; paper yarn > True hemp yarn",
+  "5308.90.00.00": "Yarn of other vegetable textile fibres; paper yarn > Other",
+  "5309.11.00.00": "Woven fabrics of flax > Containing 85% or more by weight of flax > Unbleached or bleached",
+  "5309.19.00.00": "Woven fabrics of flax > Containing 85% or more by weight of flax > Other",
+  "5309.21.00.00": "Woven fabrics of flax > Containing less than 85% by weight of flax > Unbleached or bleached",
+  "5309.29.00.00": "Woven fabrics of flax > Containing less than 85% by weight of flax > Other",
+  "5310.10.00.00": "Woven fabrics of jute or of other textile bast fibres of heading 53.03 > Unbleached",
+  "5310.90.00.00": "Woven fabrics of jute or of other textile bast fibres of heading 53.03 > Other",
+  "5311.00.00.00": "Woven fabrics of other vegetable textile fibres; woven fabrics of paper yarn"
+});

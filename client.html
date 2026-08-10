@@ -226,8 +226,21 @@
     color:var(--ink-faint);
     font-size:10px;
     flex-shrink:0;
+    cursor:pointer;
   }
   .charge-line.warning .charge-hint{ border-color:var(--flag); color:var(--flag); }
+  .charge-tooltip{
+    display:none;
+    margin-top:5px;
+    padding:8px 10px;
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:8px;
+    font-size:12.5px;
+    color:var(--ink);
+    line-height:1.45;
+  }
+  .charge-line.tooltip-open .charge-tooltip{ display:block; }
   .charge-subtitle{ font-size:13px; color:var(--ink-faint); margin-top:2px; }
   .charge-right{ display:flex; align-items:center; gap:10px; flex-shrink:0; }
   .charge-value{ font-weight:700; font-size:15.5px; color:var(--ink); white-space:nowrap; }
@@ -756,6 +769,7 @@ function runEstimate(){
     total += amt;
     charges.push({
       label: `Customs Duty (${mfnRate}%)`, subtitle: isPreferential ? `Preferential rate under treaty ${applicable.treaty}` : 'Applicable MFN rate based on selected HS code',
+      tooltip: `Customs Duty — the tariff charged on imported goods based on their HS classification, applied here at ${mfnRate}%.`,
       amount: amt, warning: false, category: 'duty',
       explain: {
         headline: mfnRate === 0 ? 'Why $0?' : `Why ${mfnRate}%?`,
@@ -768,6 +782,7 @@ function runEstimate(){
   } else if(mfn && (mfn.type === 'compound' || mfn.type === 'specific')){
     charges.push({
       label: 'Customs Duty', subtitle: 'Per-unit rate, not a flat percentage',
+      tooltip: 'Customs Duty — the tariff charged on imported goods based on their HS classification. This item is charged per unit or weight rather than as a percentage.',
       amount: null, qualifier: 'Needs quantity', warning: true, category: 'duty',
       explain: {
         headline: "Why can't this be calculated?",
@@ -779,6 +794,7 @@ function runEstimate(){
   } else {
     charges.push({
       label: 'Customs Duty', subtitle: 'Rate not yet confirmed for this code',
+      tooltip: 'Customs Duty — the tariff charged on imported goods based on their HS classification. We don\'t have a verified rate for this exact code yet.',
       amount: null, qualifier: 'Not yet confirmed', warning: true, category: 'duty',
       explain: {
         headline: 'Why is this unconfirmed?',
@@ -795,7 +811,9 @@ function runEstimate(){
       const amt = value * (order.rate/100);
       total += amt;
       charges.push({
-        label: `Surtax (${order.rate}%)`, subtitle: 'Additional duty from a trade measure', amount: amt, warning: true, category: 'trade',
+        label: `Surtax (${order.rate}%)`, subtitle: 'Additional duty from a trade measure',
+        tooltip: `Surtax — an additional import charge Canada can apply to specific products, separate from standard customs duty, applied here at ${order.rate}%.`,
+        amount: amt, warning: true, category: 'trade',
         explain: {
           headline: 'Why is this showing?',
           body: `A Canadian surtax (${order.name}) may apply to this tariff item based on the selected country of origin.`,
@@ -805,7 +823,9 @@ function runEstimate(){
       });
     } else {
       charges.push({
-        label: 'Surtax', subtitle: 'Depends on current import quota', amount: null, qualifier: 'Quota-dependent', warning: true, category: 'trade',
+        label: 'Surtax', subtitle: 'Depends on current import quota',
+        tooltip: 'Surtax — an additional import charge Canada can apply to specific products once an import quota is filled.',
+        amount: null, qualifier: 'Quota-dependent', warning: true, category: 'trade',
         explain: {
           headline: 'Why is this showing?',
           body: `A quota-based trade measure (${order.regNo}) may apply depending on current import volumes.`,
@@ -826,7 +846,9 @@ function runEstimate(){
       if(cvdDesc) parts.push(`countervailing duty of ${cvdDesc}`);
       if(!parts.length) return;
       charges.push({
-        label: 'SIMA (Anti-dumping/Countervailing)', subtitle: 'Anti-dumping / countervailing screening', amount: null, qualifier: 'Screening indication', warning: true, category: 'trade',
+        label: 'SIMA (Anti-dumping/Countervailing)', subtitle: 'Anti-dumping / countervailing screening',
+        tooltip: 'SIMA (Special Import Measures Act) — extra duties Canada can charge on certain products from certain countries found to be unfairly priced or subsidized.',
+        amount: null, qualifier: 'Screening indication', warning: true, category: 'trade',
         explain: {
           headline: 'Why is this showing?',
           body: `Special Import Measures Act. This type of product (${c.product.toLowerCase()}) may be subject to ${parts.join(' and ')}, depending on its exact specifications and manufacturer.`,
@@ -841,7 +863,9 @@ function runEstimate(){
     safeguardMatches.forEach(m => {
       const potentialAmt = value * (m.rate/100);
       charges.push({
-        label: 'Safeguard Surtax', subtitle: 'Temporary import surge measure', amount: null, qualifier: `Up to ${m.rate}%`, warning: true, category: 'trade',
+        label: 'Safeguard Surtax', subtitle: 'Temporary import surge measure',
+        tooltip: `Safeguard Surtax — a temporary charge Canada can apply when imports of a specific product surge, applied here at up to ${m.rate}%.`,
+        amount: null, qualifier: `Up to ${m.rate}%`, warning: true, category: 'trade',
         explain: {
           headline: 'Why is this showing?',
           body: 'A temporary additional surtax may currently apply to this product category due to an import surge safeguard measure.',
@@ -854,7 +878,9 @@ function runEstimate(){
 
   if(!surtaxMatches.length && !simaMatches.length && !safeguardMatches.length){
     charges.push({
-      label: 'Trade Measures', subtitle: 'SIMA, surtaxes, safeguards, anti-dumping', amount: null, qualifier: 'None flagged', warning: false, category: 'trade',
+      label: 'Trade Measures', subtitle: 'SIMA, surtaxes, safeguards, anti-dumping',
+      tooltip: 'Trade Measures — SIMA, surtaxes, safeguards and similar charges that can add to your import cost beyond standard customs duty.',
+      amount: null, qualifier: 'None flagged', warning: false, category: 'trade',
       explain: {
         headline: 'What did we check?',
         body: 'No SIMA, surtax, safeguard, or retaliatory measures were found for this tariff item and selected origin.',
@@ -886,7 +912,9 @@ function runEstimate(){
     total += amt;
     taxApplied = true;
     charges.push({
-      label: 'GST (5%)', subtitle: 'Calculated on taxable value', amount: amt, warning: false, category: 'tax-fed',
+      label: 'GST (5%)', subtitle: 'Calculated on taxable value',
+      tooltip: 'GST — federal sales tax that applies to most goods imported into Canada, at 5%.',
+      amount: amt, warning: false, category: 'tax-fed',
       explain: {
         headline: 'Why 5%?',
         body: 'GST is payable on most goods imported into Canada. For commercial imports, only the 5% federal portion is collected at the border, calculated on the duty-paid value (shipment value plus duty) rather than goods value alone.',
@@ -894,7 +922,9 @@ function runEstimate(){
       }
     });
     charges.push({
-      label: 'HST/PST/QST', subtitle: 'Provincial portion', amount: null, qualifier: 'Self-assessed', warning: false, category: 'tax-prov',
+      label: 'HST/PST/QST', subtitle: 'Provincial portion',
+      tooltip: 'HST/PST/QST — the provincial portion of sales tax. For commercial imports, this is self-assessed by the importer rather than collected at the border.',
+      amount: null, qualifier: 'Self-assessed', warning: false, category: 'tax-prov',
       explain: {
         headline: 'Why is this not included?',
         body: "The provincial portion of HST/PST is self-assessed by the importer, not collected at the border for commercial imports — and it's typically fully recoverable via Input Tax Credits if you're GST/HST-registered and make taxable supplies.",
@@ -906,12 +936,25 @@ function runEstimate(){
       const amt = dutyPaidValue * (t.rate/100);
       total += amt;
       taxApplied = true;
+      // Some provinces (BC, MB, QC, SK) list GST as a separate entry
+      // alongside their own provincial tax; GST-only provinces/territories
+      // (AB, NT, NU, YT) list just GST. Either way, GST is federal and
+      // needs its own federal-appropriate subtitle/tooltip/category — an
+      // earlier version applied "Provincial portion" to every entry in this
+      // array, which mislabeled GST itself as provincial.
+      const isFederal = t.label === 'GST';
       charges.push({
-        label: `${t.label} (${t.rate}%)`, subtitle: 'Provincial portion', amount: amt, warning: false, category: 'tax-prov',
+        label: `${t.label} (${t.rate}%)`, subtitle: isFederal ? 'Federal tax, applies nationwide' : 'Provincial portion',
+        tooltip: isFederal
+          ? `GST — federal sales tax that applies to most goods imported into Canada, at ${t.rate}%.`
+          : `${t.label} — ${province}'s provincial sales tax, applies here at ${t.rate}% to the applicable taxable amount.`,
+        amount: amt, warning: false, category: isFederal ? 'tax-fed' : 'tax-prov',
         explain: {
           headline: `Why ${t.rate}%?`,
-          body: `${t.label} applies to personal/casual imports at the full provincial rate for ${province}, calculated on the duty-paid value (shipment value plus duty) rather than goods value alone.`,
-          kv: [['Province', province], ['Rate', `${t.rate}%`], ['Calculated on', formatMoney(dutyPaidValue)]]
+          body: isFederal
+            ? `GST is payable on most goods imported into Canada. For personal/casual imports, it's collected at the border alongside any applicable provincial tax, calculated on the duty-paid value (shipment value plus duty) rather than goods value alone.`
+            : `${t.label} applies to personal/casual imports at the full provincial rate for ${province}, calculated on the duty-paid value (shipment value plus duty) rather than goods value alone.`,
+          kv: isFederal ? [['Rate', `${t.rate}%`], ['Calculated on', formatMoney(dutyPaidValue)]] : [['Province', province], ['Rate', `${t.rate}%`], ['Calculated on', formatMoney(dutyPaidValue)]]
         }
       });
     });
@@ -974,6 +1017,7 @@ function runEstimate(){
                 <span class="charge-title">${c.label}</span>
                 <span class="charge-hint">?</span>
               </div>
+              <div class="charge-tooltip">${c.tooltip || ''}</div>
               <div class="charge-subtitle">${c.subtitle || ''}</div>
             </div>
           </div>
@@ -1028,11 +1072,20 @@ function runEstimate(){
   if(downloadBtn) downloadBtn.addEventListener('click', () => window.print());
 }
 
-// Expand/collapse for the "why am I seeing this?" charge explanations —
-// event delegation since the charge list is fully regenerated on every
+// Two independent toggles per charge line: the small "?" hint opens a short
+// plain-language definition (what is this), while clicking anywhere else in
+// the row opens the full calculation breakdown (why this specific number).
+// Event delegation since the charge list is fully regenerated on every
 // estimate, so per-element listeners would leak/duplicate. Click, not
-// hover, so this works on mobile.
+// hover, so this works on mobile. The hint click stops propagation so it
+// doesn't also trigger the row's own toggle.
 document.getElementById('results').addEventListener('click', e => {
+  const hint = e.target.closest('.charge-hint');
+  if(hint){
+    e.stopPropagation();
+    hint.closest('.charge-line').classList.toggle('tooltip-open');
+    return;
+  }
   const row = e.target.closest('.charge-row');
   if(!row) return;
   row.closest('.charge-line').classList.toggle('open');
