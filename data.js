@@ -14043,3 +14043,67 @@ Object.assign(PREF_FREE, {
   "4402.20.90.00": ["CCCT","LDCT","GPT","UST","MXT","CIAT","CT","CRT","IT","NT","SLT","PT","COLT","JT","PAT","HNT","KRT","CEUT","UAT","CPTPT","UKT"],
   "4402.90.90.00": ["CCCT","LDCT","GPT","UST","MXT","CIAT","CT","CRT","IT","NT","SLT","PT","COLT","JT","PAT","HNT","KRT","CEUT","UAT","CPTPT","UKT"]
 });
+
+// ===== Chapter 58 - Special Woven Fabrics; Tufted Textile Fabrics; Lace;
+// Tapestries; Trimmings; Embroidery (verified 10 AUG 2026 from CBSA Ch.58,
+// user-provided markdown, full read) =====
+// Free-by-default (added to MFN_FREE_DEFAULT_CHAPTERS) - only 1 of 40 codes
+// dutiable: 5805.00.90 (needle-worked tapestries, i.e. NOT hand-woven) at
+// 14%, GPT excluded with zero relief. The neighboring hand-woven-tapestry
+// code is Free -- easy to assume the whole heading is uniform when it isn't.
+// Two orphaned spots (5806.10/5806.20, and 5806.40) resolved via clean
+// count-matched displaced-block inference, same technique used throughout
+// this build.
+const CH58_FREE_DEFAULT = ["58"];
+MFN_FREE_DEFAULT_CHAPTERS.push(...CH58_FREE_DEFAULT);
+
+Object.assign(MFN_RATES, {
+  "5805.00.90.00": {type:"percent", rate:14, note:""}
+});
+
+Object.assign(CODE_DESCRIPTIONS, {
+  "5801.10.00.00": "Woven pile fabrics and chenille fabrics, other than fabrics of heading 58.02 or 58.06 > Of wool or fine animal hair",
+  "5801.21.00.00": "Woven pile fabrics and chenille fabrics, other than fabrics of heading 58.02 or 58.06 > Of cotton > Uncut weft pile fabrics",
+  "5801.22.00.00": "Woven pile fabrics and chenille fabrics, other than fabrics of heading 58.02 or 58.06 > Of cotton > Cut corduroy",
+  "5801.23.00.00": "Woven pile fabrics and chenille fabrics, other than fabrics of heading 58.02 or 58.06 > Of cotton > Other weft pile fabrics",
+  "5801.26.00.00": "Woven pile fabrics and chenille fabrics, other than fabrics of heading 58.02 or 58.06 > Of cotton > Chenille fabrics",
+  "5801.27.00.00": "Woven pile fabrics and chenille fabrics, other than fabrics of heading 58.02 or 58.06 > Of cotton > Warp pile fabrics",
+  "5801.31.00.00": "Woven pile fabrics and chenille fabrics, other than fabrics of heading 58.02 or 58.06 > Of man-made fibres > Uncut weft pile fabrics",
+  "5801.32.00.00": "Woven pile fabrics and chenille fabrics, other than fabrics of heading 58.02 or 58.06 > Of man-made fibres > Cut corduroy",
+  "5801.33.00.00": "Woven pile fabrics and chenille fabrics, other than fabrics of heading 58.02 or 58.06 > Of man-made fibres > Other weft pile fabrics",
+  "5801.36.00.00": "Woven pile fabrics and chenille fabrics, other than fabrics of heading 58.02 or 58.06 > Of man-made fibres > Chenille fabrics",
+  "5801.37.00.00": "Woven pile fabrics and chenille fabrics, other than fabrics of heading 58.02 or 58.06 > Of man-made fibres > Warp pile fabrics",
+  "5801.90.00.00": "Woven pile fabrics and chenille fabrics, other than fabrics of heading 58.02 or 58.06 > Of other textile materials",
+  "5802.10.00.00": "Terry towelling and similar woven terry fabrics, other than narrow fabrics of heading 58.06; tufted textile fabrics, other than products of heading 57.03 > Terry towelling and similar woven terry fabrics, of cotton",
+  "5802.20.00.00": "Terry towelling and similar woven terry fabrics, other than narrow fabrics of heading 58.06; tufted textile fabrics, other than products of heading 57.03 > Terry towelling and similar woven terry fabrics, of other textile materials",
+  "5802.30.00.00": "Terry towelling and similar woven terry fabrics, other than narrow fabrics of heading 58.06; tufted textile fabrics, other than products of heading 57.03 > Tufted textile fabrics",
+  "5803.00.00.00": "Gauze, other than narrow fabrics of heading 58.06",
+  "5804.10.00.00": "Tulles and other net fabrics, not including woven, knitted or crocheted fabrics; lace in the piece, in strips or in motifs, other than fabrics of headings 60.02 to 60.06 > Tulles and other net fabrics",
+  "5804.21.00.00": "Tulles and other net fabrics, not including woven, knitted or crocheted fabrics; lace in the piece, in strips or in motifs, other than fabrics of headings 60.02 to 60.06 > Mechanically made lace > Of man-made fibres",
+  "5804.29.00.00": "Tulles and other net fabrics, not including woven, knitted or crocheted fabrics; lace in the piece, in strips or in motifs, other than fabrics of headings 60.02 to 60.06 > Mechanically made lace > Of other textile materials",
+  "5804.30.00.00": "Tulles and other net fabrics, not including woven, knitted or crocheted fabrics; lace in the piece, in strips or in motifs, other than fabrics of headings 60.02 to 60.06 > Hand-made lace",
+  "5805.00.10.00": "Hand-woven tapestries of the type Gobelins, Flanders, Aubusson, Beauvais and the like, and needle-worked tapestries (for example, petit point, cross stitch), whether or not made up > Hand-woven tapestries",
+  "5805.00.90.00": "Hand-woven tapestries of the type Gobelins, Flanders, Aubusson, Beauvais and the like, and needle-worked tapestries (for example, petit point, cross stitch), whether or not made up > Other",
+  "5806.10.00.00": "Narrow woven fabrics, other than goods of heading 58.07; narrow fabrics consisting of warp without weft assembled by means of an adhesive (bolducs) > Woven pile fabrics (including terry towelling and similar terry fabrics) and chenille fabrics",
+  "5806.20.00.00": "Narrow woven fabrics, other than goods of heading 58.07; narrow fabrics consisting of warp without weft assembled by means of an adhesive (bolducs) > Other woven fabrics, containing by weight 5% or more of elastomeric yarn or rubber thread",
+  "5806.31.00.00": "Narrow woven fabrics, other than goods of heading 58.07; narrow fabrics consisting of warp without weft assembled by means of an adhesive (bolducs) > Other woven fabrics > Of cotton",
+  "5806.32.00.11": "Narrow woven fabrics, other than goods of heading 58.07; narrow fabrics consisting of warp without weft assembled by means of an adhesive (bolducs) > Other woven fabrics > Of man-made fibres > Of polyesters > Ribbons",
+  "5806.32.00.19": "Narrow woven fabrics, other than goods of heading 58.07; narrow fabrics consisting of warp without weft assembled by means of an adhesive (bolducs) > Other woven fabrics > Of man-made fibres > Of polyesters > Other",
+  "5806.32.00.90": "Narrow woven fabrics, other than goods of heading 58.07; narrow fabrics consisting of warp without weft assembled by means of an adhesive (bolducs) > Other woven fabrics > Of man-made fibres > Other",
+  "5806.39.00.00": "Narrow woven fabrics, other than goods of heading 58.07; narrow fabrics consisting of warp without weft assembled by means of an adhesive (bolducs) > Other woven fabrics > Of other textile materials",
+  "5806.40.00.00": "Narrow woven fabrics, other than goods of heading 58.07; narrow fabrics consisting of warp without weft assembled by means of an adhesive (bolducs) > Fabrics consisting of warp without weft assembled by means of an adhesive (bolducs)",
+  "5807.10.00.00": "Labels, badges and similar articles of textile materials, in the piece, in strips or cut to shape or size, not embroidered > Woven",
+  "5807.90.00.00": "Labels, badges and similar articles of textile materials, in the piece, in strips or cut to shape or size, not embroidered > Other",
+  "5808.10.00.00": "Braids in the piece; ornamental trimmings in the piece, without embroidery, other than knitted or crocheted; tassels, pompons and similar articles > Braids in the piece",
+  "5808.90.00.00": "Braids in the piece; ornamental trimmings in the piece, without embroidery, other than knitted or crocheted; tassels, pompons and similar articles > Other",
+  "5809.00.00.00": "Woven fabrics of metal thread and woven fabrics of metallized yarn of heading 56.05, of a kind used in apparel, as furnishing fabrics or for similar purposes, not elsewhere specified or included",
+  "5810.10.00.00": "Embroidery in the piece, in strips or in motifs > Embroidery without visible ground",
+  "5810.91.00.00": "Embroidery in the piece, in strips or in motifs > Other embroidery > Of cotton",
+  "5810.92.00.00": "Embroidery in the piece, in strips or in motifs > Other embroidery > Of man-made fibres",
+  "5810.99.00.00": "Embroidery in the piece, in strips or in motifs > Other embroidery > Of other textile materials",
+  "5811.00.00.00": "Quilted textile products in the piece, composed of one or more layers of textile materials assembled with padding by stitching or otherwise, other than embroidery of heading 58.10"
+});
+
+Object.assign(PREF_FREE, {
+  "5805.00.90.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"]
+});
