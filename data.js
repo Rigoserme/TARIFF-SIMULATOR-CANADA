@@ -13487,3 +13487,559 @@ const BROKERAGE_FEE_CONSTANTS = {
   disbursementFeeRate: 0.03,
   usdConversionRate: 0.9
 };
+
+// ===== Chapter 54 — Man-Made Filaments; Strip and the Like of Man-Made
+// Textile Materials (verified 10 AUG 2026 from CBSA Ch.54, user-provided
+// markdown, full read) =====
+// Free-by-default (added to MFN_FREE_DEFAULT_CHAPTERS) — only 1 of 84 codes
+// dutiable: 5406.00.10 (synthetic filament yarn put up for retail sale) at
+// 8%. Unusual pattern worth remembering — this one excludes BOTH GPT and
+// CCCT from the preferential-free list (not just GPT, the far more common
+// exclusion seen throughout this build), with no special rate given for
+// either, so both pay the full 8% with zero relief.
+const CH54_FREE_DEFAULT = ["54"];
+MFN_FREE_DEFAULT_CHAPTERS.push(...CH54_FREE_DEFAULT);
+
+Object.assign(MFN_RATES, {
+  "5406.00.10.00": {type:"percent", rate:8, note:""}
+});
+
+Object.assign(CODE_DESCRIPTIONS, {
+  "5401.10.00.00": "Sewing thread of man-made filaments, whether or not put up for retail sale > Of synthetic filaments",
+  "5401.20.00.00": "Sewing thread of man-made filaments, whether or not put up for retail sale > Of artificial filaments",
+  "5402.11.00.00": "Synthetic filament yarn (other than sewing thread), not put up for retail sale, including synthetic monofilament of less than 67 decitex > High tenacity yarn of nylon or other polyamides, whether or not textured > Of aramids",
+  "5402.19.00.00": "Synthetic filament yarn (other than sewing thread), not put up for retail sale, including synthetic monofilament of less than 67 decitex > High tenacity yarn of nylon or other polyamides, whether or not textured > Other",
+  "5402.20.00.00": "Synthetic filament yarn (other than sewing thread), not put up for retail sale, including synthetic monofilament of less than 67 decitex > High tenacity yarn of polyesters, whether or not textured",
+  "5402.31.00.00": "Synthetic filament yarn (other than sewing thread), not put up for retail sale, including synthetic monofilament of less than 67 decitex > Textured yarn > Of nylon or other polyamides, measuring per single yarn not more than 50 tex",
+  "5402.32.00.00": "Synthetic filament yarn (other than sewing thread), not put up for retail sale, including synthetic monofilament of less than 67 decitex > Textured yarn > Of nylon or other polyamides, measuring per single yarn more than 50 tex",
+  "5402.33.00.10": "Synthetic filament yarn (other than sewing thread), not put up for retail sale, including synthetic monofilament of less than 67 decitex > Textured yarn > Of polyesters > Measuring not more than 66 tex (660 decitex)",
+  "5402.33.00.20": "Synthetic filament yarn (other than sewing thread), not put up for retail sale, including synthetic monofilament of less than 67 decitex > Textured yarn > Of polyesters > Measuring more than 66 tex (660 decitex)",
+  "5402.34.00.00": "Synthetic filament yarn (other than sewing thread), not put up for retail sale, including synthetic monofilament of less than 67 decitex > Textured yarn > Of polypropylene",
+  "5402.39.00.00": "Synthetic filament yarn (other than sewing thread), not put up for retail sale, including synthetic monofilament of less than 67 decitex > Textured yarn > Other",
+  "5402.44.00.00": "Synthetic filament yarn (other than sewing thread), not put up for retail sale, including synthetic monofilament of less than 67 decitex > Other yarn, single, untwisted or with a twist not exceeding 50 turns per metre > Elastomeric",
+  "5402.45.00.10": "Synthetic filament yarn (other than sewing thread), not put up for retail sale, including synthetic monofilament of less than 67 decitex > Other yarn, single, untwisted or with a twist not exceeding 50 turns per metre > Other, of nylon or other polyamides > Monofilament; multifilament, untwisted or with a twist of less than 5 turns per metre",
+  "5402.45.00.90": "Synthetic filament yarn (other than sewing thread), not put up for retail sale, including synthetic monofilament of less than 67 decitex > Other yarn, single, untwisted or with a twist not exceeding 50 turns per metre > Other, of nylon or other polyamides > Other",
+  "5402.46.00.00": "Synthetic filament yarn (other than sewing thread), not put up for retail sale, including synthetic monofilament of less than 67 decitex > Other yarn, single, untwisted or with a twist not exceeding 50 turns per metre > Other, of polyesters, partially oriented",
+  "5402.47.00.00": "Synthetic filament yarn (other than sewing thread), not put up for retail sale, including synthetic monofilament of less than 67 decitex > Other yarn, single, untwisted or with a twist not exceeding 50 turns per metre > Other, of polyesters",
+  "5402.48.00.00": "Synthetic filament yarn (other than sewing thread), not put up for retail sale, including synthetic monofilament of less than 67 decitex > Other yarn, single, untwisted or with a twist not exceeding 50 turns per metre > Other, of polypropylene",
+  "5402.49.00.00": "Synthetic filament yarn (other than sewing thread), not put up for retail sale, including synthetic monofilament of less than 67 decitex > Other yarn, single, untwisted or with a twist not exceeding 50 turns per metre > Other",
+  "5402.51.00.00": "Synthetic filament yarn (other than sewing thread), not put up for retail sale, including synthetic monofilament of less than 67 decitex > Other yarn, single, with a twist exceeding 50 turns per metre > Of nylon or other polyamides",
+  "5402.52.10.00": "Synthetic filament yarn (other than sewing thread), not put up for retail sale, including synthetic monofilament of less than 67 decitex > Other yarn, single, with a twist exceeding 50 turns per metre > Of polyesters > Solely of polyesters, measuring not less than 75 decitex but not more than 80 decitex and having 24 filaments per yarn",
+  "5402.52.91.00": "Synthetic filament yarn (other than sewing thread), not put up for retail sale, including synthetic monofilament of less than 67 decitex > Other yarn, single, with a twist exceeding 50 turns per metre > Of polyesters > Other > Solely of polyesters, fully drawn, measuring not more than 180 decitex; solely of polyesters, measuring 72 decitex or more but not exceeding 111 decitex, for use in the manufacture of woven labels; containing 80% or more by weight of polyesters, of uneven thickness with slubs, loops or similar irregularities, measuring 1,000 decitex or less, for use in the manufacture of curtains of a weight not exceeding 100 g/m2",
+  "5402.52.99.00": "Synthetic filament yarn (other than sewing thread), not put up for retail sale, including synthetic monofilament of less than 67 decitex > Other yarn, single, with a twist exceeding 50 turns per metre > Of polyesters > Other > Other",
+  "5402.53.00.00": "Synthetic filament yarn (other than sewing thread), not put up for retail sale, including synthetic monofilament of less than 67 decitex > Other yarn, single, with a twist exceeding 50 turns per metre > Of polypropylene",
+  "5402.59.00.00": "Synthetic filament yarn (other than sewing thread), not put up for retail sale, including synthetic monofilament of less than 67 decitex > Other yarn, single, with a twist exceeding 50 turns per metre > Other",
+  "5402.61.00.00": "Synthetic filament yarn (other than sewing thread), not put up for retail sale, including synthetic monofilament of less than 67 decitex > Other yarn, multiple (folded) or cabled > Of nylon or other polyamides",
+  "5402.62.00.00": "Synthetic filament yarn (other than sewing thread), not put up for retail sale, including synthetic monofilament of less than 67 decitex > Other yarn, multiple (folded) or cabled > Of polyesters",
+  "5402.63.00.00": "Synthetic filament yarn (other than sewing thread), not put up for retail sale, including synthetic monofilament of less than 67 decitex > Other yarn, multiple (folded) or cabled > Of polypropylene",
+  "5402.69.00.00": "Synthetic filament yarn (other than sewing thread), not put up for retail sale, including synthetic monofilament of less than 67 decitex > Other yarn, multiple (folded) or cabled > Other",
+  "5403.10.00.00": "Artificial filament yarn (other than sewing thread), not put up for retail sale, including artificial monofilament of less than 67 decitex > High tenacity yarn of viscose rayon",
+  "5403.31.00.00": "Artificial filament yarn (other than sewing thread), not put up for retail sale, including artificial monofilament of less than 67 decitex > Other yarn, single > Of viscose rayon, untwisted or with a twist not exceeding 120 turns per metre",
+  "5403.32.00.00": "Artificial filament yarn (other than sewing thread), not put up for retail sale, including artificial monofilament of less than 67 decitex > Other yarn, single > Of viscose rayon, with a twist exceeding 120 turns per metre",
+  "5403.33.00.00": "Artificial filament yarn (other than sewing thread), not put up for retail sale, including artificial monofilament of less than 67 decitex > Other yarn, single > Of cellulose acetate",
+  "5403.39.00.00": "Artificial filament yarn (other than sewing thread), not put up for retail sale, including artificial monofilament of less than 67 decitex > Other yarn, single > Other",
+  "5403.41.00.00": "Artificial filament yarn (other than sewing thread), not put up for retail sale, including artificial monofilament of less than 67 decitex > Other yarn, multiple (folded) or cabled > Of viscose rayon",
+  "5403.42.00.00": "Artificial filament yarn (other than sewing thread), not put up for retail sale, including artificial monofilament of less than 67 decitex > Other yarn, multiple (folded) or cabled > Of cellulose acetate",
+  "5403.49.00.00": "Artificial filament yarn (other than sewing thread), not put up for retail sale, including artificial monofilament of less than 67 decitex > Other yarn, multiple (folded) or cabled > Other",
+  "5404.11.00.00": "Synthetic monofilament of 67 decitex or more and of which no cross sectional dimension exceeds 1 mm; strip and the like (for example, artificial straw) of synthetic textile materials of an apparent width not exceeding 5 mm > Monofilament > Elastomeric",
+  "5404.12.00.00": "Synthetic monofilament of 67 decitex or more and of which no cross sectional dimension exceeds 1 mm; strip and the like (for example, artificial straw) of synthetic textile materials of an apparent width not exceeding 5 mm > Monofilament > Other, of polypropylene",
+  "5404.19.00.00": "Synthetic monofilament of 67 decitex or more and of which no cross sectional dimension exceeds 1 mm; strip and the like (for example, artificial straw) of synthetic textile materials of an apparent width not exceeding 5 mm > Monofilament > Other",
+  "5404.90.00.00": "Synthetic monofilament of 67 decitex or more and of which no cross sectional dimension exceeds 1 mm; strip and the like (for example, artificial straw) of synthetic textile materials of an apparent width not exceeding 5 mm > Other",
+  "5405.00.00.00": "Artificial monofilament of 67 decitex or more and of which no cross sectional dimension exceeds 1 mm; strip and the like (for example, artificial straw) of artificial textile materials of an apparent width not exceeding 5 mm",
+  "5406.00.10.00": "Man-made filament yarn (other than sewing thread), put up for retail sale > Synthetic filament yarn",
+  "5406.00.90.00": "Man-made filament yarn (other than sewing thread), put up for retail sale > Other",
+  "5407.10.00.00": "Woven fabrics of synthetic filament yarn, including woven fabrics obtained from materials of heading 54.04 > Woven fabrics obtained from high tenacity yarn of nylon or other polyamides or of polyesters",
+  "5407.20.00.00": "Woven fabrics of synthetic filament yarn, including woven fabrics obtained from materials of heading 54.04 > Woven fabrics obtained from strip or the like",
+  "5407.30.00.00": "Woven fabrics of synthetic filament yarn, including woven fabrics obtained from materials of heading 54.04 > Fabrics specified in Note 9 to Section XI",
+  "5407.41.00.00": "Woven fabrics of synthetic filament yarn, including woven fabrics obtained from materials of heading 54.04 > Other woven fabrics, containing 85% or more by weight of filaments of nylon or other polyamides > Unbleached or bleached",
+  "5407.42.00.00": "Woven fabrics of synthetic filament yarn, including woven fabrics obtained from materials of heading 54.04 > Other woven fabrics, containing 85% or more by weight of filaments of nylon or other polyamides > Dyed",
+  "5407.43.00.00": "Woven fabrics of synthetic filament yarn, including woven fabrics obtained from materials of heading 54.04 > Other woven fabrics, containing 85% or more by weight of filaments of nylon or other polyamides > Of yarns of different colours",
+  "5407.44.00.00": "Woven fabrics of synthetic filament yarn, including woven fabrics obtained from materials of heading 54.04 > Other woven fabrics, containing 85% or more by weight of filaments of nylon or other polyamides > Printed",
+  "5407.51.00.00": "Woven fabrics of synthetic filament yarn, including woven fabrics obtained from materials of heading 54.04 > Other woven fabrics, containing 85% or more by weight of textured polyester filaments > Unbleached or bleached",
+  "5407.52.00.40": "Woven fabrics of synthetic filament yarn, including woven fabrics obtained from materials of heading 54.04 > Other woven fabrics, containing 85% or more by weight of textured polyester filaments > Dyed > Of a weight not exceeding 170 g/m2",
+  "5407.52.00.90": "Woven fabrics of synthetic filament yarn, including woven fabrics obtained from materials of heading 54.04 > Other woven fabrics, containing 85% or more by weight of textured polyester filaments > Dyed > Other",
+  "5407.53.00.00": "Woven fabrics of synthetic filament yarn, including woven fabrics obtained from materials of heading 54.04 > Other woven fabrics, containing 85% or more by weight of textured polyester filaments > Of yarns of different colours",
+  "5407.54.00.00": "Woven fabrics of synthetic filament yarn, including woven fabrics obtained from materials of heading 54.04 > Other woven fabrics, containing 85% or more by weight of textured polyester filaments > Printed",
+  "5407.61.10.00": "Woven fabrics of synthetic filament yarn, including woven fabrics obtained from materials of heading 54.04 > Other woven fabrics, containing 85% or more by weight of polyester filaments > Containing 85% or more by weight of non-textured polyester filaments > Solely of polyester single yarns measuring not less than 75 decitex but not more than 80 decitex, having 24 filaments per yarn and a twist of 900 or more turns per metre",
+  "5407.61.90.00": "Woven fabrics of synthetic filament yarn, including woven fabrics obtained from materials of heading 54.04 > Other woven fabrics, containing 85% or more by weight of polyester filaments > Containing 85% or more by weight of non-textured polyester filaments > Other",
+  "5407.69.00.10": "Woven fabrics of synthetic filament yarn, including woven fabrics obtained from materials of heading 54.04 > Other woven fabrics, containing 85% or more by weight of polyester filaments > Other > Unbleached or bleached",
+  "5407.69.00.20": "Woven fabrics of synthetic filament yarn, including woven fabrics obtained from materials of heading 54.04 > Other woven fabrics, containing 85% or more by weight of polyester filaments > Other > Dyed",
+  "5407.69.00.30": "Woven fabrics of synthetic filament yarn, including woven fabrics obtained from materials of heading 54.04 > Other woven fabrics, containing 85% or more by weight of polyester filaments > Other > Of yarns of different colours",
+  "5407.69.00.40": "Woven fabrics of synthetic filament yarn, including woven fabrics obtained from materials of heading 54.04 > Other woven fabrics, containing 85% or more by weight of polyester filaments > Other > Printed",
+  "5407.71.00.00": "Woven fabrics of synthetic filament yarn, including woven fabrics obtained from materials of heading 54.04 > Other woven fabrics, containing 85% or more by weight of synthetic filaments > Unbleached or bleached",
+  "5407.72.00.00": "Woven fabrics of synthetic filament yarn, including woven fabrics obtained from materials of heading 54.04 > Other woven fabrics, containing 85% or more by weight of synthetic filaments > Dyed",
+  "5407.73.00.00": "Woven fabrics of synthetic filament yarn, including woven fabrics obtained from materials of heading 54.04 > Other woven fabrics, containing 85% or more by weight of synthetic filaments > Of yarns of different colours",
+  "5407.74.00.00": "Woven fabrics of synthetic filament yarn, including woven fabrics obtained from materials of heading 54.04 > Other woven fabrics, containing 85% or more by weight of synthetic filaments > Printed",
+  "5407.81.00.00": "Woven fabrics of synthetic filament yarn, including woven fabrics obtained from materials of heading 54.04 > Other woven fabrics, containing less than 85% by weight of synthetic filaments, mixed mainly or solely with cotton > Unbleached or bleached",
+  "5407.82.00.00": "Woven fabrics of synthetic filament yarn, including woven fabrics obtained from materials of heading 54.04 > Other woven fabrics, containing less than 85% by weight of synthetic filaments, mixed mainly or solely with cotton > Dyed",
+  "5407.83.00.00": "Woven fabrics of synthetic filament yarn, including woven fabrics obtained from materials of heading 54.04 > Other woven fabrics, containing less than 85% by weight of synthetic filaments, mixed mainly or solely with cotton > Of yarns of different colours",
+  "5407.84.00.00": "Woven fabrics of synthetic filament yarn, including woven fabrics obtained from materials of heading 54.04 > Other woven fabrics, containing less than 85% by weight of synthetic filaments, mixed mainly or solely with cotton > Printed",
+  "5407.91.00.00": "Woven fabrics of synthetic filament yarn, including woven fabrics obtained from materials of heading 54.04 > Other woven fabrics > Unbleached or bleached",
+  "5407.92.00.00": "Woven fabrics of synthetic filament yarn, including woven fabrics obtained from materials of heading 54.04 > Other woven fabrics > Dyed",
+  "5407.93.00.00": "Woven fabrics of synthetic filament yarn, including woven fabrics obtained from materials of heading 54.04 > Other woven fabrics > Of yarns of different colours",
+  "5407.94.00.00": "Woven fabrics of synthetic filament yarn, including woven fabrics obtained from materials of heading 54.04 > Other woven fabrics > Printed",
+  "5408.10.00.00": "Woven fabrics of artificial filament yarn, including woven fabrics obtained from materials of heading 54.05 > Woven fabrics obtained from high tenacity yarn of viscose rayon",
+  "5408.21.00.00": "Woven fabrics of artificial filament yarn, including woven fabrics obtained from materials of heading 54.05 > Other woven fabrics, containing 85% or more by weight of artificial filament or strip or the like > Unbleached or bleached",
+  "5408.22.20.00": "Woven fabrics of artificial filament yarn, including woven fabrics obtained from materials of heading 54.05 > Other woven fabrics, containing 85% or more by weight of artificial filament or strip or the like > Dyed > Of cuprammonium rayon",
+  "5408.22.90.00": "Woven fabrics of artificial filament yarn, including woven fabrics obtained from materials of heading 54.05 > Other woven fabrics, containing 85% or more by weight of artificial filament or strip or the like > Dyed > Other",
+  "5408.23.10.00": "Woven fabrics of artificial filament yarn, including woven fabrics obtained from materials of heading 54.05 > Other woven fabrics, containing 85% or more by weight of artificial filament or strip or the like > Of yarns of different colours > Of cuprammonium rayon",
+  "5408.23.90.00": "Woven fabrics of artificial filament yarn, including woven fabrics obtained from materials of heading 54.05 > Other woven fabrics, containing 85% or more by weight of artificial filament or strip or the like > Of yarns of different colours > Other",
+  "5408.24.10.00": "Woven fabrics of artificial filament yarn, including woven fabrics obtained from materials of heading 54.05 > Other woven fabrics, containing 85% or more by weight of artificial filament or strip or the like > Printed > Of cuprammonium rayon",
+  "5408.24.90.00": "Woven fabrics of artificial filament yarn, including woven fabrics obtained from materials of heading 54.05 > Other woven fabrics, containing 85% or more by weight of artificial filament or strip or the like > Printed > Other",
+  "5408.31.00.00": "Woven fabrics of artificial filament yarn, including woven fabrics obtained from materials of heading 54.05 > Other woven fabrics > Unbleached or bleached",
+  "5408.32.00.00": "Woven fabrics of artificial filament yarn, including woven fabrics obtained from materials of heading 54.05 > Other woven fabrics > Dyed",
+  "5408.33.00.00": "Woven fabrics of artificial filament yarn, including woven fabrics obtained from materials of heading 54.05 > Other woven fabrics > Of yarns of different colours",
+  "5408.34.00.00": "Woven fabrics of artificial filament yarn, including woven fabrics obtained from materials of heading 54.05 > Other woven fabrics > Printed"
+});
+
+Object.assign(PREF_FREE, {
+  "5406.00.10.00": ["LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"]
+});
+
+// ===== Chapter 55 — Man-Made Staple Fibres (verified 10 AUG 2026 from CBSA
+// Ch.55, user-provided markdown, full read) =====
+// Free-by-default (added to MFN_FREE_DEFAULT_CHAPTERS) — only 2 of 115 codes
+// dutiable: 5511.10 and 5511.20 (synthetic staple fibre yarn 'put up for
+// retail sale', 85%+ and <85% respectively), both 8%. Standard GPT-only
+// exclusion here (FULL_MINUS_GPT, no special) — unlike Ch.54's 5406.00.10
+// which excluded BOTH GPT and CCCT; don't assume that rarer pattern carries
+// over just because both chapters cover 'yarn put up for retail sale'.
+const CH55_FREE_DEFAULT = ["55"];
+MFN_FREE_DEFAULT_CHAPTERS.push(...CH55_FREE_DEFAULT);
+
+Object.assign(MFN_RATES, {
+  "5511.10.00.00": {type:"percent", rate:8, note:""},
+  "5511.20.00.00": {type:"percent", rate:8, note:""}
+});
+
+Object.assign(CODE_DESCRIPTIONS, {
+  "5501.11.00.00": "Synthetic filament tow > Of nylon or other polyamides > Of aramids",
+  "5501.19.00.00": "Synthetic filament tow > Of nylon or other polyamides > Other",
+  "5501.20.00.00": "Synthetic filament tow > Of polyesters",
+  "5501.30.00.00": "Synthetic filament tow > Acrylic or modacrylic",
+  "5501.40.00.00": "Synthetic filament tow > Of polypropylene",
+  "5501.90.00.00": "Synthetic filament tow > Other",
+  "5502.10.00.00": "Artificial filament tow > Of cellulose acetate",
+  "5502.90.00.00": "Artificial filament tow > Other",
+  "5503.11.00.00": "Synthetic staple fibres, not carded, combed or otherwise processed for spinning > Of nylon or other polyamides > Of aramids",
+  "5503.19.00.00": "Synthetic staple fibres, not carded, combed or otherwise processed for spinning > Of nylon or other polyamides > Other",
+  "5503.20.00.14": "Synthetic staple fibres, not carded, combed or otherwise processed for spinning > Of polyesters > Crimped, staple, bi-component fibres of lengths ranging from 1 cm to 10 cm, measuring not more than 25 decitex, composed solely of polyester polymers, for use in the manufacture of thermally bonded nonwovens or thermally bonded wadding",
+  "5503.20.00.15": "Synthetic staple fibres, not carded, combed or otherwise processed for spinning > Of polyesters > Solely of polyester fibres, of lengths ranging from 1 cm to 11 cm, measuring not more than 50 decitex, for use in the manufacture of thermally or resin bonded nonwovens or wadding, needle-punched nonwovens, carded or garnetted waddings, or saturated or air-laid nonwoven waddings",
+  "5503.20.00.19": "Synthetic staple fibres, not carded, combed or otherwise processed for spinning > Of polyesters > Other (of the specified exempted uses: polyester staple fibres measuring 3.3 decitex or less, of a length exceeding 31mm but not exceeding 60mm, for use in the manufacture of staple fibre yarn; solely of phosphated polyesters, for use in the manufacture of curtain, drapery, blanket or upholstery fabrics; polyesters, hollow, treated with silicone, crimped staple fibres of lengths ranging from 6.5 to 7.0 cm, measuring 14 decitex or more but not exceeding 18 decitex, for use in the manufacture of upholstered furniture)",
+  "5503.20.00.91": "Synthetic staple fibres, not carded, combed or otherwise processed for spinning > Of polyesters > Other > Measuring 13.2 decitex or more",
+  "5503.20.00.92": "Synthetic staple fibres, not carded, combed or otherwise processed for spinning > Of polyesters > Other > Measuring 3.3 decitex or more, but less than 13.2 decitex",
+  "5503.20.00.93": "Synthetic staple fibres, not carded, combed or otherwise processed for spinning > Of polyesters > Other > Measuring less than 3.3 decitex",
+  "5503.30.00.00": "Synthetic staple fibres, not carded, combed or otherwise processed for spinning > Acrylic or modacrylic",
+  "5503.40.00.00": "Synthetic staple fibres, not carded, combed or otherwise processed for spinning > Of polypropylene",
+  "5503.90.00.00": "Synthetic staple fibres, not carded, combed or otherwise processed for spinning > Other",
+  "5504.10.00.00": "Artificial staple fibres, not carded, combed or otherwise processed for spinning > Of viscose rayon",
+  "5504.90.00.00": "Artificial staple fibres, not carded, combed or otherwise processed for spinning > Other",
+  "5505.10.00.00": "Waste (including noils, yarn waste and garnetted stock) of man-made fibres > Of synthetic fibres",
+  "5505.20.00.00": "Waste (including noils, yarn waste and garnetted stock) of man-made fibres > Of artificial fibres",
+  "5506.10.00.00": "Synthetic staple fibres, carded, combed or otherwise processed for spinning > Of nylon or other polyamides",
+  "5506.20.00.00": "Synthetic staple fibres, carded, combed or otherwise processed for spinning > Of polyesters",
+  "5506.30.00.00": "Synthetic staple fibres, carded, combed or otherwise processed for spinning > Acrylic or modacrylic",
+  "5506.40.00.00": "Synthetic staple fibres, carded, combed or otherwise processed for spinning > Of polypropylene",
+  "5506.90.00.00": "Synthetic staple fibres, carded, combed or otherwise processed for spinning > Other",
+  "5507.00.00.00": "Artificial staple fibres, carded, combed or otherwise processed for spinning",
+  "5508.10.00.00": "Sewing thread of man-made staple fibres, whether or not put up for retail sale > Of synthetic staple fibres",
+  "5508.20.00.00": "Sewing thread of man-made staple fibres, whether or not put up for retail sale > Of artificial staple fibres",
+  "5509.11.00.00": "Yarn (other than sewing thread) of synthetic staple fibres, not put up for retail sale > Containing 85% or more by weight of staple fibres of nylon or other polyamides > Single yarn",
+  "5509.12.00.00": "Yarn (other than sewing thread) of synthetic staple fibres, not put up for retail sale > Containing 85% or more by weight of staple fibres of nylon or other polyamides > Multiple (folded) or cabled yarn",
+  "5509.21.00.00": "Yarn (other than sewing thread) of synthetic staple fibres, not put up for retail sale > Containing 85% or more by weight of polyester staple fibres > Single yarn",
+  "5509.22.00.00": "Yarn (other than sewing thread) of synthetic staple fibres, not put up for retail sale > Containing 85% or more by weight of polyester staple fibres > Multiple (folded) or cabled yarn",
+  "5509.31.00.00": "Yarn (other than sewing thread) of synthetic staple fibres, not put up for retail sale > Containing 85% or more by weight of acrylic or modacrylic staple fibres > Single yarn",
+  "5509.32.00.00": "Yarn (other than sewing thread) of synthetic staple fibres, not put up for retail sale > Containing 85% or more by weight of acrylic or modacrylic staple fibres > Multiple (folded) or cabled yarn",
+  "5509.41.00.00": "Yarn (other than sewing thread) of synthetic staple fibres, not put up for retail sale > Other yarn, containing 85% or more by weight of synthetic staple fibres > Single yarn",
+  "5509.42.00.00": "Yarn (other than sewing thread) of synthetic staple fibres, not put up for retail sale > Other yarn, containing 85% or more by weight of synthetic staple fibres > Multiple (folded) or cabled yarn",
+  "5509.51.00.00": "Yarn (other than sewing thread) of synthetic staple fibres, not put up for retail sale > Other yarn, of polyester staple fibres > Mixed mainly or solely with artificial staple fibres",
+  "5509.52.00.00": "Yarn (other than sewing thread) of synthetic staple fibres, not put up for retail sale > Other yarn, of polyester staple fibres > Mixed mainly or solely with wool or fine animal hair",
+  "5509.53.00.00": "Yarn (other than sewing thread) of synthetic staple fibres, not put up for retail sale > Other yarn, of polyester staple fibres > Mixed mainly or solely with cotton",
+  "5509.59.00.00": "Yarn (other than sewing thread) of synthetic staple fibres, not put up for retail sale > Other yarn, of polyester staple fibres > Other",
+  "5509.61.00.00": "Yarn (other than sewing thread) of synthetic staple fibres, not put up for retail sale > Other yarn, of acrylic or modacrylic staple fibres > Mixed mainly or solely with wool or fine animal hair",
+  "5509.62.00.00": "Yarn (other than sewing thread) of synthetic staple fibres, not put up for retail sale > Other yarn, of acrylic or modacrylic staple fibres > Mixed mainly or solely with cotton",
+  "5509.69.00.00": "Yarn (other than sewing thread) of synthetic staple fibres, not put up for retail sale > Other yarn, of acrylic or modacrylic staple fibres > Other",
+  "5509.91.00.00": "Yarn (other than sewing thread) of synthetic staple fibres, not put up for retail sale > Other yarn > Mixed mainly or solely with wool or fine animal hair",
+  "5509.92.00.00": "Yarn (other than sewing thread) of synthetic staple fibres, not put up for retail sale > Other yarn > Mixed mainly or solely with cotton",
+  "5509.99.00.00": "Yarn (other than sewing thread) of synthetic staple fibres, not put up for retail sale > Other yarn > Other",
+  "5510.11.00.00": "Yarn (other than sewing thread) of artificial staple fibres, not put up for retail sale > Containing 85% or more by weight of artificial staple fibres > Single yarn",
+  "5510.12.00.00": "Yarn (other than sewing thread) of artificial staple fibres, not put up for retail sale > Containing 85% or more by weight of artificial staple fibres > Multiple (folded) or cabled yarn",
+  "5510.20.00.00": "Yarn (other than sewing thread) of artificial staple fibres, not put up for retail sale > Other yarn, mixed mainly or solely with wool or fine animal hair",
+  "5510.30.00.00": "Yarn (other than sewing thread) of artificial staple fibres, not put up for retail sale > Other yarn, mixed mainly or solely with cotton",
+  "5510.90.00.00": "Yarn (other than sewing thread) of artificial staple fibres, not put up for retail sale > Other yarn",
+  "5511.10.00.00": "Yarn (other than sewing thread) of man-made staple fibres, put up for retail sale > Of synthetic staple fibres, containing 85% or more by weight of such fibres",
+  "5511.20.00.00": "Yarn (other than sewing thread) of man-made staple fibres, put up for retail sale > Of synthetic staple fibres, containing less than 85% by weight of such fibres",
+  "5511.30.00.00": "Yarn (other than sewing thread) of man-made staple fibres, put up for retail sale > Of artificial staple fibres",
+  "5512.11.00.00": "Woven fabrics of synthetic staple fibres, containing 85% or more by weight of synthetic staple fibres > Containing 85% or more by weight of polyester staple fibres > Unbleached or bleached",
+  "5512.19.00.00": "Woven fabrics of synthetic staple fibres, containing 85% or more by weight of synthetic staple fibres > Containing 85% or more by weight of polyester staple fibres > Other",
+  "5512.21.00.00": "Woven fabrics of synthetic staple fibres, containing 85% or more by weight of synthetic staple fibres > Containing 85% or more by weight of acrylic or modacrylic staple fibres > Unbleached or bleached",
+  "5512.29.00.00": "Woven fabrics of synthetic staple fibres, containing 85% or more by weight of synthetic staple fibres > Containing 85% or more by weight of acrylic or modacrylic staple fibres > Other",
+  "5512.91.00.00": "Woven fabrics of synthetic staple fibres, containing 85% or more by weight of synthetic staple fibres > Other > Unbleached or bleached",
+  "5512.99.00.00": "Woven fabrics of synthetic staple fibres, containing 85% or more by weight of synthetic staple fibres > Other > Other",
+  "5513.11.00.00": "Woven fabrics of synthetic staple fibres, containing less than 85% by weight of such fibres, mixed mainly or solely with cotton, of a weight not exceeding 170 g/m2 > Unbleached or bleached > Of polyester staple fibres, plain weave",
+  "5513.12.00.00": "Woven fabrics of synthetic staple fibres, containing less than 85% by weight of such fibres, mixed mainly or solely with cotton, of a weight not exceeding 170 g/m2 > Unbleached or bleached > 3-thread or 4-thread twill, including cross twill, of polyester staple fibres",
+  "5513.13.00.00": "Woven fabrics of synthetic staple fibres, containing less than 85% by weight of such fibres, mixed mainly or solely with cotton, of a weight not exceeding 170 g/m2 > Unbleached or bleached > Other woven fabrics of polyester staple fibres",
+  "5513.19.00.00": "Woven fabrics of synthetic staple fibres, containing less than 85% by weight of such fibres, mixed mainly or solely with cotton, of a weight not exceeding 170 g/m2 > Unbleached or bleached > Other woven fabrics",
+  "5513.21.00.00": "Woven fabrics of synthetic staple fibres, containing less than 85% by weight of such fibres, mixed mainly or solely with cotton, of a weight not exceeding 170 g/m2 > Dyed > Of polyester staple fibres, plain weave",
+  "5513.23.00.00": "Woven fabrics of synthetic staple fibres, containing less than 85% by weight of such fibres, mixed mainly or solely with cotton, of a weight not exceeding 170 g/m2 > Dyed > Other woven fabrics of polyester staple fibres",
+  "5513.29.00.00": "Woven fabrics of synthetic staple fibres, containing less than 85% by weight of such fibres, mixed mainly or solely with cotton, of a weight not exceeding 170 g/m2 > Dyed > Other woven fabrics",
+  "5513.31.00.00": "Woven fabrics of synthetic staple fibres, containing less than 85% by weight of such fibres, mixed mainly or solely with cotton, of a weight not exceeding 170 g/m2 > Of yarns of different colours > Of polyester staple fibres, plain weave",
+  "5513.39.00.00": "Woven fabrics of synthetic staple fibres, containing less than 85% by weight of such fibres, mixed mainly or solely with cotton, of a weight not exceeding 170 g/m2 > Of yarns of different colours > Other woven fabrics",
+  "5513.41.00.00": "Woven fabrics of synthetic staple fibres, containing less than 85% by weight of such fibres, mixed mainly or solely with cotton, of a weight not exceeding 170 g/m2 > Printed > Of polyester staple fibres, plain weave",
+  "5513.49.00.00": "Woven fabrics of synthetic staple fibres, containing less than 85% by weight of such fibres, mixed mainly or solely with cotton, of a weight not exceeding 170 g/m2 > Printed > Other woven fabrics",
+  "5514.11.00.00": "Woven fabrics of synthetic staple fibres, containing less than 85% by weight of such fibres, mixed mainly or solely with cotton, of a weight exceeding 170 g/m2 > Unbleached or bleached > Of polyester staple fibres, plain weave",
+  "5514.12.00.00": "Woven fabrics of synthetic staple fibres, containing less than 85% by weight of such fibres, mixed mainly or solely with cotton, of a weight exceeding 170 g/m2 > Unbleached or bleached > 3-thread or 4-thread twill, including cross twill, of polyester staple fibres",
+  "5514.19.00.00": "Woven fabrics of synthetic staple fibres, containing less than 85% by weight of such fibres, mixed mainly or solely with cotton, of a weight exceeding 170 g/m2 > Unbleached or bleached > Other woven fabrics",
+  "5514.21.00.00": "Woven fabrics of synthetic staple fibres, containing less than 85% by weight of such fibres, mixed mainly or solely with cotton, of a weight exceeding 170 g/m2 > Dyed > Of polyester staple fibres, plain weave",
+  "5514.22.00.00": "Woven fabrics of synthetic staple fibres, containing less than 85% by weight of such fibres, mixed mainly or solely with cotton, of a weight exceeding 170 g/m2 > Dyed > 3-thread or 4-thread twill, including cross twill, of polyester staple fibres",
+  "5514.23.00.00": "Woven fabrics of synthetic staple fibres, containing less than 85% by weight of such fibres, mixed mainly or solely with cotton, of a weight exceeding 170 g/m2 > Dyed > Other woven fabrics of polyester staple fibres",
+  "5514.29.00.00": "Woven fabrics of synthetic staple fibres, containing less than 85% by weight of such fibres, mixed mainly or solely with cotton, of a weight exceeding 170 g/m2 > Dyed > Other woven fabrics",
+  "5514.30.00.00": "Woven fabrics of synthetic staple fibres, containing less than 85% by weight of such fibres, mixed mainly or solely with cotton, of a weight exceeding 170 g/m2 > Of yarns of different colours",
+  "5514.41.00.00": "Woven fabrics of synthetic staple fibres, containing less than 85% by weight of such fibres, mixed mainly or solely with cotton, of a weight exceeding 170 g/m2 > Printed > Of polyester staple fibres, plain weave",
+  "5514.42.00.00": "Woven fabrics of synthetic staple fibres, containing less than 85% by weight of such fibres, mixed mainly or solely with cotton, of a weight exceeding 170 g/m2 > Printed > 3-thread or 4-thread twill, including cross twill, of polyester staple fibres",
+  "5514.43.00.00": "Woven fabrics of synthetic staple fibres, containing less than 85% by weight of such fibres, mixed mainly or solely with cotton, of a weight exceeding 170 g/m2 > Printed > Other woven fabrics of polyester staple fibres",
+  "5514.49.00.00": "Woven fabrics of synthetic staple fibres, containing less than 85% by weight of such fibres, mixed mainly or solely with cotton, of a weight exceeding 170 g/m2 > Printed > Other woven fabrics",
+  "5515.11.00.00": "Other woven fabrics of synthetic staple fibres > Of polyester staple fibres > Mixed mainly or solely with viscose rayon staple fibres",
+  "5515.12.00.00": "Other woven fabrics of synthetic staple fibres > Of polyester staple fibres > Mixed mainly or solely with man-made filaments",
+  "5515.13.00.00": "Other woven fabrics of synthetic staple fibres > Of polyester staple fibres > Mixed mainly or solely with wool or fine animal hair",
+  "5515.19.00.00": "Other woven fabrics of synthetic staple fibres > Of polyester staple fibres > Other",
+  "5515.21.00.00": "Other woven fabrics of synthetic staple fibres > Of acrylic or modacrylic staple fibres > Mixed mainly or solely with man-made filaments",
+  "5515.22.00.00": "Other woven fabrics of synthetic staple fibres > Of acrylic or modacrylic staple fibres > Mixed mainly or solely with wool or fine animal hair",
+  "5515.29.00.00": "Other woven fabrics of synthetic staple fibres > Of acrylic or modacrylic staple fibres > Other",
+  "5515.91.00.00": "Other woven fabrics of synthetic staple fibres > Other woven fabrics > Mixed mainly or solely with man-made filaments",
+  "5515.99.00.00": "Other woven fabrics of synthetic staple fibres > Other woven fabrics > Other",
+  "5516.11.00.00": "Woven fabrics of artificial staple fibres > Containing 85% or more by weight of artificial staple fibres > Unbleached or bleached",
+  "5516.12.00.00": "Woven fabrics of artificial staple fibres > Containing 85% or more by weight of artificial staple fibres > Dyed",
+  "5516.13.00.00": "Woven fabrics of artificial staple fibres > Containing 85% or more by weight of artificial staple fibres > Of yarns of different colours",
+  "5516.14.00.00": "Woven fabrics of artificial staple fibres > Containing 85% or more by weight of artificial staple fibres > Printed",
+  "5516.21.00.00": "Woven fabrics of artificial staple fibres > Containing less than 85% by weight of artificial staple fibres, mixed mainly or solely with man-made filaments > Unbleached or bleached",
+  "5516.22.00.00": "Woven fabrics of artificial staple fibres > Containing less than 85% by weight of artificial staple fibres, mixed mainly or solely with man-made filaments > Dyed",
+  "5516.23.00.00": "Woven fabrics of artificial staple fibres > Containing less than 85% by weight of artificial staple fibres, mixed mainly or solely with man-made filaments > Of yarns of different colours",
+  "5516.24.00.00": "Woven fabrics of artificial staple fibres > Containing less than 85% by weight of artificial staple fibres, mixed mainly or solely with man-made filaments > Printed",
+  "5516.31.00.00": "Woven fabrics of artificial staple fibres > Containing less than 85% by weight of artificial staple fibres, mixed mainly or solely with wool or fine animal hair > Unbleached or bleached",
+  "5516.32.00.00": "Woven fabrics of artificial staple fibres > Containing less than 85% by weight of artificial staple fibres, mixed mainly or solely with wool or fine animal hair > Dyed",
+  "5516.33.00.00": "Woven fabrics of artificial staple fibres > Containing less than 85% by weight of artificial staple fibres, mixed mainly or solely with wool or fine animal hair > Of yarns of different colours",
+  "5516.34.00.00": "Woven fabrics of artificial staple fibres > Containing less than 85% by weight of artificial staple fibres, mixed mainly or solely with wool or fine animal hair > Printed",
+  "5516.41.00.00": "Woven fabrics of artificial staple fibres > Containing less than 85% by weight of artificial staple fibres, mixed mainly or solely with cotton > Unbleached or bleached",
+  "5516.42.00.00": "Woven fabrics of artificial staple fibres > Containing less than 85% by weight of artificial staple fibres, mixed mainly or solely with cotton > Dyed",
+  "5516.43.00.00": "Woven fabrics of artificial staple fibres > Containing less than 85% by weight of artificial staple fibres, mixed mainly or solely with cotton > Of yarns of different colours",
+  "5516.44.00.00": "Woven fabrics of artificial staple fibres > Containing less than 85% by weight of artificial staple fibres, mixed mainly or solely with cotton > Printed",
+  "5516.91.00.00": "Woven fabrics of artificial staple fibres > Other > Unbleached or bleached",
+  "5516.92.00.00": "Woven fabrics of artificial staple fibres > Other > Dyed",
+  "5516.93.00.00": "Woven fabrics of artificial staple fibres > Other > Of yarns of different colours",
+  "5516.94.00.00": "Woven fabrics of artificial staple fibres > Other > Printed"
+});
+
+Object.assign(PREF_FREE, {
+  "5511.10.00.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "5511.20.00.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"]
+});
+
+// ===== Chapter 56 — Wadding, Felt and Nonwovens; Special Yarns; Twine,
+// Cordage, Ropes and Cables and Articles Thereof (verified 10 AUG 2026 from
+// CBSA Ch.56, user-provided markdown, full read) =====
+// Free-by-default (added to MFN_FREE_DEFAULT_CHAPTERS) — 14 of 49 codes
+// dutiable (~29%, on the higher end of chapters using this treatment so
+// far, but still safe since no gaps exist). Exceptions cluster in two
+// places: 'articles of wadding' (14%/16%), and rope/twine/netting once it
+// crosses out of specific commercial-use exemptions (fishing, farm baling,
+// mountaineering-standard rope, etc.) — 10-14% depending on heading. Nearly
+// all exceptions have GPT simply excluded with no special (zero relief,
+// stays at MFN). The one exception to that (5609.00, 'articles of twine/
+// cordage/rope not elsewhere specified') explicitly states 'GPT: 14%' — same
+// rate as MFN, written out rather than omitted, matching the same pattern
+// seen on tires in Ch.40.
+const CH56_FREE_DEFAULT = ["56"];
+MFN_FREE_DEFAULT_CHAPTERS.push(...CH56_FREE_DEFAULT);
+
+Object.assign(MFN_RATES, {
+  "5601.21.30.00": {type:"percent", rate:14, note:""},
+  "5601.22.50.00": {type:"percent", rate:16, note:""},
+  "5607.29.20.00": {type:"percent", rate:10, note:""},
+  "5607.29.90.00": {type:"percent", rate:10, note:""},
+  "5607.49.20.00": {type:"percent", rate:10, note:""},
+  "5607.49.90.00": {type:"percent", rate:10, note:""},
+  "5607.50.20.00": {type:"percent", rate:10, note:""},
+  "5607.50.90.00": {type:"percent", rate:10, note:""},
+  "5607.90.20.00": {type:"percent", rate:10, note:""},
+  "5607.90.90.00": {type:"percent", rate:10, note:""},
+  "5608.11.90.00": {type:"percent", rate:14, note:""},
+  "5608.19.90.00": {type:"percent", rate:14, note:""},
+  "5608.90.90.00": {type:"percent", rate:13, note:""},
+  "5609.00.00.00": {type:"percent", rate:14, note:""}
+});
+
+Object.assign(CODE_DESCRIPTIONS, {
+  "5601.21.10.00": "Wadding of textile materials and articles thereof; textile fibres, not exceeding 5 mm in length (flock), textile dust and mill neps > Wadding of textile materials and articles thereof > Of cotton > Strips of wadding, for use in the manufacture of tampons",
+  "5601.21.21.00": "Wadding of textile materials and articles thereof; textile fibres, not exceeding 5 mm in length (flock), textile dust and mill neps > Wadding of textile materials and articles thereof > Of cotton > Other wadding > For use in the manufacture of apparel",
+  "5601.21.29.00": "Wadding of textile materials and articles thereof; textile fibres, not exceeding 5 mm in length (flock), textile dust and mill neps > Wadding of textile materials and articles thereof > Of cotton > Other wadding > Other",
+  "5601.21.30.00": "Wadding of textile materials and articles thereof; textile fibres, not exceeding 5 mm in length (flock), textile dust and mill neps > Wadding of textile materials and articles thereof > Of cotton > Articles of wadding",
+  "5601.22.40.00": "Wadding of textile materials and articles thereof; textile fibres, not exceeding 5 mm in length (flock), textile dust and mill neps > Wadding of textile materials and articles thereof > Of man-made fibres > Wadding",
+  "5601.22.50.00": "Wadding of textile materials and articles thereof; textile fibres, not exceeding 5 mm in length (flock), textile dust and mill neps > Wadding of textile materials and articles thereof > Of man-made fibres > Articles of wadding",
+  "5601.29.00.00": "Wadding of textile materials and articles thereof; textile fibres, not exceeding 5 mm in length (flock), textile dust and mill neps > Wadding of textile materials and articles thereof > Other",
+  "5601.30.00.00": "Wadding of textile materials and articles thereof; textile fibres, not exceeding 5 mm in length (flock), textile dust and mill neps > Textile flock and dust and mill neps",
+  "5602.10.00.10": "Felt, whether or not impregnated, coated, covered or laminated > Needleloom felt and stitch-bonded fibre fabrics > Impregnated, coated, covered or laminated",
+  "5602.10.00.90": "Felt, whether or not impregnated, coated, covered or laminated > Needleloom felt and stitch-bonded fibre fabrics > Other",
+  "5602.21.00.00": "Felt, whether or not impregnated, coated, covered or laminated > Other felt, not impregnated, coated, covered or laminated > Of wool or fine animal hair",
+  "5602.29.00.00": "Felt, whether or not impregnated, coated, covered or laminated > Other felt, not impregnated, coated, covered or laminated > Of other textile materials",
+  "5602.90.00.00": "Felt, whether or not impregnated, coated, covered or laminated > Other",
+  "5603.11.00.00": "Nonwovens, whether or not impregnated, coated, covered or laminated > Of man-made filaments > Weighing not more than 25 g/m2",
+  "5603.12.00.00": "Nonwovens, whether or not impregnated, coated, covered or laminated > Of man-made filaments > Weighing more than 25 g/m2 but not more than 70 g/m2",
+  "5603.13.00.20": "Nonwovens, whether or not impregnated, coated, covered or laminated > Of man-made filaments > Weighing more than 70 g/m2 but not more than 150 g/m2 > Of polypropylene",
+  "5603.13.00.90": "Nonwovens, whether or not impregnated, coated, covered or laminated > Of man-made filaments > Weighing more than 70 g/m2 but not more than 150 g/m2 > Other",
+  "5603.14.00.00": "Nonwovens, whether or not impregnated, coated, covered or laminated > Of man-made filaments > Weighing more than 150 g/m2",
+  "5603.91.00.00": "Nonwovens, whether or not impregnated, coated, covered or laminated > Other > Weighing not more than 25 g/m2",
+  "5603.92.00.00": "Nonwovens, whether or not impregnated, coated, covered or laminated > Other > Weighing more than 25 g/m2 but not more than 70 g/m2",
+  "5603.93.00.00": "Nonwovens, whether or not impregnated, coated, covered or laminated > Other > Weighing more than 70 g/m2 but not more than 150 g/m2",
+  "5603.94.00.10": "Nonwovens, whether or not impregnated, coated, covered or laminated > Other > Weighing more than 150 g/m2 > Floor covering underlays",
+  "5603.94.00.90": "Nonwovens, whether or not impregnated, coated, covered or laminated > Other > Weighing more than 150 g/m2 > Other",
+  "5604.10.00.00": "Rubber thread and cord, textile covered; textile yarn, and strip and the like of heading 54.04 or 54.05, impregnated, coated, covered or sheathed with rubber or plastics > Rubber thread and cord, textile covered",
+  "5604.90.00.00": "Rubber thread and cord, textile covered; textile yarn, and strip and the like of heading 54.04 or 54.05, impregnated, coated, covered or sheathed with rubber or plastics > Other",
+  "5605.00.00.00": "Metallized yarn, whether or not gimped, being textile yarn, or strip or the like of heading 54.04 or 54.05, combined with metal in the form of thread, strip or powder or covered with metal",
+  "5606.00.00.00": "Gimped yarn, and strip and the like of heading 54.04 or 54.05, gimped (other than those of heading 56.05 and gimped horsehair yarn); chenille yarn (including flock chenille yarn); loop wale-yarn",
+  "5607.21.00.00": "Twine, cordage, ropes and cables, whether or not plaited or braided and whether or not impregnated, coated, covered or sheathed with rubber or plastics > Of sisal or other textile fibres of the genus Agave > Binder or baler twine",
+  "5607.29.10.00": "Twine, cordage, ropes and cables, whether or not plaited or braided and whether or not impregnated, coated, covered or sheathed with rubber or plastics > Of sisal or other textile fibres of the genus Agave > Other > Of a circumference not exceeding 38 mm, to be employed in commercial fishing or in the commercial harvesting of marine plants; twine, to be employed in baling farm produce",
+  "5607.29.20.00": "Twine, cordage, ropes and cables, whether or not plaited or braided and whether or not impregnated, coated, covered or sheathed with rubber or plastics > Of sisal or other textile fibres of the genus Agave > Other > Other, of a circumference not exceeding 25.4 mm",
+  "5607.29.90.00": "Twine, cordage, ropes and cables, whether or not plaited or braided and whether or not impregnated, coated, covered or sheathed with rubber or plastics > Of sisal or other textile fibres of the genus Agave > Other > Other",
+  "5607.41.00.00": "Twine, cordage, ropes and cables, whether or not plaited or braided and whether or not impregnated, coated, covered or sheathed with rubber or plastics > Of polyethylene or polypropylene > Binder or baler twine",
+  "5607.49.10.00": "Twine, cordage, ropes and cables, whether or not plaited or braided and whether or not impregnated, coated, covered or sheathed with rubber or plastics > Of polyethylene or polypropylene > Other > Rope, for climbing or mountaineering, manufactured to the standards of the Union Internationale des Associations d'Alpinisme; seine rope, of a circumference of 60 mm or more, consisting of multiple ropes of polypropylene and twisted steel wires surrounding a core of multiple ropes of polypropylene, to be employed in commercial fishing or in the commercial harvesting of marine plants; of a circumference not exceeding 38 mm, to be employed in commercial fishing or in the commercial harvesting of marine plants; twine, to be employed in baling farm produce",
+  "5607.49.20.00": "Twine, cordage, ropes and cables, whether or not plaited or braided and whether or not impregnated, coated, covered or sheathed with rubber or plastics > Of polyethylene or polypropylene > Other > Other, of a circumference not exceeding 25.4 mm",
+  "5607.49.90.00": "Twine, cordage, ropes and cables, whether or not plaited or braided and whether or not impregnated, coated, covered or sheathed with rubber or plastics > Of polyethylene or polypropylene > Other > Other",
+  "5607.50.10.00": "Twine, cordage, ropes and cables, whether or not plaited or braided and whether or not impregnated, coated, covered or sheathed with rubber or plastics > Of other synthetic fibres > Braided cord, solely of polyester, electrically conductive, of a circumference exceeding 29 mm but not exceeding 40 mm, for use in the manufacture or refurbishing of electrical generators; of a circumference not exceeding 38 mm, to be employed in commercial fishing or in the commercial harvesting of marine plants; rope, for climbing or mountaineering, manufactured to the standards of the Union Internationale des Associations d'Alpinisme",
+  "5607.50.20.00": "Twine, cordage, ropes and cables, whether or not plaited or braided and whether or not impregnated, coated, covered or sheathed with rubber or plastics > Of other synthetic fibres > Other, of a circumference not exceeding 25.4 mm",
+  "5607.50.90.00": "Twine, cordage, ropes and cables, whether or not plaited or braided and whether or not impregnated, coated, covered or sheathed with rubber or plastics > Of other synthetic fibres > Other",
+  "5607.90.10.00": "Twine, cordage, ropes and cables, whether or not plaited or braided and whether or not impregnated, coated, covered or sheathed with rubber or plastics > Other > Jute twine for use in the manufacture of backing for area carpets; of a circumference not exceeding 38 mm, to be employed in commercial fishing or in the commercial harvesting of marine plants; rope, for climbing or mountaineering, manufactured to the standards of the Union Internationale des Associations d'Alpinisme",
+  "5607.90.20.00": "Twine, cordage, ropes and cables, whether or not plaited or braided and whether or not impregnated, coated, covered or sheathed with rubber or plastics > Other > Other, of a circumference not exceeding 25.4 mm; other, of jute or other textile bast fibres of heading 53.03",
+  "5607.90.90.00": "Twine, cordage, ropes and cables, whether or not plaited or braided and whether or not impregnated, coated, covered or sheathed with rubber or plastics > Other > Other",
+  "5608.11.10.00": "Knotted netting of twine, cordage or rope; made up fishing nets and other made up nets, of textile materials > Of man-made textile materials > Made up fishing nets > To be employed in commercial fishing",
+  "5608.11.90.00": "Knotted netting of twine, cordage or rope; made up fishing nets and other made up nets, of textile materials > Of man-made textile materials > Made up fishing nets > Other",
+  "5608.19.10.00": "Knotted netting of twine, cordage or rope; made up fishing nets and other made up nets, of textile materials > Of man-made textile materials > Other > Netting, to be employed in commercial fishing or in the commercial harvesting of marine plants; made up nets, solely of polyethylene monofilament, to be employed in the protection of fruit crops from birds",
+  "5608.19.20.00": "Knotted netting of twine, cordage or rope; made up fishing nets and other made up nets, of textile materials > Of man-made textile materials > Other > Knotted netting, open square mesh, of tubular braided twine of polyethylene filaments, for use in the manufacture of tennis nets",
+  "5608.19.90.00": "Knotted netting of twine, cordage or rope; made up fishing nets and other made up nets, of textile materials > Of man-made textile materials > Other > Other",
+  "5608.90.10.00": "Knotted netting of twine, cordage or rope; made up fishing nets and other made up nets, of textile materials > Other > Fishing nets and netting, to be employed in commercial fishing or in the commercial harvesting of marine plants",
+  "5608.90.90.00": "Knotted netting of twine, cordage or rope; made up fishing nets and other made up nets, of textile materials > Other > Other",
+  "5609.00.00.00": "Articles of yarn, strip or the like of heading 54.04 or 54.05, twine, cordage, rope or cables, not elsewhere specified or included"
+});
+
+Object.assign(PREF_FREE, {
+  "5601.21.30.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "5601.22.50.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "5607.29.20.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "5607.29.90.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "5607.49.20.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "5607.49.90.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "5607.50.20.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "5607.50.90.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "5607.90.20.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "5607.90.90.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "5608.11.90.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "5608.19.90.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "5608.90.90.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "5609.00.00.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"]
+});
+
+Object.assign(PREF_SPECIAL, {
+  "5609.00.00.00": {"GPT": {type:"percent", rate:14}}
+});
+
+// ===== Chapter 57 - Carpets and Other Textile Floor Coverings (verified 10
+// AUG 2026 from CBSA Ch.57, user-provided markdown, full read) =====
+// NOT free-by-default - the most extreme dutiable-majority chapter in this
+// build so far: 38 of 39 codes dutiable, only floor coverings of coconut
+// fibres (coir) confirmed Free. Since this chapter isn't in any free-default
+// array, that one Free code needs an explicit MFN_RATES entry too, same as
+// every other code -- an earlier pass on this exact chapter omitted it since
+// it scored as nothing-to-add in the exceptions-only view, which silently
+// made it unresolvable (same mistake made once before on Ch.46's pigeon-
+// panniers codes); caught immediately by the validation sweep and fixed
+// before shipping.
+// Consistent structural pattern throughout: machine knotted/tufted and
+// pile-construction variants generally carry GPT-excluded/GPT-discounted
+// rates, while several Other catch-all subheadings resolve to full relief
+// including GPT. One 3-way split (5703.10.10, wool machine-tufted carpets,
+// AUT/NZT 10.5%, GPT 8%).
+// One likely extraction artifact resolved by pattern, not guesswork:
+// 5703.39.90 is missing its closing CCCT-Free text that every single other
+// code in this chapter has -- given 100% consistency everywhere else,
+// treated as the full 21-treaty list rather than a deliberate CCCT exclusion.
+
+Object.assign(MFN_RATES, {
+  "5701.10.10.00": {type:"percent", rate:13, note:""},
+  "5701.10.90.00": {type:"percent", rate:6.5, note:""},
+  "5701.90.10.00": {type:"percent", rate:12.5, note:""},
+  "5701.90.90.00": {type:"percent", rate:6.5, note:""},
+  "5702.10.00.00": {type:"percent", rate:12.5, note:""},
+  "5702.20.00.00": {type:"free", rate:null, note:""},
+  "5702.31.00.00": {type:"percent", rate:12.5, note:""},
+  "5702.32.00.00": {type:"percent", rate:12.5, note:""},
+  "5702.39.00.00": {type:"percent", rate:12.5, note:""},
+  "5702.41.00.00": {type:"percent", rate:12.5, note:""},
+  "5702.42.00.00": {type:"percent", rate:14, note:""},
+  "5702.49.00.00": {type:"percent", rate:14, note:""},
+  "5702.50.10.00": {type:"percent", rate:6.5, note:""},
+  "5702.50.90.00": {type:"percent", rate:12.5, note:""},
+  "5702.91.00.00": {type:"percent", rate:12.5, note:""},
+  "5702.92.00.00": {type:"percent", rate:14, note:""},
+  "5702.99.10.00": {type:"percent", rate:6.5, note:""},
+  "5702.99.90.00": {type:"percent", rate:12.5, note:""},
+  "5703.10.10.00": {type:"percent", rate:12.5, note:""},
+  "5703.10.90.00": {type:"percent", rate:10, note:""},
+  "5703.21.00.00": {type:"percent", rate:12.5, note:""},
+  "5703.29.10.10": {type:"percent", rate:12.5, note:""},
+  "5703.29.10.20": {type:"percent", rate:12.5, note:""},
+  "5703.29.10.90": {type:"percent", rate:12.5, note:""},
+  "5703.29.90.00": {type:"percent", rate:10, note:""},
+  "5703.31.00.00": {type:"percent", rate:12.5, note:""},
+  "5703.39.10.10": {type:"percent", rate:12.5, note:""},
+  "5703.39.10.20": {type:"percent", rate:12.5, note:""},
+  "5703.39.10.90": {type:"percent", rate:12.5, note:""},
+  "5703.39.90.10": {type:"percent", rate:10, note:""},
+  "5703.39.90.90": {type:"percent", rate:10, note:""},
+  "5703.90.10.00": {type:"percent", rate:12.5, note:""},
+  "5703.90.90.00": {type:"percent", rate:10, note:""},
+  "5704.10.00.00": {type:"percent", rate:12.5, note:""},
+  "5704.20.00.00": {type:"percent", rate:12.5, note:""},
+  "5704.90.00.11": {type:"percent", rate:12.5, note:""},
+  "5704.90.00.19": {type:"percent", rate:12.5, note:""},
+  "5704.90.00.90": {type:"percent", rate:12.5, note:""},
+  "5705.00.00.00": {type:"percent", rate:12, note:""}
+});
+
+Object.assign(CODE_DESCRIPTIONS, {
+  "5701.10.10.00": "Carpets and other textile floor coverings, knotted, whether or not made up > Of wool or fine animal hair > Machine knotted",
+  "5701.10.90.00": "Carpets and other textile floor coverings, knotted, whether or not made up > Of wool or fine animal hair > Other",
+  "5701.90.10.00": "Carpets and other textile floor coverings, knotted, whether or not made up > Of other textile materials > Machine knotted",
+  "5701.90.90.00": "Carpets and other textile floor coverings, knotted, whether or not made up > Of other textile materials > Other",
+  "5702.10.00.00": "Carpets and other textile floor coverings, woven, not tufted or flocked, whether or not made up, including \"Kelem\", \"Schumacks\", \"Karamanie\" and similar hand-woven rugs > \"Kelem\", \"Schumacks\", \"Karamanie\" and similar hand-woven rugs",
+  "5702.20.00.00": "Carpets and other textile floor coverings, woven, not tufted or flocked, whether or not made up, including \"Kelem\", \"Schumacks\", \"Karamanie\" and similar hand-woven rugs > Floor coverings of coconut fibres (coir)",
+  "5702.31.00.00": "Carpets and other textile floor coverings, woven, not tufted or flocked, whether or not made up, including \"Kelem\", \"Schumacks\", \"Karamanie\" and similar hand-woven rugs > Other, of pile construction, not made up > Of wool or fine animal hair",
+  "5702.32.00.00": "Carpets and other textile floor coverings, woven, not tufted or flocked, whether or not made up, including \"Kelem\", \"Schumacks\", \"Karamanie\" and similar hand-woven rugs > Other, of pile construction, not made up > Of man-made textile materials",
+  "5702.39.00.00": "Carpets and other textile floor coverings, woven, not tufted or flocked, whether or not made up, including \"Kelem\", \"Schumacks\", \"Karamanie\" and similar hand-woven rugs > Other, of pile construction, not made up > Of other textile materials",
+  "5702.41.00.00": "Carpets and other textile floor coverings, woven, not tufted or flocked, whether or not made up, including \"Kelem\", \"Schumacks\", \"Karamanie\" and similar hand-woven rugs > Other, of pile construction, made up > Of wool or fine animal hair",
+  "5702.42.00.00": "Carpets and other textile floor coverings, woven, not tufted or flocked, whether or not made up, including \"Kelem\", \"Schumacks\", \"Karamanie\" and similar hand-woven rugs > Other, of pile construction, made up > Of man-made textile materials",
+  "5702.49.00.00": "Carpets and other textile floor coverings, woven, not tufted or flocked, whether or not made up, including \"Kelem\", \"Schumacks\", \"Karamanie\" and similar hand-woven rugs > Other, of pile construction, made up > Of other textile materials",
+  "5702.50.10.00": "Carpets and other textile floor coverings, woven, not tufted or flocked, whether or not made up, including \"Kelem\", \"Schumacks\", \"Karamanie\" and similar hand-woven rugs > Other, not of pile construction, not made up > Of straw, hemp, flax tow or jute",
+  "5702.50.90.00": "Carpets and other textile floor coverings, woven, not tufted or flocked, whether or not made up, including \"Kelem\", \"Schumacks\", \"Karamanie\" and similar hand-woven rugs > Other, not of pile construction, not made up > Other",
+  "5702.91.00.00": "Carpets and other textile floor coverings, woven, not tufted or flocked, whether or not made up, including \"Kelem\", \"Schumacks\", \"Karamanie\" and similar hand-woven rugs > Other, not of pile construction, made up > Of wool or fine animal hair",
+  "5702.92.00.00": "Carpets and other textile floor coverings, woven, not tufted or flocked, whether or not made up, including \"Kelem\", \"Schumacks\", \"Karamanie\" and similar hand-woven rugs > Other, not of pile construction, made up > Of man-made textile materials",
+  "5702.99.10.00": "Carpets and other textile floor coverings, woven, not tufted or flocked, whether or not made up, including \"Kelem\", \"Schumacks\", \"Karamanie\" and similar hand-woven rugs > Other, not of pile construction, made up > Of other textile materials > Of straw, hemp, flax tow or jute",
+  "5702.99.90.00": "Carpets and other textile floor coverings, woven, not tufted or flocked, whether or not made up, including \"Kelem\", \"Schumacks\", \"Karamanie\" and similar hand-woven rugs > Other, not of pile construction, made up > Of other textile materials > Other",
+  "5703.10.10.00": "Carpets and other textile floor coverings (including turf), tufted, whether or not made up > Of wool or fine animal hair > Machine tufted",
+  "5703.10.90.00": "Carpets and other textile floor coverings (including turf), tufted, whether or not made up > Of wool or fine animal hair > Other",
+  "5703.21.00.00": "Carpets and other textile floor coverings (including turf), tufted, whether or not made up > Of nylon or other polyamides > Turf",
+  "5703.29.10.10": "Carpets and other textile floor coverings (including turf), tufted, whether or not made up > Of nylon or other polyamides > Other > Machine tufted > For automotive use",
+  "5703.29.10.20": "Carpets and other textile floor coverings (including turf), tufted, whether or not made up > Of nylon or other polyamides > Other > Machine tufted > Tiles, having a maximum surface area of 0.3 m2",
+  "5703.29.10.90": "Carpets and other textile floor coverings (including turf), tufted, whether or not made up > Of nylon or other polyamides > Other > Machine tufted > Other",
+  "5703.29.90.00": "Carpets and other textile floor coverings (including turf), tufted, whether or not made up > Of nylon or other polyamides > Other > Other",
+  "5703.31.00.00": "Carpets and other textile floor coverings (including turf), tufted, whether or not made up > Of other man-made textile materials > Turf",
+  "5703.39.10.10": "Carpets and other textile floor coverings (including turf), tufted, whether or not made up > Of other man-made textile materials > Other > Machine tufted > Of polypropylene",
+  "5703.39.10.20": "Carpets and other textile floor coverings (including turf), tufted, whether or not made up > Of other man-made textile materials > Other > Machine tufted > Of polyesters",
+  "5703.39.10.90": "Carpets and other textile floor coverings (including turf), tufted, whether or not made up > Of other man-made textile materials > Other > Machine tufted > Other",
+  "5703.39.90.10": "Carpets and other textile floor coverings (including turf), tufted, whether or not made up > Of other man-made textile materials > Other > Other > Of polyesters",
+  "5703.39.90.90": "Carpets and other textile floor coverings (including turf), tufted, whether or not made up > Of other man-made textile materials > Other > Other > Other",
+  "5703.90.10.00": "Carpets and other textile floor coverings (including turf), tufted, whether or not made up > Of other textile materials > Machine tufted",
+  "5703.90.90.00": "Carpets and other textile floor coverings (including turf), tufted, whether or not made up > Of other textile materials > Other",
+  "5704.10.00.00": "Carpets and other textile floor coverings, of felt, not tufted or flocked, whether or not made up > Tiles, having a maximum surface area of 0.3 m2",
+  "5704.20.00.00": "Carpets and other textile floor coverings, of felt, not tufted or flocked, whether or not made up > Tiles, having a maximum surface area exceeding 0.3 m2 but not exceeding 1 m2",
+  "5704.90.00.11": "Carpets and other textile floor coverings, of felt, not tufted or flocked, whether or not made up > Other > For automotive use > Needle punched",
+  "5704.90.00.19": "Carpets and other textile floor coverings, of felt, not tufted or flocked, whether or not made up > Other > For automotive use > Other",
+  "5704.90.00.90": "Carpets and other textile floor coverings, of felt, not tufted or flocked, whether or not made up > Other > Other",
+  "5705.00.00.00": "Other carpets and other textile floor coverings, whether or not made up"
+});
+
+Object.assign(PREF_FREE, {
+  "5701.10.10.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "5701.10.90.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "5701.90.10.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "5701.90.90.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "5702.10.00.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "5702.20.00.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "5702.31.00.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "5702.32.00.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "5702.39.00.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "5702.41.00.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "5702.42.00.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "5702.49.00.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "5702.50.10.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "5702.50.90.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "5702.91.00.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "5702.92.00.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "5702.99.10.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "5702.99.90.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "5703.10.10.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "5703.10.90.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "5703.21.00.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "5703.29.10.10": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "5703.29.10.20": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "5703.29.10.90": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "5703.29.90.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "5703.31.00.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "5703.39.10.10": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "5703.39.10.20": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "5703.39.10.90": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "5703.39.90.10": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "5703.39.90.90": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "5703.90.10.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "5703.90.90.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "5704.10.00.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "5704.20.00.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "5704.90.00.11": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "5704.90.00.19": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "5704.90.00.90": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "5705.00.00.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"]
+});
+
+Object.assign(PREF_SPECIAL, {
+  "5701.10.10.00": {"GPT": {type:"percent", rate:10}},
+  "5701.90.10.00": {"GPT": {type:"percent", rate:8}},
+  "5702.10.00.00": {"GPT": {type:"percent", rate:8}},
+  "5702.31.00.00": {"GPT": {type:"percent", rate:8}},
+  "5702.32.00.00": {"GPT": {type:"percent", rate:8}},
+  "5702.39.00.00": {"GPT": {type:"percent", rate:8}},
+  "5702.41.00.00": {"GPT": {type:"percent", rate:8}},
+  "5702.42.00.00": {"GPT": {type:"percent", rate:10}},
+  "5702.49.00.00": {"GPT": {type:"percent", rate:10}},
+  "5702.50.90.00": {"GPT": {type:"percent", rate:8}},
+  "5702.91.00.00": {"GPT": {type:"percent", rate:8}},
+  "5702.92.00.00": {"GPT": {type:"percent", rate:10}},
+  "5702.99.90.00": {"GPT": {type:"percent", rate:8}},
+  "5703.10.10.00": {"AUT": {type:"percent", rate:10.5}, "NZT": {type:"percent", rate:10.5}, "GPT": {type:"percent", rate:8}},
+  "5703.21.00.00": {"GPT": {type:"percent", rate:8}},
+  "5703.29.10.10": {"GPT": {type:"percent", rate:8}},
+  "5703.29.10.20": {"GPT": {type:"percent", rate:8}},
+  "5703.29.10.90": {"GPT": {type:"percent", rate:8}},
+  "5703.31.00.00": {"GPT": {type:"percent", rate:8}},
+  "5703.39.10.10": {"GPT": {type:"percent", rate:8}},
+  "5703.39.10.20": {"GPT": {type:"percent", rate:8}},
+  "5703.39.10.90": {"GPT": {type:"percent", rate:8}},
+  "5703.90.10.00": {"GPT": {type:"percent", rate:8}},
+  "5704.10.00.00": {"GPT": {type:"percent", rate:8}},
+  "5704.20.00.00": {"GPT": {type:"percent", rate:8}},
+  "5704.90.00.11": {"GPT": {type:"percent", rate:8}},
+  "5704.90.00.19": {"GPT": {type:"percent", rate:8}},
+  "5704.90.00.90": {"GPT": {type:"percent", rate:8}},
+  "5705.00.00.00": {"GPT": {type:"percent", rate:8}}
+});
+
+// ===== Correction — 10 AUG 2026 =====
+// Chapter 44's original build correctly identified heading 44.02 (wood
+// charcoal) as an alternating Free/6.5% pattern across all three material
+// sub-groups (bamboo, shell-or-nut, other) — confirmed against the
+// original source notes at the time. But the three 6.5% "Other" codes
+// never actually made it into MFN_RATES, so they were silently resolving
+// via the chapter's free-by-default fallback instead. Caught when the user
+// spot-checked 4402.10.90.00 against an independent CBSA schedule
+// screenshot showing 6.5%, not Free. All three carry the full standard
+// treaty list including GPT (no discount needed — GPT already gets full
+// relief), confirmed directly from that screenshot.
+Object.assign(MFN_RATES, {
+  "4402.10.90.00": {type:"percent", rate:6.5, note:""},
+  "4402.20.90.00": {type:"percent", rate:6.5, note:""},
+  "4402.90.90.00": {type:"percent", rate:6.5, note:""}
+});
+
+Object.assign(PREF_FREE, {
+  "4402.10.90.00": ["CCCT","LDCT","GPT","UST","MXT","CIAT","CT","CRT","IT","NT","SLT","PT","COLT","JT","PAT","HNT","KRT","CEUT","UAT","CPTPT","UKT"],
+  "4402.20.90.00": ["CCCT","LDCT","GPT","UST","MXT","CIAT","CT","CRT","IT","NT","SLT","PT","COLT","JT","PAT","HNT","KRT","CEUT","UAT","CPTPT","UKT"],
+  "4402.90.90.00": ["CCCT","LDCT","GPT","UST","MXT","CIAT","CT","CRT","IT","NT","SLT","PT","COLT","JT","PAT","HNT","KRT","CEUT","UAT","CPTPT","UKT"]
+});
