@@ -344,6 +344,44 @@
   .bp-total-row .bp-total-val{ font-family:'Montserrat',sans-serif; font-weight:800; font-size:22px; color:var(--brown-deep); }
   .bp-usd{ text-align:right; font-size:12.5px; color:var(--ink-faint); margin-top:2px; }
   .bp-note{ font-size:11.5px; color:var(--ink-faint); margin-top:14px; line-height:1.5; }
+
+  .carm-box{
+    margin-top:18px;
+    padding:16px 18px;
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:12px;
+  }
+  .carm-box .carm-head{ display:flex; align-items:center; gap:10px; margin-bottom:4px; }
+  .carm-box .carm-icon{
+    width:30px; height:30px; border-radius:8px;
+    background:#DCEAFB; color:#2E6BB8;
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0;
+  }
+  .carm-box .carm-icon svg{ width:16px; height:16px; }
+  .carm-box .carm-title{ font-weight:700; font-size:14px; color:var(--brown-deep); }
+  .carm-box .carm-question{ font-size:13.5px; color:var(--ink); margin:8px 0 12px; }
+  .carm-btn-row{ display:flex; gap:8px; }
+  .carm-btn{
+    flex:1;
+    padding:8px 10px;
+    border:1.5px solid var(--line);
+    border-radius:8px;
+    background:#fff;
+    font-family:'Inter',sans-serif;
+    font-size:12.5px;
+    font-weight:600;
+    color:var(--ink-faint);
+    cursor:pointer;
+    text-align:center;
+  }
+  .carm-btn.active{ border-color:var(--teal); background:var(--teal-soft); color:var(--brown-deep); }
+  .carm-result{ display:none; margin-top:12px; padding:12px 14px; border-radius:9px; font-size:12.5px; line-height:1.5; }
+  .carm-result.show{ display:block; }
+  .carm-result.yes{ background:var(--success-soft); color:#2F6B4F; }
+  .carm-result.no{ background:#FBE9D8; color:#8A5A1E; }
+  .carm-result a{ color:inherit; font-weight:700; text-decoration:underline; }
   .bp-quote-form{ margin-top:20px; padding-top:20px; border-top:1px solid var(--line); }
   .bp-quote-form .field{ margin-bottom:12px; }
   .bp-submit-btn{
@@ -601,9 +639,9 @@ function formatMoney(n){
   return '$' + n.toLocaleString('en-CA', {minimumFractionDigits:2, maximumFractionDigits:2});
 }
 
-// Tally form URL for the "Request Official Quote" flow. Tally supports
-// pre-filling a form via URL query params when the form has a matching
-// Hidden Field
+// Tally form URL for the "Request Official Quote" flow — REPLACE with the
+// real form URL once it's created in Tally. Tally supports pre-filling a
+// form via URL query params when the form has a matching Hidden Field
 // configured for each param name (Tally docs: Hidden Fields > populate
 // from URL). Every param name built in the submit handler below
 // (client_type, shipment_value_cad, entry_fee, aci_fee, carm_fee,
@@ -657,6 +695,29 @@ function wireBrokerageTypeButtons(){
   });
 }
 
+// CARM (CBSA Assessment and Revenue Management) Client Portal registration
+// check — registration is mandatory for commercial importers, and as of May
+// 2025 importers need their own financial security rather than relying on
+// their broker's bond, so this is a genuinely useful onboarding question,
+// not just a checkbox. Answer is stored on window.__carmStatus so it can
+// ride along with the rest of the breakdown when a quote is requested.
+const CARM_REGISTER_URL = 'https://www.cbsa-asfc.gc.ca/services/carm-gcra/start-passer-eng.html';
+function wireCarmButtons(){
+  document.querySelectorAll('.carm-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.carm-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const status = btn.dataset.carm;
+      window.__carmStatus = status;
+      const result = document.getElementById('carmResult');
+      result.className = 'carm-result show ' + (status === 'yes' ? 'yes' : 'no');
+      result.innerHTML = status === 'yes'
+        ? "Great — we'll use your CARM number for this shipment."
+        : `You'll need to register before we can process a commercial import for you. It only takes a few minutes: <a href="${CARM_REGISTER_URL}" target="_blank">Register in the CARM Client Portal ›</a>`;
+    });
+  });
+}
+
 function renderBrokeragePanel(clientType){
   const panel = document.getElementById('brokeragePanel');
   const fees = computeBrokerageFees(clientType);
@@ -704,6 +765,19 @@ function renderBrokeragePanel(clientType){
     </div>
     <div class="bp-usd">≈ ${formatMoney(fees.grandTotalUSD)} USD</div>
     <div class="bp-note">This is an estimate of Hemisphere's own brokerage fees, separate from the customs duty and tax shown above. Final fees are confirmed by a broker.</div>
+    <div class="carm-box">
+      <div class="carm-head">
+        <div class="carm-icon">${ICON_SHIELD}</div>
+        <div class="carm-title">CARM Client Portal</div>
+      </div>
+      <div class="carm-question">Are you registered in the CARM Client Portal? Registration is mandatory for commercial importers, and since May 2025 you'll also need your own financial security rather than relying on your broker's bond.</div>
+      <div class="carm-btn-row">
+        <button type="button" class="carm-btn" data-carm="yes">Yes</button>
+        <button type="button" class="carm-btn" data-carm="no">No</button>
+        <button type="button" class="carm-btn" data-carm="unsure">Not sure</button>
+      </div>
+      <div class="carm-result" id="carmResult"></div>
+    </div>
     <div class="bp-quote-form">
       <h4>Get this as an official quote</h4>
       <p class="bp-intro">We'll review this and reply with a confirmed quote.</p>
@@ -716,6 +790,7 @@ function renderBrokeragePanel(clientType){
   `;
 
   wireBrokerageTypeButtons();
+  wireCarmButtons();
 
   document.getElementById('bpSubmitBtn').addEventListener('click', () => {
     const name = document.getElementById('bpName').value.trim();
@@ -727,8 +802,10 @@ function renderBrokeragePanel(clientType){
     }
     msg.style.display = 'none';
     const inputs = window.__brokerageInputs;
+    const carmLabels = {yes:'Yes, registered', no:'No, not registered', unsure:'Not sure'};
     const params = new URLSearchParams({
       client_type: fees.isSetup ? 'Setting up an account' : 'One-time shipment',
+      carm_status: carmLabels[window.__carmStatus] || 'Not answered',
       shipment_value_cad: inputs.value.toFixed(2),
       entry_fee: fees.entryFee.toFixed(2),
       aci_fee: fees.aciFee.toFixed(2),
