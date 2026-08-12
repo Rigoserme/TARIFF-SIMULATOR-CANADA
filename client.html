@@ -696,12 +696,10 @@ function wireBrokerageTypeButtons(){
 }
 
 // CARM (CBSA Assessment and Revenue Management) Client Portal registration
-// check — registration is mandatory for commercial importers, and as of May
-// 2025 importers need their own financial security rather than relying on
-// their broker's bond, so this is a genuinely useful onboarding question,
-// not just a checkbox. Answer is stored on window.__carmStatus so it can
-// ride along with the rest of the breakdown when a quote is requested.
-const CARM_REGISTER_URL = 'https://www.cbsa-asfc.gc.ca/services/carm-gcra/start-passer-eng.html';
+// check — just captures the answer for the internal quote request. No
+// registration link or push toward registering: Hemisphere sometimes
+// processes shipments under its own business number, so "No" or "Not sure"
+// isn't necessarily a blocker and shouldn't be presented as one.
 function wireCarmButtons(){
   document.querySelectorAll('.carm-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -712,18 +710,25 @@ function wireCarmButtons(){
       const result = document.getElementById('carmResult');
       result.className = 'carm-result show ' + (status === 'yes' ? 'yes' : 'no');
       result.innerHTML = status === 'yes'
-        ? "Great — we'll use your CARM number for this shipment."
-        : `You'll need to register before we can process a commercial import for you. It only takes a few minutes: <a href="${CARM_REGISTER_URL}" target="_blank">Register in the CARM Client Portal ›</a>`;
+        ? "Good to know — we'll use your CARM number for this shipment."
+        : "Good to know — we'll factor that into your quote.";
     });
   });
 }
 
+// The dollar breakdown (Entry Fee, ACI, CARM, Account Setup, Bond Fee, HST
+// on Fees, Disbursement) is Hemisphere's own internal fee schedule and is
+// deliberately never rendered here — it's computed by computeBrokerageFees()
+// and passed to Tally as hidden fields on submit (see the click handler
+// below), so it reaches Hemisphere's inbox without ever appearing on the
+// client-facing page. The one-time/account-setup choice still shows because
+// it's a real question the client is answering, not a number being quoted.
 function renderBrokeragePanel(clientType){
   const panel = document.getElementById('brokeragePanel');
   const fees = computeBrokerageFees(clientType);
 
   if(!fees){
-    panel.innerHTML = '<div class="bp-unavailable">Run an estimate above first to see brokerage fees.</div>';
+    panel.innerHTML = '<div class="bp-unavailable">Run an estimate above first to request a quote.</div>';
     return;
   }
 
@@ -735,42 +740,25 @@ function renderBrokeragePanel(clientType){
 
   if(fees.overLimit){
     panel.innerHTML = `
-      <h4>Brokerage Fee Estimate</h4>
-      <p class="bp-intro">Hemisphere's own brokerage fees, on top of the duty and tax shown above.</p>
+      <h4>Request a Customs Quote</h4>
+      <p class="bp-intro">Tell us a bit more and we'll follow up with the details.</p>
       ${typeRow}
-      <div class="bp-unavailable">Shipments over $25,000 CAD fall outside our standard fee schedule and need a manual quote — use "Get a Hemisphere Import Quote" below to reach us directly.</div>
+      <div class="bp-unavailable">Shipments over $25,000 CAD need a manual quote — use "Get a Hemisphere Import Quote" below to reach us directly.</div>
     `;
     wireBrokerageTypeButtons();
     return;
   }
 
-  const lines = [['Entry Fee', fees.entryFee], ['ACI Fee', fees.aciFee], ['CARM Fee', fees.carmFee]];
-  if(fees.isSetup){
-    lines.push(['Account Set Up', fees.accountSetupFee]);
-    lines.push(['Bond Fee', fees.bondFee]);
-  }
-  lines.push(['HST on Goods', fees.hstOnGoods]);
-  lines.push(['HST on Fees (13%)', fees.hstOnFees]);
-  lines.push(['Disbursement Fee (3%)', fees.disbursementFee]);
-  const linesHtml = lines.map(([label, amt]) => `<div class="bp-line"><span class="bp-label">${label}</span><span class="bp-val">${formatMoney(amt)}</span></div>`).join('');
-
   panel.innerHTML = `
-    <h4>Brokerage Fee Estimate</h4>
-    <p class="bp-intro">Hemisphere's own brokerage fees, on top of the duty and tax shown above.</p>
+    <h4>Request a Customs Quote</h4>
+    <p class="bp-intro">Tell us a bit more and we'll follow up with a confirmed quote, including our brokerage fees.</p>
     ${typeRow}
-    ${linesHtml}
-    <div class="bp-total-row">
-      <span class="bp-total-label">Grand Total (CAD)</span>
-      <span class="bp-total-val">${formatMoney(fees.grandTotalCAD)}</span>
-    </div>
-    <div class="bp-usd">≈ ${formatMoney(fees.grandTotalUSD)} USD</div>
-    <div class="bp-note">This is an estimate of Hemisphere's own brokerage fees, separate from the customs duty and tax shown above. Final fees are confirmed by a broker.</div>
     <div class="carm-box">
       <div class="carm-head">
         <div class="carm-icon">${ICON_SHIELD}</div>
         <div class="carm-title">CARM Client Portal</div>
       </div>
-      <div class="carm-question">Are you registered in the CARM Client Portal? Registration is mandatory for commercial importers, and since May 2025 you'll also need your own financial security rather than relying on your broker's bond.</div>
+      <div class="carm-question">Are you registered in the CARM Client Portal?</div>
       <div class="carm-btn-row">
         <button type="button" class="carm-btn" data-carm="yes">Yes</button>
         <button type="button" class="carm-btn" data-carm="no">No</button>
@@ -782,6 +770,7 @@ function renderBrokeragePanel(clientType){
       <h4>Get this as an official quote</h4>
       <p class="bp-intro">We'll review this and reply with a confirmed quote.</p>
       <div class="field"><label for="bpName">Name</label><input type="text" id="bpName" placeholder="Your name"></div>
+      <div class="field"><label for="bpCompany">Company (optional)</label><input type="text" id="bpCompany" placeholder="Your company"></div>
       <div class="field"><label for="bpEmail">Email</label><input type="email" id="bpEmail" placeholder="you@example.com"></div>
       <div class="field"><label for="bpPhone">Phone (optional)</label><input type="tel" id="bpPhone" placeholder="(xxx) xxx-xxxx"></div>
       <div id="bpValidationMsg" class="bp-unavailable" style="display:none;">Please enter your name and email so we can reply with your quote.</div>
@@ -804,9 +793,31 @@ function renderBrokeragePanel(clientType){
     const inputs = window.__brokerageInputs;
     const carmLabels = {yes:'Yes, registered', no:'No, not registered', unsure:'Not sure'};
     const params = new URLSearchParams({
-      client_type: fees.isSetup ? 'Setting up an account' : 'One-time shipment',
-      carm_status: carmLabels[window.__carmStatus] || 'Not answered',
+      // Client information
+      name,
+      company: document.getElementById('bpCompany').value.trim(),
+      email,
+      phone: document.getElementById('bpPhone').value.trim(),
+      // Shipment
+      hs_code: inputs.hsCode,
+      product_description: inputs.productDescription,
+      origin: inputs.origin,
+      province: inputs.province,
+      import_type: inputs.importType,
       shipment_value_cad: inputs.value.toFixed(2),
+      frequency: inputs.frequency,
+      carm_status: carmLabels[window.__carmStatus] || 'Not answered',
+      client_type: fees.isSetup ? 'Setting up an account' : 'One-time shipment',
+      // Simulator calculation
+      duty_rate: inputs.dutyRate,
+      duty_amount: inputs.duty.toFixed(2),
+      gst_hst_pst_amount: inputs.taxOnGoods.toFixed(2),
+      trade_measures_flag: inputs.tradeMeasuresFlag,
+      preferential_treatment: inputs.preferentialTreatment,
+      estimated_landed_cost: inputs.estimatedLandedCost.toFixed(2),
+      // INTERNAL ONLY — Hemisphere's own brokerage fee schedule. These fields
+      // only ever reach Hemisphere's Tally dashboard/notification; the client
+      // never sees them anywhere on the page.
       entry_fee: fees.entryFee.toFixed(2),
       aci_fee: fees.aciFee.toFixed(2),
       carm_fee: fees.carmFee.toFixed(2),
@@ -816,9 +827,7 @@ function renderBrokeragePanel(clientType){
       hst_on_fees: fees.hstOnFees.toFixed(2),
       disbursement_fee: fees.disbursementFee.toFixed(2),
       grand_total_cad: fees.grandTotalCAD.toFixed(2),
-      grand_total_usd: fees.grandTotalUSD.toFixed(2),
-      name, email,
-      phone: document.getElementById('bpPhone').value.trim()
+      grand_total_usd: fees.grandTotalUSD.toFixed(2)
     });
     window.open(`${TALLY_FORM_URL}?${params.toString()}`, '_blank');
   });
@@ -1376,17 +1385,34 @@ function runEstimate(){
   const downloadBtn = document.getElementById('downloadReportBtn');
   if(downloadBtn) downloadBtn.addEventListener('click', () => window.print());
 
-  // Brokerage fee estimate panel — stores the inputs this specific estimate
-  // needs (shipment value, and the duty + tax already computed above) so
-  // renderBrokeragePanel() can compute Bond Fee correctly without
-  // recomputing duty/tax itself. See lookupEntryFee()/BROKERAGE_FEE_CONSTANTS
-  // in data.js for the actual fee schedule and rules.
+  // Brokerage/quote-request inputs — captures everything the internal quote
+  // request needs (shipment details, calculation results, and the inputs
+  // computeBrokerageFees() needs for Bond Fee) so nothing has to be
+  // recomputed when a quote is actually requested. See
+  // lookupEntryFee()/BROKERAGE_FEE_CONSTANTS in data.js for the fee schedule.
   const dutyCharge = charges.find(c => c.category === 'duty');
   const taxCharges = charges.filter(c => c.category === 'tax-fed' || c.category === 'tax-prov');
+  const tradeCharges = charges.filter(c => c.category === 'trade');
+  const tradeFlagSummary = tradeCharges.map(c => {
+    if(c.amount !== null) return `${c.label} (${formatMoney(c.amount)})`;
+    if(c.qualifier) return `${c.label} (${c.qualifier})`;
+    return c.label;
+  }).join('; ') || 'None flagged';
+  const freqLabels = {once:'One-time', weekly:'Weekly', monthly:'Monthly', custom:'Custom'};
   window.__brokerageInputs = {
     value,
     duty: dutyCharge && dutyCharge.amount !== null ? dutyCharge.amount : 0,
-    taxOnGoods: taxCharges.reduce((sum, c) => sum + (c.amount || 0), 0)
+    taxOnGoods: taxCharges.reduce((sum, c) => sum + (c.amount || 0), 0),
+    hsCode: matchedCode,
+    productDescription: CODE_DESCRIPTIONS[matchedCode] || 'No description on file for this code',
+    origin: origin || 'Not specified',
+    province: province || 'Not specified',
+    importType: importType === 'commercial' ? 'Commercial' : 'Personal / casual',
+    frequency: freqLabels[freq] || freq,
+    dutyRate: mfnRate !== null ? mfnRate + '%' : 'N/A',
+    preferentialTreatment: isPreferential ? applicable.treaty : 'MFN (no preferential treaty)',
+    tradeMeasuresFlag: tradeFlagSummary,
+    estimatedLandedCost: total
   };
   document.getElementById('brokerageToggleLink').addEventListener('click', () => {
     const panel = document.getElementById('brokeragePanel');
