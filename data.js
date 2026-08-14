@@ -15845,3 +15845,871 @@ Object.assign(PREF_SPECIAL, {
   "6307.90.30.00": {"GPT": {type:"percent", rate:8}},
   "6307.90.92.00": {"GPT": {type:"percent", rate:8}}
 });
+
+// ===== Chapter 64 - Footwear, Gaiters and the Like; Parts of Such Articles
+// (verified 10 AUG 2026 from CBSA Ch.64, user-provided markdown, 825-line
+// source, full read) =====
+// NOT free-by-default - 60 of 80 codes dutiable (75%). The most structurally
+// complex chapter treaty-wise in this build: several codes have genuine
+// 3-way splits where AUT, NZT, and CPTPT each get a DIFFERENT rate from one
+// another (not just AUT/NZT sharing one rate and GPT/CPTPT sharing another) -
+// e.g. 6402.91.10 (AUT/NZT 8.5%, CPTPT 13%), 6403.51.10/6403.59.91/
+// 6403.91.00/6403.99.91 (AUT/NZT 13.5%, CPTPT 3-4.5%). CPTPT itself flips
+// between full relief and its own reduced rate code by code within the same
+// heading - never assume based on a neighboring line.
+// Two extraction artifacts resolved by logical necessity, not guesswork:
+// two codes (6401.92.92, 6401.99.12) showed a trailing 'CPTPT: 15%'/'CPTPT:
+// 7.5%' fragment despite their OWN stated MFN rate already being Free -
+// since a preferential rate can never be worse than the general MFN rate,
+// this is bleed-over from the adjacent entry during extraction, not a real
+// provision, and both codes are encoded as fully Free instead.
+// Genuine, repeated carve-outs worth knowing: footwear for individuals with
+// a defective/abnormal foot or ankle (medical order required) is Free
+// throughout 64.03/64.04, as are pointe/block-toe shoes for professional or
+// full-time-student ballet dancers throughout 64.03-64.05 - both patterns
+// repeat identically across many otherwise-dutiable headings.
+
+Object.assign(MFN_RATES, {
+  "6401.10.11.00": {type:"percent", rate:20, note:""},
+  "6401.10.19.00": {type:"percent", rate:20, note:""},
+  "6401.10.20.00": {type:"percent", rate:20, note:""},
+  "6401.92.11.00": {type:"percent", rate:20, note:""},
+  "6401.92.12.00": {type:"percent", rate:20, note:""},
+  "6401.92.20.00": {type:"free", rate:null, note:""},
+  "6401.92.91.00": {type:"percent", rate:20, note:""},
+  "6401.92.92.00": {type:"free", rate:null, note:""},
+  "6401.99.11.00": {type:"percent", rate:20, note:""},
+  "6401.99.12.00": {type:"free", rate:null, note:""},
+  "6401.99.19.00": {type:"percent", rate:20, note:""},
+  "6401.99.20.00": {type:"percent", rate:20, note:""},
+  "6402.12.00.00": {type:"free", rate:null, note:""},
+  "6402.19.10.00": {type:"percent", rate:17.5, note:""},
+  "6402.19.90.00": {type:"percent", rate:17.5, note:""},
+  "6402.20.11.00": {type:"percent", rate:16, note:""},
+  "6402.20.19.00": {type:"percent", rate:16, note:""},
+  "6402.20.20.00": {type:"percent", rate:18, note:""},
+  "6402.91.10.00": {type:"percent", rate:17.5, note:""},
+  "6402.91.90.20": {type:"percent", rate:17.5, note:""},
+  "6402.91.90.30": {type:"percent", rate:17.5, note:""},
+  "6402.91.90.40": {type:"percent", rate:17.5, note:""},
+  "6402.99.10.00": {type:"percent", rate:17.5, note:""},
+  "6402.99.90.10": {type:"percent", rate:17.5, note:""},
+  "6402.99.90.91": {type:"percent", rate:17.5, note:""},
+  "6402.99.90.92": {type:"percent", rate:17.5, note:""},
+  "6402.99.90.93": {type:"percent", rate:17.5, note:""},
+  "6403.12.00.00": {type:"free", rate:null, note:""},
+  "6403.19.10.00": {type:"free", rate:null, note:""},
+  "6403.19.20.10": {type:"percent", rate:18, note:""},
+  "6403.19.20.20": {type:"percent", rate:18, note:""},
+  "6403.19.20.30": {type:"percent", rate:18, note:""},
+  "6403.19.20.90": {type:"percent", rate:18, note:""},
+  "6403.19.90.00": {type:"percent", rate:18, note:""},
+  "6403.20.00.00": {type:"percent", rate:18, note:""},
+  "6403.40.00.00": {type:"percent", rate:18, note:""},
+  "6403.51.10.00": {type:"percent", rate:18, note:""},
+  "6403.51.90.00": {type:"percent", rate:18, note:""},
+  "6403.59.10.00": {type:"free", rate:null, note:""},
+  "6403.59.20.00": {type:"percent", rate:11, note:""},
+  "6403.59.91.00": {type:"percent", rate:18, note:""},
+  "6403.59.99.10": {type:"percent", rate:18, note:""},
+  "6403.59.99.20": {type:"percent", rate:18, note:""},
+  "6403.91.00.10": {type:"percent", rate:18, note:""},
+  "6403.91.00.91": {type:"percent", rate:18, note:""},
+  "6403.91.00.92": {type:"percent", rate:18, note:""},
+  "6403.99.10.00": {type:"free", rate:null, note:""},
+  "6403.99.30.00": {type:"percent", rate:11, note:""},
+  "6403.99.91.00": {type:"percent", rate:18, note:""},
+  "6403.99.99.10": {type:"percent", rate:18, note:""},
+  "6403.99.99.20": {type:"percent", rate:18, note:""},
+  "6404.11.11.00": {type:"percent", rate:16, note:""},
+  "6404.11.19.00": {type:"percent", rate:16, note:""},
+  "6404.11.91.00": {type:"percent", rate:18, note:""},
+  "6404.11.99.21": {type:"percent", rate:18, note:""},
+  "6404.11.99.22": {type:"percent", rate:18, note:""},
+  "6404.11.99.90": {type:"percent", rate:18, note:""},
+  "6404.19.10.00": {type:"free", rate:null, note:""},
+  "6404.19.30.10": {type:"free", rate:null, note:""},
+  "6404.19.30.20": {type:"free", rate:null, note:""},
+  "6404.19.90.10": {type:"percent", rate:18, note:""},
+  "6404.19.90.91": {type:"percent", rate:18, note:""},
+  "6404.19.90.92": {type:"percent", rate:18, note:""},
+  "6404.20.10.00": {type:"free", rate:null, note:""},
+  "6404.20.90.00": {type:"percent", rate:18, note:""},
+  "6405.10.10.00": {type:"free", rate:null, note:""},
+  "6405.10.90.00": {type:"percent", rate:18, note:""},
+  "6405.20.10.00": {type:"free", rate:null, note:""},
+  "6405.20.20.00": {type:"percent", rate:18, note:""},
+  "6405.20.90.00": {type:"percent", rate:18, note:""},
+  "6405.90.00.00": {type:"percent", rate:18, note:""},
+  "6406.10.11.00": {type:"free", rate:null, note:""},
+  "6406.10.19.00": {type:"free", rate:null, note:""},
+  "6406.10.91.00": {type:"percent", rate:8, note:""},
+  "6406.10.99.00": {type:"free", rate:null, note:""},
+  "6406.20.00.00": {type:"free", rate:null, note:""},
+  "6406.90.10.00": {type:"free", rate:null, note:""},
+  "6406.90.20.00": {type:"free", rate:null, note:""},
+  "6406.90.30.00": {type:"percent", rate:10, note:""},
+  "6406.90.90.00": {type:"percent", rate:5, note:""}
+});
+
+Object.assign(CODE_DESCRIPTIONS, {
+  "6401.10.11.00": "Waterproof footwear with outer soles and uppers of rubber or of plastics, the uppers of which are neither fixed to the sole nor assembled by stitching, riveting, nailing, screwing, plugging or similar processes > Footwear incorporating a protective metal toe-cap > Of rubber > Riding boots solely of rubber",
+  "6401.10.19.00": "Waterproof footwear with outer soles and uppers of rubber or of plastics, the uppers of which are neither fixed to the sole nor assembled by stitching, riveting, nailing, screwing, plugging or similar processes > Footwear incorporating a protective metal toe-cap > Of rubber > Other",
+  "6401.10.20.00": "Waterproof footwear with outer soles and uppers of rubber or of plastics, the uppers of which are neither fixed to the sole nor assembled by stitching, riveting, nailing, screwing, plugging or similar processes > Footwear incorporating a protective metal toe-cap > Of plastics",
+  "6401.92.11.00": "Waterproof footwear with outer soles and uppers of rubber or of plastics, the uppers of which are neither fixed to the sole nor assembled by stitching, riveting, nailing, screwing, plugging or similar processes > Other footwear > Covering the ankle but not covering the knee > Riding boots > Of rubber",
+  "6401.92.12.00": "Waterproof footwear with outer soles and uppers of rubber or of plastics, the uppers of which are neither fixed to the sole nor assembled by stitching, riveting, nailing, screwing, plugging or similar processes > Other footwear > Covering the ankle but not covering the knee > Riding boots > Of plastics",
+  "6401.92.20.00": "Waterproof footwear with outer soles and uppers of rubber or of plastics, the uppers of which are neither fixed to the sole nor assembled by stitching, riveting, nailing, screwing, plugging or similar processes > Other footwear > Covering the ankle but not covering the knee > Downhill ski-boots",
+  "6401.92.91.00": "Waterproof footwear with outer soles and uppers of rubber or of plastics, the uppers of which are neither fixed to the sole nor assembled by stitching, riveting, nailing, screwing, plugging or similar processes > Other footwear > Covering the ankle but not covering the knee > Other > Of rubber",
+  "6401.92.92.00": "Waterproof footwear with outer soles and uppers of rubber or of plastics, the uppers of which are neither fixed to the sole nor assembled by stitching, riveting, nailing, screwing, plugging or similar processes > Other footwear > Covering the ankle but not covering the knee > Other > Of plastics",
+  "6401.99.11.00": "Waterproof footwear with outer soles and uppers of rubber or of plastics, the uppers of which are neither fixed to the sole nor assembled by stitching, riveting, nailing, screwing, plugging or similar processes > Other footwear > Other > Of rubber > Riding boots solely of rubber",
+  "6401.99.12.00": "Waterproof footwear with outer soles and uppers of rubber or of plastics, the uppers of which are neither fixed to the sole nor assembled by stitching, riveting, nailing, screwing, plugging or similar processes > Other footwear > Other > Of rubber > Unfinished footwear consisting of an outer sole and an incomplete upper",
+  "6401.99.19.00": "Waterproof footwear with outer soles and uppers of rubber or of plastics, the uppers of which are neither fixed to the sole nor assembled by stitching, riveting, nailing, screwing, plugging or similar processes > Other footwear > Other > Of rubber > Other",
+  "6401.99.20.00": "Waterproof footwear with outer soles and uppers of rubber or of plastics, the uppers of which are neither fixed to the sole nor assembled by stitching, riveting, nailing, screwing, plugging or similar processes > Other footwear > Other > Of plastics",
+  "6402.12.00.00": "Other footwear with outer soles and uppers of rubber or plastics > Sports footwear > Ski-boots, cross-country ski footwear and snowboard boots",
+  "6402.19.10.00": "Other footwear with outer soles and uppers of rubber or plastics > Sports footwear > Other > Soccer, other football, baseball or bowling footwear",
+  "6402.19.90.00": "Other footwear with outer soles and uppers of rubber or plastics > Sports footwear > Other > Other",
+  "6402.20.11.00": "Other footwear with outer soles and uppers of rubber or plastics > Footwear with upper straps or thongs assembled to the sole by means of plugs > Of rubber > Sandals solely of rubber",
+  "6402.20.19.00": "Other footwear with outer soles and uppers of rubber or plastics > Footwear with upper straps or thongs assembled to the sole by means of plugs > Of rubber > Other",
+  "6402.20.20.00": "Other footwear with outer soles and uppers of rubber or plastics > Footwear with upper straps or thongs assembled to the sole by means of plugs > Of plastics",
+  "6402.91.10.00": "Other footwear with outer soles and uppers of rubber or plastics > Other footwear > Covering the ankle > Incorporating a protective metal toe-cap",
+  "6402.91.90.20": "Other footwear with outer soles and uppers of rubber or plastics > Other footwear > Covering the ankle > Other > Men's or boys'",
+  "6402.91.90.30": "Other footwear with outer soles and uppers of rubber or plastics > Other footwear > Covering the ankle > Other > Women's or girls'",
+  "6402.91.90.40": "Other footwear with outer soles and uppers of rubber or plastics > Other footwear > Covering the ankle > Other > Children's",
+  "6402.99.10.00": "Other footwear with outer soles and uppers of rubber or plastics > Other footwear > Other > Incorporating a protective metal toe-cap",
+  "6402.99.90.10": "Other footwear with outer soles and uppers of rubber or plastics > Other footwear > Other > Other > Slippers",
+  "6402.99.90.91": "Other footwear with outer soles and uppers of rubber or plastics > Other footwear > Other > Other > Other > Men's or boys'",
+  "6402.99.90.92": "Other footwear with outer soles and uppers of rubber or plastics > Other footwear > Other > Other > Other > Women's or girls'",
+  "6402.99.90.93": "Other footwear with outer soles and uppers of rubber or plastics > Other footwear > Other > Other > Other > Children's",
+  "6403.12.00.00": "Footwear with outer soles of rubber, plastics, leather or composition leather and uppers of leather > Sports footwear > Ski-boots, cross-country ski footwear and snowboard boots",
+  "6403.19.10.00": "Footwear with outer soles of rubber, plastics, leather or composition leather and uppers of leather > Sports footwear > Other > For an individual with a defective or abnormal foot or ankle, when purchased on the written order of a registered medical practitioner",
+  "6403.19.20.10": "Footwear with outer soles of rubber, plastics, leather or composition leather and uppers of leather > Sports footwear > Other > Other footwear for riding, golfing, hiking, climbing, curling, bowling, skating or training including track and running > Golf",
+  "6403.19.20.20": "Footwear with outer soles of rubber, plastics, leather or composition leather and uppers of leather > Sports footwear > Other > Other footwear for riding, golfing, hiking, climbing, curling, bowling, skating or training including track and running > Hiking or climbing",
+  "6403.19.20.30": "Footwear with outer soles of rubber, plastics, leather or composition leather and uppers of leather > Sports footwear > Other > Other footwear for riding, golfing, hiking, climbing, curling, bowling, skating or training including track and running > Training, including track or running",
+  "6403.19.20.90": "Footwear with outer soles of rubber, plastics, leather or composition leather and uppers of leather > Sports footwear > Other > Other footwear for riding, golfing, hiking, climbing, curling, bowling, skating or training including track and running > Other",
+  "6403.19.90.00": "Footwear with outer soles of rubber, plastics, leather or composition leather and uppers of leather > Sports footwear > Other > Other",
+  "6403.20.00.00": "Footwear with outer soles of rubber, plastics, leather or composition leather and uppers of leather > Footwear with outer soles of leather, and uppers which consist of leather straps across the instep and around the big toe",
+  "6403.40.00.00": "Footwear with outer soles of rubber, plastics, leather or composition leather and uppers of leather > Other footwear, incorporating a protective metal toe-cap",
+  "6403.51.10.00": "Footwear with outer soles of rubber, plastics, leather or composition leather and uppers of leather > Other footwear with outer soles of leather > Covering the ankle > Slippers",
+  "6403.51.90.00": "Footwear with outer soles of rubber, plastics, leather or composition leather and uppers of leather > Other footwear with outer soles of leather > Covering the ankle > Other",
+  "6403.59.10.00": "Footwear with outer soles of rubber, plastics, leather or composition leather and uppers of leather > Other footwear with outer soles of leather > Other > For an individual with a defective or abnormal foot or ankle, when purchased on the written order of a registered medical practitioner; pointe shoes or block toe shoes, for professional dancers employed by full-time dance companies which meet Canada Council standards of professionalism or for ballet students in full-time attendance at a ballet school which meets Canada Council curriculum standards",
+  "6403.59.20.00": "Footwear with outer soles of rubber, plastics, leather or composition leather and uppers of leather > Other footwear with outer soles of leather > Other > Other women's footwear, valued at $30 or more per pair",
+  "6403.59.91.00": "Footwear with outer soles of rubber, plastics, leather or composition leather and uppers of leather > Other footwear with outer soles of leather > Other > Other > Slippers",
+  "6403.59.99.10": "Footwear with outer soles of rubber, plastics, leather or composition leather and uppers of leather > Other footwear with outer soles of leather > Other > Other > Other > Men's or boys'",
+  "6403.59.99.20": "Footwear with outer soles of rubber, plastics, leather or composition leather and uppers of leather > Other footwear with outer soles of leather > Other > Other > Other > Women's, girls' or children's",
+  "6403.91.00.10": "Footwear with outer soles of rubber, plastics, leather or composition leather and uppers of leather > Other footwear > Covering the ankle > Work",
+  "6403.91.00.91": "Footwear with outer soles of rubber, plastics, leather or composition leather and uppers of leather > Other footwear > Covering the ankle > Other > Men's or boys'",
+  "6403.91.00.92": "Footwear with outer soles of rubber, plastics, leather or composition leather and uppers of leather > Other footwear > Covering the ankle > Other > Women's, girls' or children's",
+  "6403.99.10.00": "Footwear with outer soles of rubber, plastics, leather or composition leather and uppers of leather > Other footwear > Other > For an individual with a defective or abnormal foot or ankle, when purchased on the written order of a registered medical practitioner",
+  "6403.99.30.00": "Footwear with outer soles of rubber, plastics, leather or composition leather and uppers of leather > Other footwear > Other > Other women's footwear, valued at $30 or more per pair",
+  "6403.99.91.00": "Footwear with outer soles of rubber, plastics, leather or composition leather and uppers of leather > Other footwear > Other > Other > Slippers",
+  "6403.99.99.10": "Footwear with outer soles of rubber, plastics, leather or composition leather and uppers of leather > Other footwear > Other > Other > Other > Men's or boys'",
+  "6403.99.99.20": "Footwear with outer soles of rubber, plastics, leather or composition leather and uppers of leather > Other footwear > Other > Other > Other > Women's, girls' or children's",
+  "6404.11.11.00": "Footwear with outer soles of rubber, plastics, leather or composition leather and uppers of textile materials > Footwear with outer soles of rubber or plastics > Sports footwear; tennis shoes, basketball shoes, gym shoes, training shoes and the like > Footwear with outer soles solely of rubber and uppers of canvas (per Chapter criteria) > Hiking footwear",
+  "6404.11.19.00": "Footwear with outer soles of rubber, plastics, leather or composition leather and uppers of textile materials > Footwear with outer soles of rubber or plastics > Sports footwear; tennis shoes, basketball shoes, gym shoes, training shoes and the like > Footwear with outer soles solely of rubber and uppers of canvas (per Chapter criteria) > Other",
+  "6404.11.91.00": "Footwear with outer soles of rubber, plastics, leather or composition leather and uppers of textile materials > Footwear with outer soles of rubber or plastics > Sports footwear; tennis shoes, basketball shoes, gym shoes, training shoes and the like > Other > Hiking footwear",
+  "6404.11.99.21": "Footwear with outer soles of rubber, plastics, leather or composition leather and uppers of textile materials > Footwear with outer soles of rubber or plastics > Sports footwear; tennis shoes, basketball shoes, gym shoes, training shoes and the like > Other > Other > Training, including track or running > Men's or boys'",
+  "6404.11.99.22": "Footwear with outer soles of rubber, plastics, leather or composition leather and uppers of textile materials > Footwear with outer soles of rubber or plastics > Sports footwear; tennis shoes, basketball shoes, gym shoes, training shoes and the like > Other > Other > Training, including track or running > Women's, girls' or children's",
+  "6404.11.99.90": "Footwear with outer soles of rubber, plastics, leather or composition leather and uppers of textile materials > Footwear with outer soles of rubber or plastics > Sports footwear; tennis shoes, basketball shoes, gym shoes, training shoes and the like > Other > Other > Other",
+  "6404.19.10.00": "Footwear with outer soles of rubber, plastics, leather or composition leather and uppers of textile materials > Footwear with outer soles of rubber or plastics > Other > For an individual with a defective or abnormal foot or ankle, when purchased on the written order of a registered medical practitioner",
+  "6404.19.30.10": "Footwear with outer soles of rubber, plastics, leather or composition leather and uppers of textile materials > Footwear with outer soles of rubber or plastics > Other > Other, with outer soles solely of rubber and uppers of canvas (per Chapter criteria) > Women's, girls' or children's",
+  "6404.19.30.20": "Footwear with outer soles of rubber, plastics, leather or composition leather and uppers of textile materials > Footwear with outer soles of rubber or plastics > Other > Other, with outer soles solely of rubber and uppers of canvas (per Chapter criteria) > Men's or boys'",
+  "6404.19.90.10": "Footwear with outer soles of rubber, plastics, leather or composition leather and uppers of textile materials > Footwear with outer soles of rubber or plastics > Other > Other > Slippers",
+  "6404.19.90.91": "Footwear with outer soles of rubber, plastics, leather or composition leather and uppers of textile materials > Footwear with outer soles of rubber or plastics > Other > Other > Other > Men's or boys'",
+  "6404.19.90.92": "Footwear with outer soles of rubber, plastics, leather or composition leather and uppers of textile materials > Footwear with outer soles of rubber or plastics > Other > Other > Other > Women's, girls' or children's",
+  "6404.20.10.00": "Footwear with outer soles of rubber, plastics, leather or composition leather and uppers of textile materials > Footwear with outer soles of leather or composition leather > Pointe shoes or block toe shoes, for professional dancers employed by full-time dance companies which meet Canada Council standards of professionalism or for ballet students in full-time attendance at a ballet school which meets Canada Council curriculum standards",
+  "6404.20.90.00": "Footwear with outer soles of rubber, plastics, leather or composition leather and uppers of textile materials > Footwear with outer soles of leather or composition leather > Other",
+  "6405.10.10.00": "Other footwear > With uppers of leather or composition leather > Pointe shoes or block toe shoes, for professional dancers employed by full-time dance companies which meet Canada Council standards of professionalism or for ballet students in full-time attendance at a ballet school which meets Canada Council curriculum standards",
+  "6405.10.90.00": "Other footwear > With uppers of leather or composition leather > Other",
+  "6405.20.10.00": "Other footwear > With uppers of textile materials > Pointe shoes or block toe shoes, for professional dancers employed by full-time dance companies which meet Canada Council standards of professionalism or for ballet students in full-time attendance at a ballet school which meets Canada Council curriculum standards",
+  "6405.20.20.00": "Other footwear > With uppers of textile materials > Other footwear with outer soles and uppers of wool felt",
+  "6405.20.90.00": "Other footwear > With uppers of textile materials > Other",
+  "6405.90.00.00": "Other footwear > Other",
+  "6406.10.11.00": "Parts of footwear (including uppers whether or not attached to soles other than outer soles); removable in-soles, heel cushions and similar articles; gaiters, leggings and similar articles, and parts thereof > Uppers and parts thereof, other than stiffeners > Of textile materials > Uppers, the external surface of which is 50% or more of textile materials",
+  "6406.10.19.00": "Parts of footwear (including uppers whether or not attached to soles other than outer soles); removable in-soles, heel cushions and similar articles; gaiters, leggings and similar articles, and parts thereof > Uppers and parts thereof, other than stiffeners > Of textile materials > Other",
+  "6406.10.91.00": "Parts of footwear (including uppers whether or not attached to soles other than outer soles); removable in-soles, heel cushions and similar articles; gaiters, leggings and similar articles, and parts thereof > Uppers and parts thereof, other than stiffeners > Other > Of leather or imitation leather, or combinations thereof, unlined or lined with textile or other materials, for use in the manufacture of women's cement lasted footwear",
+  "6406.10.99.00": "Parts of footwear (including uppers whether or not attached to soles other than outer soles); removable in-soles, heel cushions and similar articles; gaiters, leggings and similar articles, and parts thereof > Uppers and parts thereof, other than stiffeners > Other > Other",
+  "6406.20.00.00": "Parts of footwear (including uppers whether or not attached to soles other than outer soles); removable in-soles, heel cushions and similar articles; gaiters, leggings and similar articles, and parts thereof > Outer soles and heels, of rubber or plastics",
+  "6406.90.10.00": "Parts of footwear (including uppers whether or not attached to soles other than outer soles); removable in-soles, heel cushions and similar articles; gaiters, leggings and similar articles, and parts thereof > Other > Of wood",
+  "6406.90.20.00": "Parts of footwear (including uppers whether or not attached to soles other than outer soles); removable in-soles, heel cushions and similar articles; gaiters, leggings and similar articles, and parts thereof > Other > Crampons for climbing or mountaineering",
+  "6406.90.30.00": "Parts of footwear (including uppers whether or not attached to soles other than outer soles); removable in-soles, heel cushions and similar articles; gaiters, leggings and similar articles, and parts thereof > Other > Gaiters or leggings of textile material",
+  "6406.90.90.00": "Parts of footwear (including uppers whether or not attached to soles other than outer soles); removable in-soles, heel cushions and similar articles; gaiters, leggings and similar articles, and parts thereof > Other > Other"
+});
+
+Object.assign(PREF_FREE, {
+  "6401.10.11.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6401.10.19.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6401.10.20.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6401.92.11.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6401.92.12.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6401.92.91.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6401.99.11.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6401.99.19.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6401.99.20.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6402.19.10.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6402.19.90.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6402.20.11.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6402.20.19.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6402.20.20.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6402.91.10.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "UKT"],
+  "6402.91.90.20": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6402.91.90.30": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6402.91.90.40": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6402.99.10.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6402.99.90.10": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6402.99.90.91": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6402.99.90.92": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6402.99.90.93": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6403.19.20.10": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6403.19.20.20": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6403.19.20.30": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6403.19.20.90": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6403.19.90.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6403.20.00.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6403.40.00.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6403.51.10.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "UKT"],
+  "6403.51.90.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6403.59.20.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6403.59.91.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "UKT"],
+  "6403.59.99.10": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6403.59.99.20": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6403.91.00.10": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "UKT"],
+  "6403.91.00.91": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "UKT"],
+  "6403.91.00.92": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "UKT"],
+  "6403.99.30.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6403.99.91.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "UKT"],
+  "6403.99.99.10": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6403.99.99.20": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6404.11.11.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6404.11.19.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6404.11.91.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6404.11.99.21": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6404.11.99.22": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6404.11.99.90": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6404.19.90.10": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "UKT"],
+  "6404.19.90.91": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "UKT"],
+  "6404.19.90.92": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "UKT"],
+  "6404.20.90.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6405.10.90.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6405.20.20.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6405.20.90.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6405.90.00.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6406.10.91.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6406.90.30.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6406.90.90.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"]
+});
+
+Object.assign(PREF_SPECIAL, {
+  "6401.10.19.00": {"CPTPT": {type:"percent", rate:15}},
+  "6401.10.20.00": {"AUT": {type:"percent", rate:18.5}, "NZT": {type:"percent", rate:18.5}, "CPTPT": {type:"percent", rate:15}},
+  "6401.92.12.00": {"AUT": {type:"percent", rate:18.5}, "NZT": {type:"percent", rate:18.5}},
+  "6401.92.91.00": {"CPTPT": {type:"percent", rate:15}},
+  "6401.99.19.00": {"CPTPT": {type:"percent", rate:15}},
+  "6401.99.20.00": {"AUT": {type:"percent", rate:18.5}, "NZT": {type:"percent", rate:18.5}, "CPTPT": {type:"percent", rate:15}},
+  "6402.19.10.00": {"AUT": {type:"percent", rate:13}, "NZT": {type:"percent", rate:13}},
+  "6402.19.90.00": {"AUT": {type:"percent", rate:13}, "NZT": {type:"percent", rate:13}},
+  "6402.20.20.00": {"AUT": {type:"percent", rate:13.5}, "NZT": {type:"percent", rate:13.5}},
+  "6402.91.10.00": {"AUT": {type:"percent", rate:8.5}, "NZT": {type:"percent", rate:8.5}, "CPTPT": {type:"percent", rate:13}},
+  "6402.91.90.20": {"AUT": {type:"percent", rate:13}, "NZT": {type:"percent", rate:13}},
+  "6402.91.90.30": {"AUT": {type:"percent", rate:13}, "NZT": {type:"percent", rate:13}},
+  "6402.91.90.40": {"AUT": {type:"percent", rate:13}, "NZT": {type:"percent", rate:13}},
+  "6402.99.10.00": {"AUT": {type:"percent", rate:8.5}, "NZT": {type:"percent", rate:8.5}},
+  "6402.99.90.10": {"AUT": {type:"percent", rate:13.5}, "NZT": {type:"percent", rate:13.5}},
+  "6402.99.90.91": {"AUT": {type:"percent", rate:13.5}, "NZT": {type:"percent", rate:13.5}},
+  "6402.99.90.92": {"AUT": {type:"percent", rate:13.5}, "NZT": {type:"percent", rate:13.5}},
+  "6402.99.90.93": {"AUT": {type:"percent", rate:13.5}, "NZT": {type:"percent", rate:13.5}},
+  "6403.19.20.10": {"AUT": {type:"percent", rate:13.5}, "NZT": {type:"percent", rate:13.5}},
+  "6403.19.20.20": {"AUT": {type:"percent", rate:13.5}, "NZT": {type:"percent", rate:13.5}},
+  "6403.19.20.30": {"AUT": {type:"percent", rate:13.5}, "NZT": {type:"percent", rate:13.5}},
+  "6403.19.20.90": {"AUT": {type:"percent", rate:13.5}, "NZT": {type:"percent", rate:13.5}},
+  "6403.19.90.00": {"AUT": {type:"percent", rate:13.5}, "NZT": {type:"percent", rate:13.5}},
+  "6403.20.00.00": {"AUT": {type:"percent", rate:13.5}, "NZT": {type:"percent", rate:13.5}},
+  "6403.40.00.00": {"AUT": {type:"percent", rate:13.5}, "NZT": {type:"percent", rate:13.5}},
+  "6403.51.10.00": {"AUT": {type:"percent", rate:13.5}, "NZT": {type:"percent", rate:13.5}, "CPTPT": {type:"percent", rate:3}},
+  "6403.51.90.00": {"AUT": {type:"percent", rate:13.5}, "NZT": {type:"percent", rate:13.5}},
+  "6403.59.20.00": {"AUT": {type:"percent", rate:6.5}, "NZT": {type:"percent", rate:6.5}},
+  "6403.59.91.00": {"AUT": {type:"percent", rate:13.5}, "NZT": {type:"percent", rate:13.5}, "CPTPT": {type:"percent", rate:3}},
+  "6403.59.99.10": {"AUT": {type:"percent", rate:13.5}, "NZT": {type:"percent", rate:13.5}},
+  "6403.59.99.20": {"AUT": {type:"percent", rate:13.5}, "NZT": {type:"percent", rate:13.5}},
+  "6403.91.00.10": {"AUT": {type:"percent", rate:13.5}, "NZT": {type:"percent", rate:13.5}, "CPTPT": {type:"percent", rate:4.5}},
+  "6403.91.00.91": {"AUT": {type:"percent", rate:13.5}, "NZT": {type:"percent", rate:13.5}, "CPTPT": {type:"percent", rate:4.5}},
+  "6403.91.00.92": {"AUT": {type:"percent", rate:13.5}, "NZT": {type:"percent", rate:13.5}, "CPTPT": {type:"percent", rate:4.5}},
+  "6403.99.30.00": {"AUT": {type:"percent", rate:6.5}, "NZT": {type:"percent", rate:6.5}},
+  "6403.99.91.00": {"AUT": {type:"percent", rate:13.5}, "NZT": {type:"percent", rate:13.5}, "CPTPT": {type:"percent", rate:3}},
+  "6403.99.99.10": {"AUT": {type:"percent", rate:13.5}, "NZT": {type:"percent", rate:13.5}},
+  "6403.99.99.20": {"AUT": {type:"percent", rate:13.5}, "NZT": {type:"percent", rate:13.5}},
+  "6404.11.11.00": {"GPT": {type:"percent", rate:13}},
+  "6404.11.19.00": {"GPT": {type:"percent", rate:13}},
+  "6404.11.91.00": {"AUT": {type:"percent", rate:13.5}, "NZT": {type:"percent", rate:13.5}},
+  "6404.11.99.21": {"AUT": {type:"percent", rate:13.5}, "NZT": {type:"percent", rate:13.5}},
+  "6404.11.99.22": {"AUT": {type:"percent", rate:13.5}, "NZT": {type:"percent", rate:13.5}},
+  "6404.11.99.90": {"AUT": {type:"percent", rate:13.5}, "NZT": {type:"percent", rate:13.5}},
+  "6404.19.90.10": {"AUT": {type:"percent", rate:13.5}, "NZT": {type:"percent", rate:13.5}, "CPTPT": {type:"percent", rate:13.5}},
+  "6404.19.90.91": {"AUT": {type:"percent", rate:13.5}, "NZT": {type:"percent", rate:13.5}, "CPTPT": {type:"percent", rate:13.5}},
+  "6404.19.90.92": {"AUT": {type:"percent", rate:13.5}, "NZT": {type:"percent", rate:13.5}, "CPTPT": {type:"percent", rate:13.5}},
+  "6404.20.90.00": {"AUT": {type:"percent", rate:13.5}, "NZT": {type:"percent", rate:13.5}},
+  "6405.10.90.00": {"AUT": {type:"percent", rate:13.5}, "NZT": {type:"percent", rate:13.5}},
+  "6405.20.20.00": {"AUT": {type:"percent", rate:13.5}, "NZT": {type:"percent", rate:13.5}},
+  "6405.20.90.00": {"AUT": {type:"percent", rate:13.5}, "NZT": {type:"percent", rate:13.5}},
+  "6405.90.00.00": {"AUT": {type:"percent", rate:13.5}, "NZT": {type:"percent", rate:13.5}},
+  "6406.10.91.00": {"GPT": {type:"percent", rate:5}},
+  "6406.90.30.00": {"GPT": {type:"percent", rate:5}},
+  "6406.90.90.00": {"GPT": {type:"percent", rate:4}}
+});
+
+// ===== Chapter 65 - Headgear and Parts Thereof (verified 10 AUG 2026 from
+// CBSA Ch.65, user-provided markdown, full read) =====
+// NOT free-by-default - 10 of 19 codes dutiable. Three consecutive orphaned
+// codes (6501.00.00, 6502.00.00, 6504.00.10) resolved via clean 3:3
+// count-matched displaced-block inference. GPT gets an explicit reduced
+// rate (not zero-relief exclusion) on most dutiable codes here, distinct
+// from the more common zero-relief pattern seen in many other chapters.
+
+Object.assign(MFN_RATES, {
+  "6501.00.00.00": {type:"free", rate:null, note:""},
+  "6502.00.00.00": {type:"free", rate:null, note:""},
+  "6504.00.10.00": {type:"free", rate:null, note:""},
+  "6504.00.90.00": {type:"percent", rate:12.5, note:""},
+  "6505.00.10.00": {type:"percent", rate:15.5, note:""},
+  "6505.00.20.00": {type:"free", rate:null, note:""},
+  "6505.00.31.00": {type:"free", rate:null, note:""},
+  "6505.00.39.00": {type:"percent", rate:12.5, note:""},
+  "6505.00.40.00": {type:"percent", rate:12.5, note:""},
+  "6505.00.90.00": {type:"percent", rate:15.5, note:""},
+  "6506.10.10.30": {type:"free", rate:null, note:""},
+  "6506.10.10.40": {type:"free", rate:null, note:""},
+  "6506.10.10.90": {type:"free", rate:null, note:""},
+  "6506.10.90.00": {type:"percent", rate:8.5, note:""},
+  "6506.91.00.00": {type:"percent", rate:9, note:""},
+  "6506.99.10.00": {type:"percent", rate:5, note:""},
+  "6506.99.20.00": {type:"percent", rate:8, note:""},
+  "6506.99.90.00": {type:"percent", rate:12.5, note:""},
+  "6507.00.00.00": {type:"free", rate:null, note:""}
+});
+
+Object.assign(CODE_DESCRIPTIONS, {
+  "6501.00.00.00": "Hat-forms, hat bodies and hoods of felt, neither blocked to shape nor with made brims; plateaux and manchons (including slit manchons), of felt",
+  "6502.00.00.00": "Hat-shapes, plaited or made by assembling strips of any material, neither blocked to shape, nor with made brims, nor lined, nor trimmed",
+  "6504.00.10.00": "Hats and other headgear, plaited or made by assembling strips of any material, whether or not lined or trimmed > Plaited, in a single piece, or of fur-felt or wool-felt, for use in the manufacture of hats",
+  "6504.00.90.00": "Hats and other headgear, plaited or made by assembling strips of any material, whether or not lined or trimmed > Other",
+  "6505.00.10.00": "Hats and other headgear, knitted or crocheted, or made up from lace, felt or other textile fabric, in the piece (but not in strips), whether or not lined or trimmed; hair-nets of any material, whether or not lined or trimmed > Hair-nets",
+  "6505.00.20.00": "Hats and other headgear, knitted or crocheted, or made up from lace, felt or other textile fabric, in the piece (but not in strips), whether or not lined or trimmed; hair-nets of any material, whether or not lined or trimmed > Knitted, crocheted or woven, for use in the manufacture of hats",
+  "6505.00.31.00": "Hats and other headgear, knitted or crocheted, or made up from lace, felt or other textile fabric, in the piece (but not in strips), whether or not lined or trimmed; hair-nets of any material, whether or not lined or trimmed > Felt hats and other felt headgear, made from the hat bodies, hoods or plateaux of heading 65.01, whether or not lined or trimmed > Of fur-felt or wool-felt, for use in the manufacture of hats",
+  "6505.00.39.00": "Hats and other headgear, knitted or crocheted, or made up from lace, felt or other textile fabric, in the piece (but not in strips), whether or not lined or trimmed; hair-nets of any material, whether or not lined or trimmed > Felt hats and other felt headgear, made from the hat bodies, hoods or plateaux of heading 65.01, whether or not lined or trimmed > Other",
+  "6505.00.40.00": "Hats and other headgear, knitted or crocheted, or made up from lace, felt or other textile fabric, in the piece (but not in strips), whether or not lined or trimmed; hair-nets of any material, whether or not lined or trimmed > Other hats, hoods, caps, bonnets or berets",
+  "6505.00.90.00": "Hats and other headgear, knitted or crocheted, or made up from lace, felt or other textile fabric, in the piece (but not in strips), whether or not lined or trimmed; hair-nets of any material, whether or not lined or trimmed > Other",
+  "6506.10.10.30": "Other headgear, whether or not lined or trimmed > Safety headgear > Football helmets; for firefighters; for mountaineering and climbing; industrial safety helmets; lead-impregnated or lead-lined, for X-ray operators; other protective headgear, athletic > Welders'",
+  "6506.10.10.40": "Other headgear, whether or not lined or trimmed > Safety headgear > Football helmets; for firefighters; for mountaineering and climbing; industrial safety helmets; lead-impregnated or lead-lined, for X-ray operators; other protective headgear, athletic > Protective headgear, athletic",
+  "6506.10.10.90": "Other headgear, whether or not lined or trimmed > Safety headgear > Football helmets; for firefighters; for mountaineering and climbing; industrial safety helmets; lead-impregnated or lead-lined, for X-ray operators; other protective headgear, athletic > Other",
+  "6506.10.90.00": "Other headgear, whether or not lined or trimmed > Safety headgear > Other",
+  "6506.91.00.00": "Other headgear, whether or not lined or trimmed > Other > Of rubber or of plastics",
+  "6506.99.10.00": "Other headgear, whether or not lined or trimmed > Other > Of other materials > Of paper, leather or feathers",
+  "6506.99.20.00": "Other headgear, whether or not lined or trimmed > Other > Of other materials > Of furskin",
+  "6506.99.90.00": "Other headgear, whether or not lined or trimmed > Other > Of other materials > Other",
+  "6507.00.00.00": "Head-bands, linings, covers, hat foundations, hat frames, peaks and chinstraps, for headgear"
+});
+
+Object.assign(PREF_FREE, {
+  "6504.00.90.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6505.00.10.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6505.00.39.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6505.00.40.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6505.00.90.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6506.10.90.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6506.91.00.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6506.99.10.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6506.99.20.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6506.99.90.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"]
+});
+
+Object.assign(PREF_SPECIAL, {
+  "6504.00.90.00": {"AUT": {type:"percent", rate:10.5}, "NZT": {type:"percent", rate:10.5}, "GPT": {type:"percent", rate:10}},
+  "6505.00.39.00": {"GPT": {type:"percent", rate:10}},
+  "6505.00.40.00": {"AUT": {type:"percent", rate:10.5}, "NZT": {type:"percent", rate:10.5}, "GPT": {type:"percent", rate:10}},
+  "6505.00.90.00": {"AUT": {type:"percent", rate:8.5}, "NZT": {type:"percent", rate:8.5}},
+  "6506.10.90.00": {"GPT": {type:"percent", rate:5}},
+  "6506.91.00.00": {"GPT": {type:"percent", rate:5}},
+  "6506.99.10.00": {"GPT": {type:"percent", rate:5}},
+  "6506.99.20.00": {"GPT": {type:"percent", rate:5}},
+  "6506.99.90.00": {"GPT": {type:"percent", rate:10}}
+});
+
+// ===== Chapter 66 - Umbrellas, Sun Umbrellas, Walking-Sticks, Seat-Sticks,
+// Whips, Riding-Crops and Parts Thereof (verified 10 AUG 2026 from CBSA
+// Ch.66, user-provided markdown, full read) =====
+// NOT free-by-default - 4 of 7 codes dutiable. Small, simple chapter -
+// consistent 7-7.5% MFN with GPT getting a real 5% discount throughout.
+// Parts/frames/hospital-use canes are Free; finished umbrellas/sticks are
+// dutiable.
+
+Object.assign(MFN_RATES, {
+  "6601.10.00.00": {type:"percent", rate:7, note:""},
+  "6601.91.00.00": {type:"percent", rate:7.5, note:""},
+  "6601.99.00.00": {type:"percent", rate:7.5, note:""},
+  "6602.00.10.00": {type:"free", rate:null, note:""},
+  "6602.00.90.00": {type:"percent", rate:7, note:""},
+  "6603.20.00.00": {type:"free", rate:null, note:""},
+  "6603.90.00.00": {type:"free", rate:null, note:""}
+});
+
+Object.assign(CODE_DESCRIPTIONS, {
+  "6601.10.00.00": "Umbrellas and sun umbrellas (including walking-stick umbrellas, garden umbrellas and similar umbrellas) > Garden or similar umbrellas",
+  "6601.91.00.00": "Umbrellas and sun umbrellas (including walking-stick umbrellas, garden umbrellas and similar umbrellas) > Other > Having a telescopic shaft",
+  "6601.99.00.00": "Umbrellas and sun umbrellas (including walking-stick umbrellas, garden umbrellas and similar umbrellas) > Other > Other",
+  "6602.00.10.00": "Walking-sticks, seat-sticks, whips, riding-crops and the like > Canes for use of a public hospital",
+  "6602.00.90.00": "Walking-sticks, seat-sticks, whips, riding-crops and the like > Other",
+  "6603.20.00.00": "Parts, trimmings and accessories of articles of heading 66.01 or 66.02 > Umbrella frames, including frames mounted on shafts (sticks)",
+  "6603.90.00.00": "Parts, trimmings and accessories of articles of heading 66.01 or 66.02 > Other"
+});
+
+Object.assign(PREF_FREE, {
+  "6601.10.00.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6601.91.00.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6601.99.00.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6602.00.90.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"]
+});
+
+Object.assign(PREF_SPECIAL, {
+  "6601.10.00.00": {"GPT": {type:"percent", rate:5}},
+  "6601.91.00.00": {"GPT": {type:"percent", rate:5}},
+  "6601.99.00.00": {"GPT": {type:"percent", rate:5}},
+  "6602.00.90.00": {"GPT": {type:"percent", rate:5}}
+});
+
+// ===== Chapter 67 - Prepared Feathers and Down and Articles Made of
+// Feathers or of Down; Artificial Flowers; Articles of Human Hair (verified
+// 10 AUG 2026 from CBSA Ch.67, user-provided markdown, full read) =====
+// NOT free-by-default - 8 of 10 codes dutiable. Wigs (67.04) are a flat
+// 15.5% across every material variant (synthetic, human hair, other) with
+// full relief for everyone including GPT - no exclusions at all, unlike
+// most other dutiable codes in this chapter which exclude GPT from the
+// main list and give it a separate reduced rate instead.
+
+Object.assign(MFN_RATES, {
+  "6701.00.10.00": {type:"percent", rate:4.5, note:""},
+  "6701.00.90.00": {type:"percent", rate:4.5, note:""},
+  "6702.10.00.00": {type:"percent", rate:5, note:""},
+  "6702.90.10.00": {type:"free", rate:null, note:""},
+  "6702.90.90.00": {type:"percent", rate:6.5, note:""},
+  "6703.00.00.00": {type:"free", rate:null, note:""},
+  "6704.11.00.00": {type:"percent", rate:15.5, note:""},
+  "6704.19.00.00": {type:"percent", rate:15.5, note:""},
+  "6704.20.00.00": {type:"percent", rate:15.5, note:""},
+  "6704.90.00.00": {type:"percent", rate:15.5, note:""}
+});
+
+Object.assign(CODE_DESCRIPTIONS, {
+  "6701.00.10.00": "Skins and other parts of birds with their feathers or down, feathers, parts of feathers, down and articles thereof (other than goods of heading 05.05 and worked quills and scapes) > Articles of feathers or down",
+  "6701.00.90.00": "Skins and other parts of birds with their feathers or down, feathers, parts of feathers, down and articles thereof (other than goods of heading 05.05 and worked quills and scapes) > Other",
+  "6702.10.00.00": "Artificial flowers, foliage and fruit and parts thereof; articles made of artificial flowers, foliage or fruit > Of plastics",
+  "6702.90.10.00": "Artificial flowers, foliage and fruit and parts thereof; articles made of artificial flowers, foliage or fruit > Of other materials > Parts, of polyester or silk yarns or fabrics, whether or not with wire stems, for use in the manufacture of artificial flowers, trees or other plants",
+  "6702.90.90.00": "Artificial flowers, foliage and fruit and parts thereof; articles made of artificial flowers, foliage or fruit > Of other materials > Other",
+  "6703.00.00.00": "Human hair, dressed, thinned, bleached or otherwise worked; wool or other animal hair or other textile materials, prepared for use in making wigs or the like",
+  "6704.11.00.00": "Wigs, false beards, eyebrows and eyelashes, switches and the like, of human or animal hair or of textile materials; articles of human hair not elsewhere specified or included > Of synthetic textile materials > Complete wigs",
+  "6704.19.00.00": "Wigs, false beards, eyebrows and eyelashes, switches and the like, of human or animal hair or of textile materials; articles of human hair not elsewhere specified or included > Of synthetic textile materials > Other",
+  "6704.20.00.00": "Wigs, false beards, eyebrows and eyelashes, switches and the like, of human or animal hair or of textile materials; articles of human hair not elsewhere specified or included > Of human hair",
+  "6704.90.00.00": "Wigs, false beards, eyebrows and eyelashes, switches and the like, of human or animal hair or of textile materials; articles of human hair not elsewhere specified or included > Of other materials"
+});
+
+Object.assign(PREF_FREE, {
+  "6701.00.10.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6701.00.90.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6702.10.00.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6702.90.90.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6704.11.00.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6704.19.00.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6704.20.00.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6704.90.00.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"]
+});
+
+Object.assign(PREF_SPECIAL, {
+  "6701.00.10.00": {"GPT": {type:"percent", rate:3}},
+  "6701.00.90.00": {"GPT": {type:"percent", rate:3}},
+  "6702.10.00.00": {"GPT": {type:"percent", rate:5}},
+  "6702.90.90.00": {"GPT": {type:"percent", rate:5}}
+});
+
+// ===== Chapter 68 - Articles of Stone, Plaster, Cement, Asbestos, Mica or
+// Similar Materials (verified 10 AUG 2026 from CBSA Ch.68, user-provided
+// markdown, 617-line source, full read) =====
+// Free-by-default (added to MFN_FREE_DEFAULT_CHAPTERS) - 42 of 68 codes
+// dutiable (62%), more dutiable-heavy than most chapters using this
+// treatment, but safe since no gaps were found anywhere. Several dutiable
+// codes carry an explicit GPT rate that exactly equals MFN (zero real
+// relief but stated rather than omitted) - e.g. 6802.93.00, 6802.99.00,
+// 6803.00.90 all show 'GPT: 6.5%' alongside a 6.5% MFN rate, same shape as
+// the tires pattern from Ch.40.
+// Built around 2 pre-existing SIMA-linked stray codes (6809.11.00.19/.90,
+// gypsum wallboard) from earlier work - their existing MFN_RATES entries
+// (6%) were not touched, only their missing CODE_DESCRIPTIONS/PREF_FREE
+// added here, plus the third suffix in that subheading (6809.11.00.11) that
+// was missing entirely.
+const CH68_FREE_DEFAULT = ["68"];
+MFN_FREE_DEFAULT_CHAPTERS.push(...CH68_FREE_DEFAULT);
+
+Object.assign(MFN_RATES, {
+  "6801.00.00.00": {type:"percent", rate:3.5, note:""},
+  "6802.10.90.00": {type:"percent", rate:8, note:""},
+  "6802.21.00.00": {type:"percent", rate:3.5, note:""},
+  "6802.23.00.10": {type:"percent", rate:3.5, note:""},
+  "6802.23.00.90": {type:"percent", rate:3.5, note:""},
+  "6802.29.00.00": {type:"percent", rate:5, note:""},
+  "6802.91.00.00": {type:"percent", rate:6, note:""},
+  "6802.92.00.00": {type:"percent", rate:6.5, note:""},
+  "6802.93.00.20": {type:"percent", rate:6.5, note:""},
+  "6802.93.00.90": {type:"percent", rate:6.5, note:""},
+  "6802.99.00.00": {type:"percent", rate:6.5, note:""},
+  "6803.00.90.00": {type:"percent", rate:6.5, note:""},
+  "6807.10.00.00": {type:"percent", rate:6.5, note:""},
+  "6807.90.00.10": {type:"percent", rate:2.5, note:""},
+  "6807.90.00.90": {type:"percent", rate:2.5, note:""},
+  "6808.00.00.00": {type:"percent", rate:4, note:""},
+  "6809.11.00.11": {type:"percent", rate:6, note:""},
+  "6809.19.00.10": {type:"percent", rate:6.5, note:""},
+  "6809.19.00.90": {type:"percent", rate:6.5, note:""},
+  "6809.90.90.00": {type:"percent", rate:6.5, note:""},
+  "6810.11.00.00": {type:"percent", rate:3, note:""},
+  "6810.19.00.00": {type:"percent", rate:5, note:""},
+  "6810.91.00.00": {type:"percent", rate:5, note:""},
+  "6810.99.00.00": {type:"percent", rate:5, note:""},
+  "6811.40.00.00": {type:"percent", rate:5, note:""},
+  "6811.81.00.00": {type:"percent", rate:5, note:""},
+  "6811.82.00.00": {type:"percent", rate:5, note:""},
+  "6811.89.00.00": {type:"percent", rate:5, note:""},
+  "6812.91.00.00": {type:"percent", rate:15.5, note:""},
+  "6813.20.11.00": {type:"percent", rate:7, note:""},
+  "6813.20.19.00": {type:"percent", rate:5, note:""},
+  "6813.81.10.00": {type:"percent", rate:7, note:""},
+  "6813.81.90.00": {type:"percent", rate:5, note:""},
+  "6815.11.00.00": {type:"percent", rate:5, note:""},
+  "6815.12.00.00": {type:"percent", rate:5, note:""},
+  "6815.13.00.00": {type:"percent", rate:5, note:""},
+  "6815.20.00.00": {type:"percent", rate:4.5, note:""},
+  "6815.91.90.00": {type:"percent", rate:5, note:""},
+  "6815.99.20.00": {type:"percent", rate:7, note:""},
+  "6815.99.90.00": {type:"percent", rate:5, note:""}
+});
+
+Object.assign(CODE_DESCRIPTIONS, {
+  "6801.00.00.00": "Setts, curbstones and flagstones, of natural stone (except slate)",
+  "6802.10.10.00": "Worked monumental or building stone (except slate) and articles thereof, other than goods of heading 68.01; mosaic cubes and the like, of natural stone (including slate), whether or not on a backing; artificially coloured granules, chippings and powder, of natural stone (including slate) > Tiles, cubes and similar articles, whether or not rectangular (including square), the largest face of which is capable of being enclosed in a square the side of which is less than 7 cm; artificially coloured granules, chippings and powder > Artificially coloured roofing granules",
+  "6802.10.90.00": "Worked monumental or building stone (except slate) and articles thereof, other than goods of heading 68.01; mosaic cubes and the like, of natural stone (including slate), whether or not on a backing; artificially coloured granules, chippings and powder, of natural stone (including slate) > Tiles, cubes and similar articles, whether or not rectangular (including square), the largest face of which is capable of being enclosed in a square the side of which is less than 7 cm; artificially coloured granules, chippings and powder > Other",
+  "6802.21.00.00": "Worked monumental or building stone (except slate) and articles thereof, other than goods of heading 68.01; mosaic cubes and the like, of natural stone (including slate), whether or not on a backing; artificially coloured granules, chippings and powder, of natural stone (including slate) > Other monumental or building stone and articles thereof, simply cut or sawn, with a flat or even surface > Marble, travertine and alabaster",
+  "6802.23.00.10": "Worked monumental or building stone (except slate) and articles thereof, other than goods of heading 68.01; mosaic cubes and the like, of natural stone (including slate), whether or not on a backing; artificially coloured granules, chippings and powder, of natural stone (including slate) > Other monumental or building stone and articles thereof, simply cut or sawn, with a flat or even surface > Granite > Building stone",
+  "6802.23.00.90": "Worked monumental or building stone (except slate) and articles thereof, other than goods of heading 68.01; mosaic cubes and the like, of natural stone (including slate), whether or not on a backing; artificially coloured granules, chippings and powder, of natural stone (including slate) > Other monumental or building stone and articles thereof, simply cut or sawn, with a flat or even surface > Granite > Other",
+  "6802.29.00.00": "Worked monumental or building stone (except slate) and articles thereof, other than goods of heading 68.01; mosaic cubes and the like, of natural stone (including slate), whether or not on a backing; artificially coloured granules, chippings and powder, of natural stone (including slate) > Other monumental or building stone and articles thereof, simply cut or sawn, with a flat or even surface > Other stone",
+  "6802.91.00.00": "Worked monumental or building stone (except slate) and articles thereof, other than goods of heading 68.01; mosaic cubes and the like, of natural stone (including slate), whether or not on a backing; artificially coloured granules, chippings and powder, of natural stone (including slate) > Other > Marble, travertine and alabaster",
+  "6802.92.00.00": "Worked monumental or building stone (except slate) and articles thereof, other than goods of heading 68.01; mosaic cubes and the like, of natural stone (including slate), whether or not on a backing; artificially coloured granules, chippings and powder, of natural stone (including slate) > Other > Other calcareous stone",
+  "6802.93.00.20": "Worked monumental or building stone (except slate) and articles thereof, other than goods of heading 68.01; mosaic cubes and the like, of natural stone (including slate), whether or not on a backing; artificially coloured granules, chippings and powder, of natural stone (including slate) > Other > Granite > Monuments, bases and markers, finished",
+  "6802.93.00.90": "Worked monumental or building stone (except slate) and articles thereof, other than goods of heading 68.01; mosaic cubes and the like, of natural stone (including slate), whether or not on a backing; artificially coloured granules, chippings and powder, of natural stone (including slate) > Other > Granite > Other",
+  "6802.99.00.00": "Worked monumental or building stone (except slate) and articles thereof, other than goods of heading 68.01; mosaic cubes and the like, of natural stone (including slate), whether or not on a backing; artificially coloured granules, chippings and powder, of natural stone (including slate) > Other > Other stone",
+  "6803.00.10.00": "Worked slate and articles of slate or of agglomerated slate > Roofing slate; slate for use in the manufacture of billiard tables",
+  "6803.00.90.00": "Worked slate and articles of slate or of agglomerated slate > Other",
+  "6804.10.00.00": "Millstones, grindstones, grinding wheels and the like, without frameworks, for grinding, sharpening, polishing, trueing or cutting, hand sharpening or polishing stones, and parts thereof, of natural stone, of agglomerated natural or artificial abrasives, or of ceramics, with or without parts of other materials > Millstones and grindstones for milling, grinding or pulping",
+  "6804.21.00.00": "Millstones, grindstones, grinding wheels and the like, without frameworks, for grinding, sharpening, polishing, trueing or cutting, hand sharpening or polishing stones, and parts thereof, of natural stone, of agglomerated natural or artificial abrasives, or of ceramics, with or without parts of other materials > Other millstones, grindstones, grinding wheels and the like > Of agglomerated synthetic or natural diamond",
+  "6804.22.00.00": "Millstones, grindstones, grinding wheels and the like, without frameworks, for grinding, sharpening, polishing, trueing or cutting, hand sharpening or polishing stones, and parts thereof, of natural stone, of agglomerated natural or artificial abrasives, or of ceramics, with or without parts of other materials > Other millstones, grindstones, grinding wheels and the like > Of other agglomerated abrasives or of ceramics",
+  "6804.23.00.00": "Millstones, grindstones, grinding wheels and the like, without frameworks, for grinding, sharpening, polishing, trueing or cutting, hand sharpening or polishing stones, and parts thereof, of natural stone, of agglomerated natural or artificial abrasives, or of ceramics, with or without parts of other materials > Other millstones, grindstones, grinding wheels and the like > Of natural stone",
+  "6804.30.00.00": "Millstones, grindstones, grinding wheels and the like, without frameworks, for grinding, sharpening, polishing, trueing or cutting, hand sharpening or polishing stones, and parts thereof, of natural stone, of agglomerated natural or artificial abrasives, or of ceramics, with or without parts of other materials > Hand sharpening or polishing stones",
+  "6805.10.00.00": "Natural or artificial abrasive powder or grain, on a base of textile material, of paper, of paperboard or of other materials, whether or not cut to shape or sewn or otherwise made up > On a base of woven textile fabric only",
+  "6805.20.00.00": "Natural or artificial abrasive powder or grain, on a base of textile material, of paper, of paperboard or of other materials, whether or not cut to shape or sewn or otherwise made up > On a base of paper or paperboard only",
+  "6805.30.00.00": "Natural or artificial abrasive powder or grain, on a base of textile material, of paper, of paperboard or of other materials, whether or not cut to shape or sewn or otherwise made up > On a base of other materials",
+  "6806.10.00.10": "Slag wool, rock wool and similar mineral wools; exfoliated vermiculite, expanded clays, foamed slag and similar expanded mineral materials; mixtures and articles of heat-insulating, sound-insulating or sound absorbing mineral materials, other than those of heading 68.11 or 68.12 or of Chapter 69 > Slag wool, rock wool and similar mineral wools, (including intermixtures thereof), in bulk, sheets or rolls > Insulation products",
+  "6806.10.00.90": "Slag wool, rock wool and similar mineral wools; exfoliated vermiculite, expanded clays, foamed slag and similar expanded mineral materials; mixtures and articles of heat-insulating, sound-insulating or sound absorbing mineral materials, other than those of heading 68.11 or 68.12 or of Chapter 69 > Slag wool, rock wool and similar mineral wools, (including intermixtures thereof), in bulk, sheets or rolls > Other",
+  "6806.20.00.20": "Slag wool, rock wool and similar mineral wools; exfoliated vermiculite, expanded clays, foamed slag and similar expanded mineral materials; mixtures and articles of heat-insulating, sound-insulating or sound absorbing mineral materials, other than those of heading 68.11 or 68.12 or of Chapter 69 > Exfoliated vermiculite, expanded clays, foamed slag and similar expanded mineral materials (including intermixtures thereof) > Expanded perlite",
+  "6806.20.00.90": "Slag wool, rock wool and similar mineral wools; exfoliated vermiculite, expanded clays, foamed slag and similar expanded mineral materials; mixtures and articles of heat-insulating, sound-insulating or sound absorbing mineral materials, other than those of heading 68.11 or 68.12 or of Chapter 69 > Exfoliated vermiculite, expanded clays, foamed slag and similar expanded mineral materials (including intermixtures thereof) > Other",
+  "6806.90.00.20": "Slag wool, rock wool and similar mineral wools; exfoliated vermiculite, expanded clays, foamed slag and similar expanded mineral materials; mixtures and articles of heat-insulating, sound-insulating or sound absorbing mineral materials, other than those of heading 68.11 or 68.12 or of Chapter 69 > Other > Acoustical pads or boards",
+  "6806.90.00.90": "Slag wool, rock wool and similar mineral wools; exfoliated vermiculite, expanded clays, foamed slag and similar expanded mineral materials; mixtures and articles of heat-insulating, sound-insulating or sound absorbing mineral materials, other than those of heading 68.11 or 68.12 or of Chapter 69 > Other > Other",
+  "6807.10.00.00": "Articles of asphalt or of similar material (for example, petroleum bitumen or coal tar pitch) > In rolls",
+  "6807.90.00.10": "Articles of asphalt or of similar material (for example, petroleum bitumen or coal tar pitch) > Other > Asphalt shingles",
+  "6807.90.00.90": "Articles of asphalt or of similar material (for example, petroleum bitumen or coal tar pitch) > Other > Other",
+  "6808.00.00.00": "Panels, boards, tiles, blocks and similar articles of vegetable fibre, of straw or of shavings, chips, particles, sawdust or other waste, of wood, agglomerated with cement, plaster or other mineral binders",
+  "6809.11.00.11": "Articles of plaster or of compositions based on plaster > Boards, sheets, panels, tiles and similar articles, not ornamented > Faced or reinforced with paper or paperboard only > Gypsum wallboard > Of a width of 137.16 cm or more",
+  "6809.11.00.19": "Articles of plaster or of compositions based on plaster > Boards, sheets, panels, tiles and similar articles, not ornamented > Faced or reinforced with paper or paperboard only > Gypsum wallboard > Other",
+  "6809.11.00.90": "Articles of plaster or of compositions based on plaster > Boards, sheets, panels, tiles and similar articles, not ornamented > Faced or reinforced with paper or paperboard only > Other",
+  "6809.19.00.10": "Articles of plaster or of compositions based on plaster > Boards, sheets, panels, tiles and similar articles, not ornamented > Other > Gypsum wallboard",
+  "6809.19.00.90": "Articles of plaster or of compositions based on plaster > Boards, sheets, panels, tiles and similar articles, not ornamented > Other > Other",
+  "6809.90.10.00": "Articles of plaster or of compositions based on plaster > Other articles > Models and casts, of a kind used in the manufacture of dental prostheses",
+  "6809.90.90.00": "Articles of plaster or of compositions based on plaster > Other articles > Other",
+  "6810.11.00.00": "Articles of cement, of concrete or of artificial stone, whether or not reinforced > Tiles, flagstones, bricks and similar articles > Building blocks and bricks",
+  "6810.19.00.00": "Articles of cement, of concrete or of artificial stone, whether or not reinforced > Tiles, flagstones, bricks and similar articles > Other",
+  "6810.91.00.00": "Articles of cement, of concrete or of artificial stone, whether or not reinforced > Other articles > Prefabricated structural components for building or civil engineering",
+  "6810.99.00.00": "Articles of cement, of concrete or of artificial stone, whether or not reinforced > Other articles > Other",
+  "6811.40.00.00": "Articles of asbestos-cement, of cellulose fibre-cement or the like > Containing asbestos",
+  "6811.81.00.00": "Articles of asbestos-cement, of cellulose fibre-cement or the like > Not containing asbestos > Corrugated sheets",
+  "6811.82.00.00": "Articles of asbestos-cement, of cellulose fibre-cement or the like > Not containing asbestos > Other sheets, panels, tiles and similar articles",
+  "6811.89.00.00": "Articles of asbestos-cement, of cellulose fibre-cement or the like > Not containing asbestos > Other articles",
+  "6812.80.00.00": "Fabricated asbestos fibres; mixtures with a basis of asbestos or with a basis of asbestos and magnesium carbonate; articles of such mixtures or of asbestos (for example, thread, woven fabric, clothing, headgear, footwear, gaskets), whether or not reinforced, other than goods of heading 68.11 or 68.13 > Of crocidolite",
+  "6812.91.00.00": "Fabricated asbestos fibres; mixtures with a basis of asbestos or with a basis of asbestos and magnesium carbonate; articles of such mixtures or of asbestos (for example, thread, woven fabric, clothing, headgear, footwear, gaskets), whether or not reinforced, other than goods of heading 68.11 or 68.13 > Other > Clothing, clothing accessories, footwear and headgear",
+  "6812.99.00.00": "Fabricated asbestos fibres; mixtures with a basis of asbestos or with a basis of asbestos and magnesium carbonate; articles of such mixtures or of asbestos (for example, thread, woven fabric, clothing, headgear, footwear, gaskets), whether or not reinforced, other than goods of heading 68.11 or 68.13 > Other > Other",
+  "6813.20.11.00": "Friction material and articles thereof (for example, sheets, rolls, strips, segments, discs, washers, pads), not mounted, for brakes, for clutches or the like, with a basis of asbestos, of other mineral substances or of cellulose, whether or not combined with textile or other materials > Containing asbestos > Brake linings and pads > For motor vehicles of heading 87.02, 87.03, 87.04 or 87.05",
+  "6813.20.19.00": "Friction material and articles thereof (for example, sheets, rolls, strips, segments, discs, washers, pads), not mounted, for brakes, for clutches or the like, with a basis of asbestos, of other mineral substances or of cellulose, whether or not combined with textile or other materials > Containing asbestos > Brake linings and pads > Other",
+  "6813.20.90.00": "Friction material and articles thereof (for example, sheets, rolls, strips, segments, discs, washers, pads), not mounted, for brakes, for clutches or the like, with a basis of asbestos, of other mineral substances or of cellulose, whether or not combined with textile or other materials > Containing asbestos > Other",
+  "6813.81.10.00": "Friction material and articles thereof (for example, sheets, rolls, strips, segments, discs, washers, pads), not mounted, for brakes, for clutches or the like, with a basis of asbestos, of other mineral substances or of cellulose, whether or not combined with textile or other materials > Not containing asbestos > Brake linings and pads > For motor vehicles of heading 87.02, 87.03, 87.04 or 87.05",
+  "6813.81.90.00": "Friction material and articles thereof (for example, sheets, rolls, strips, segments, discs, washers, pads), not mounted, for brakes, for clutches or the like, with a basis of asbestos, of other mineral substances or of cellulose, whether or not combined with textile or other materials > Not containing asbestos > Brake linings and pads > Other",
+  "6813.89.00.00": "Friction material and articles thereof (for example, sheets, rolls, strips, segments, discs, washers, pads), not mounted, for brakes, for clutches or the like, with a basis of asbestos, of other mineral substances or of cellulose, whether or not combined with textile or other materials > Not containing asbestos > Other",
+  "6814.10.00.00": "Worked mica and articles of mica, including agglomerated or reconstituted mica, whether or not on a support of paper, paperboard or other materials > Plates, sheets and strips of agglomerated or reconstituted mica, whether or not on a support",
+  "6814.90.00.00": "Worked mica and articles of mica, including agglomerated or reconstituted mica, whether or not on a support of paper, paperboard or other materials > Other",
+  "6815.11.00.00": "Articles of stone or of other mineral substances (including carbon fibres, articles of carbon fibres and articles of peat), not elsewhere specified or included > Carbon fibres; articles of carbon fibres for non-electrical uses; other articles of graphite or other carbon for non-electrical uses > Carbon fibres",
+  "6815.12.00.00": "Articles of stone or of other mineral substances (including carbon fibres, articles of carbon fibres and articles of peat), not elsewhere specified or included > Carbon fibres; articles of carbon fibres for non-electrical uses; other articles of graphite or other carbon for non-electrical uses > Fabrics of carbon fibres",
+  "6815.13.00.00": "Articles of stone or of other mineral substances (including carbon fibres, articles of carbon fibres and articles of peat), not elsewhere specified or included > Carbon fibres; articles of carbon fibres for non-electrical uses; other articles of graphite or other carbon for non-electrical uses > Other articles of carbon fibres",
+  "6815.19.00.00": "Articles of stone or of other mineral substances (including carbon fibres, articles of carbon fibres and articles of peat), not elsewhere specified or included > Carbon fibres; articles of carbon fibres for non-electrical uses; other articles of graphite or other carbon for non-electrical uses > Other",
+  "6815.20.00.00": "Articles of stone or of other mineral substances (including carbon fibres, articles of carbon fibres and articles of peat), not elsewhere specified or included > Articles of peat",
+  "6815.91.10.00": "Articles of stone or of other mineral substances (including carbon fibres, articles of carbon fibres and articles of peat), not elsewhere specified or included > Other articles > Containing magnesite, magnesia in the form of periclase, dolomite including in the form of dolime, or chromite > Refractory bricks, blocks, tiles and similar refractory constructional products to be employed in the production of metallurgical coke, iron and steel; other articles containing magnesite, dolomite or chromite",
+  "6815.91.90.00": "Articles of stone or of other mineral substances (including carbon fibres, articles of carbon fibres and articles of peat), not elsewhere specified or included > Other articles > Containing magnesite, magnesia in the form of periclase, dolomite including in the form of dolime, or chromite > Other",
+  "6815.99.10.00": "Articles of stone or of other mineral substances (including carbon fibres, articles of carbon fibres and articles of peat), not elsewhere specified or included > Other articles > Other > Foundry facings; models and casts, of a kind used in the manufacture of dental prostheses; olivine panels for use in the manufacture of wood waste incinerators; refractory bricks, blocks, tiles and similar refractory constructional products to be employed in the production of metallurgical coke, iron and steel",
+  "6815.99.20.00": "Articles of stone or of other mineral substances (including carbon fibres, articles of carbon fibres and articles of peat), not elsewhere specified or included > Other articles > Other > Signs",
+  "6815.99.90.00": "Articles of stone or of other mineral substances (including carbon fibres, articles of carbon fibres and articles of peat), not elsewhere specified or included > Other articles > Other > Other"
+});
+
+Object.assign(PREF_FREE, {
+  "6801.00.00.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6802.10.90.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6802.21.00.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6802.23.00.10": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6802.23.00.90": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6802.29.00.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6802.91.00.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6802.92.00.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6802.93.00.20": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6802.93.00.90": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6802.99.00.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6803.00.90.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6807.10.00.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6807.90.00.10": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6807.90.00.90": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6808.00.00.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6809.11.00.11": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6809.11.00.19": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6809.11.00.90": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6809.19.00.10": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6809.19.00.90": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6809.90.90.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6810.11.00.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6810.19.00.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6810.91.00.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6810.99.00.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6811.40.00.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6811.81.00.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6811.82.00.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6811.89.00.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6812.91.00.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6813.20.11.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6813.20.19.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6813.81.10.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6813.81.90.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6815.11.00.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6815.12.00.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6815.13.00.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6815.20.00.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6815.91.90.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6815.99.20.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6815.99.90.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"]
+});
+
+Object.assign(PREF_SPECIAL, {
+  "6802.10.90.00": {"GPT": {type:"percent", rate:5}},
+  "6802.92.00.00": {"GPT": {type:"percent", rate:3}},
+  "6802.93.00.20": {"GPT": {type:"percent", rate:6.5}},
+  "6802.93.00.90": {"GPT": {type:"percent", rate:6.5}},
+  "6802.99.00.00": {"GPT": {type:"percent", rate:6.5}},
+  "6803.00.90.00": {"GPT": {type:"percent", rate:6.5}},
+  "6809.19.00.10": {"GPT": {type:"percent", rate:3}},
+  "6809.19.00.90": {"GPT": {type:"percent", rate:3}},
+  "6809.90.90.00": {"GPT": {type:"percent", rate:3}},
+  "6813.20.19.00": {"GPT": {type:"percent", rate:5}},
+  "6813.81.90.00": {"GPT": {type:"percent", rate:5}},
+  "6815.99.20.00": {"AUT": {type:"percent", rate:6}, "NZT": {type:"percent", rate:6}, "GPT": {type:"percent", rate:3}}
+});
+
+// ===== Chapter 69 - Ceramic Products (verified 10 AUG 2026 from CBSA
+// Ch.69, user-provided markdown, 557-line source, full read) =====
+// Free-by-default (added to MFN_FREE_DEFAULT_CHAPTERS) - 43 of 63 codes
+// dutiable (68%), majority-dutiable like Ch.68 right before it, but safe
+// since no gaps were found anywhere. Section I (refractory/technical
+// ceramics, 69.01-69.03) is essentially all Free; Section II (finished
+// tiles, sanitary fixtures, tableware, ornaments) carries the dutiable
+// content. Heading 69.07 (flags/paving/tiles) has a granular but genuine
+// pattern worth remembering: unglazed and 'glazed, large format (>=103
+// cm2)' variants get full relief including GPT, while the SAME glazed tile
+// in smaller format ('Other') excludes GPT and gives it a separate 5%
+// discount instead - repeats identically across all four subheadings
+// (6907.21/22/23/30/40).
+const CH69_FREE_DEFAULT = ["69"];
+MFN_FREE_DEFAULT_CHAPTERS.push(...CH69_FREE_DEFAULT);
+
+Object.assign(MFN_RATES, {
+  "6904.10.00.00": {type:"percent", rate:3, note:""},
+  "6904.90.10.00": {type:"percent", rate:3, note:""},
+  "6904.90.20.00": {type:"percent", rate:8, note:""},
+  "6905.10.00.00": {type:"percent", rate:6.5, note:""},
+  "6905.90.00.00": {type:"percent", rate:7, note:""},
+  "6907.21.10.00": {type:"percent", rate:8, note:""},
+  "6907.21.21.00": {type:"percent", rate:8, note:""},
+  "6907.21.29.00": {type:"percent", rate:8, note:""},
+  "6907.22.10.00": {type:"percent", rate:8, note:""},
+  "6907.22.21.00": {type:"percent", rate:8, note:""},
+  "6907.22.29.00": {type:"percent", rate:8, note:""},
+  "6907.23.10.00": {type:"percent", rate:8, note:""},
+  "6907.23.21.00": {type:"percent", rate:8, note:""},
+  "6907.23.29.00": {type:"percent", rate:8, note:""},
+  "6907.30.10.00": {type:"percent", rate:8, note:""},
+  "6907.30.21.00": {type:"percent", rate:8, note:""},
+  "6907.30.29.00": {type:"percent", rate:8, note:""},
+  "6907.40.10.00": {type:"percent", rate:8, note:""},
+  "6907.40.21.00": {type:"percent", rate:8, note:""},
+  "6907.40.29.00": {type:"percent", rate:8, note:""},
+  "6909.11.00.00": {type:"percent", rate:4.5, note:""},
+  "6909.12.90.00": {type:"percent", rate:4.5, note:""},
+  "6909.19.90.00": {type:"percent", rate:4.5, note:""},
+  "6909.90.00.10": {type:"percent", rate:7, note:""},
+  "6909.90.00.90": {type:"percent", rate:7, note:""},
+  "6910.10.10.10": {type:"percent", rate:7.5, note:""},
+  "6910.10.10.20": {type:"percent", rate:7.5, note:""},
+  "6910.10.10.30": {type:"percent", rate:7.5, note:""},
+  "6910.10.90.30": {type:"percent", rate:7.5, note:""},
+  "6910.10.90.90": {type:"percent", rate:7.5, note:""},
+  "6910.90.00.10": {type:"percent", rate:7.5, note:""},
+  "6910.90.00.90": {type:"percent", rate:7.5, note:""},
+  "6911.10.90.10": {type:"percent", rate:7, note:""},
+  "6911.10.90.90": {type:"percent", rate:7, note:""},
+  "6911.90.00.10": {type:"percent", rate:5.5, note:""},
+  "6911.90.00.90": {type:"percent", rate:5.5, note:""},
+  "6912.00.90.10": {type:"percent", rate:7, note:""},
+  "6912.00.90.20": {type:"percent", rate:7, note:""},
+  "6912.00.90.90": {type:"percent", rate:7, note:""},
+  "6913.10.00.00": {type:"percent", rate:6.5, note:""},
+  "6913.90.90.00": {type:"percent", rate:6.5, note:""},
+  "6914.10.90.00": {type:"percent", rate:7, note:""},
+  "6914.90.00.00": {type:"percent", rate:7, note:""}
+});
+
+Object.assign(CODE_DESCRIPTIONS, {
+  "6901.00.00.00": "Bricks, blocks, tiles and other ceramic goods of siliceous fossil meals (for example, kieselguhr, tripolite or diatomite) or of similar siliceous earths",
+  "6902.10.00.10": "Refractory bricks, blocks, tiles and similar refractory ceramic constructional goods, other than those of siliceous fossil meals or similar siliceous earths > Containing by weight, singly or together, more than 50% of the elements Mg, Ca or Cr, expressed as MgO, CaO or Cr2O3 > Magnesite bricks",
+  "6902.10.00.90": "Refractory bricks, blocks, tiles and similar refractory ceramic constructional goods, other than those of siliceous fossil meals or similar siliceous earths > Containing by weight, singly or together, more than 50% of the elements Mg, Ca or Cr, expressed as MgO, CaO or Cr2O3 > Other",
+  "6902.20.00.11": "Refractory bricks, blocks, tiles and similar refractory ceramic constructional goods, other than those of siliceous fossil meals or similar siliceous earths > Containing by weight more than 50% of alumina (Al2O3), of silica (SiO2) or of a mixture or compound of these products > Containing by weight more than 50% of alumina > Bricks",
+  "6902.20.00.19": "Refractory bricks, blocks, tiles and similar refractory ceramic constructional goods, other than those of siliceous fossil meals or similar siliceous earths > Containing by weight more than 50% of alumina (Al2O3), of silica (SiO2) or of a mixture or compound of these products > Containing by weight more than 50% of alumina > Other",
+  "6902.20.00.80": "Refractory bricks, blocks, tiles and similar refractory ceramic constructional goods, other than those of siliceous fossil meals or similar siliceous earths > Containing by weight more than 50% of alumina (Al2O3), of silica (SiO2) or of a mixture or compound of these products > Other bricks",
+  "6902.20.00.90": "Refractory bricks, blocks, tiles and similar refractory ceramic constructional goods, other than those of siliceous fossil meals or similar siliceous earths > Containing by weight more than 50% of alumina (Al2O3), of silica (SiO2) or of a mixture or compound of these products > Other",
+  "6902.90.00.00": "Refractory bricks, blocks, tiles and similar refractory ceramic constructional goods, other than those of siliceous fossil meals or similar siliceous earths > Other",
+  "6903.10.00.00": "Other refractory ceramic goods (for example, retorts, crucibles, muffles, nozzles, plugs, supports, cupels, tubes, pipes, sheaths, rods and slide gates), other than those of siliceous fossil meals or of similar siliceous earths > Containing by weight more than 50% of free carbon",
+  "6903.20.00.00": "Other refractory ceramic goods (for example, retorts, crucibles, muffles, nozzles, plugs, supports, cupels, tubes, pipes, sheaths, rods and slide gates), other than those of siliceous fossil meals or of similar siliceous earths > Containing by weight more than 50% of alumina (Al2O3) or of a mixture or compound of alumina and of silica (SiO2)",
+  "6903.90.00.00": "Other refractory ceramic goods (for example, retorts, crucibles, muffles, nozzles, plugs, supports, cupels, tubes, pipes, sheaths, rods and slide gates), other than those of siliceous fossil meals or of similar siliceous earths > Other",
+  "6904.10.00.00": "Ceramic building bricks, flooring blocks, support or filler tiles and the like > Building bricks",
+  "6904.90.10.00": "Ceramic building bricks, flooring blocks, support or filler tiles and the like > Other > Flooring blocks",
+  "6904.90.20.00": "Ceramic building bricks, flooring blocks, support or filler tiles and the like > Other > Support or filler tiles and the like",
+  "6905.10.00.00": "Roofing tiles, chimney-pots, cowls, chimney liners, architectural ornaments and other ceramic constructional goods > Roofing tiles",
+  "6905.90.00.00": "Roofing tiles, chimney-pots, cowls, chimney liners, architectural ornaments and other ceramic constructional goods > Other",
+  "6906.00.00.00": "Ceramic pipes, conduits, guttering and pipe fittings",
+  "6907.21.10.00": "Ceramic flags and paving, hearth or wall tiles; ceramic mosaic cubes and the like, whether or not on a backing; finishing ceramics > Flags and paving, hearth or wall tiles, other than those of subheadings 6907.30 and 6907.40 > Of a water absorption coefficient by weight not exceeding 0.5% > Unglazed",
+  "6907.21.21.00": "Ceramic flags and paving, hearth or wall tiles; ceramic mosaic cubes and the like, whether or not on a backing; finishing ceramics > Flags and paving, hearth or wall tiles, other than those of subheadings 6907.30 and 6907.40 > Of a water absorption coefficient by weight not exceeding 0.5% > Glazed > Tiles with a surface area of 103 cm2 or more",
+  "6907.21.29.00": "Ceramic flags and paving, hearth or wall tiles; ceramic mosaic cubes and the like, whether or not on a backing; finishing ceramics > Flags and paving, hearth or wall tiles, other than those of subheadings 6907.30 and 6907.40 > Of a water absorption coefficient by weight not exceeding 0.5% > Glazed > Other",
+  "6907.22.10.00": "Ceramic flags and paving, hearth or wall tiles; ceramic mosaic cubes and the like, whether or not on a backing; finishing ceramics > Flags and paving, hearth or wall tiles, other than those of subheadings 6907.30 and 6907.40 > Of a water absorption coefficient by weight exceeding 0.5% but not exceeding 10% > Unglazed",
+  "6907.22.21.00": "Ceramic flags and paving, hearth or wall tiles; ceramic mosaic cubes and the like, whether or not on a backing; finishing ceramics > Flags and paving, hearth or wall tiles, other than those of subheadings 6907.30 and 6907.40 > Of a water absorption coefficient by weight exceeding 0.5% but not exceeding 10% > Glazed > Tiles with a surface area of 103 cm2 or more",
+  "6907.22.29.00": "Ceramic flags and paving, hearth or wall tiles; ceramic mosaic cubes and the like, whether or not on a backing; finishing ceramics > Flags and paving, hearth or wall tiles, other than those of subheadings 6907.30 and 6907.40 > Of a water absorption coefficient by weight exceeding 0.5% but not exceeding 10% > Glazed > Other",
+  "6907.23.10.00": "Ceramic flags and paving, hearth or wall tiles; ceramic mosaic cubes and the like, whether or not on a backing; finishing ceramics > Flags and paving, hearth or wall tiles, other than those of subheadings 6907.30 and 6907.40 > Of a water absorption coefficient by weight exceeding 10% > Unglazed",
+  "6907.23.21.00": "Ceramic flags and paving, hearth or wall tiles; ceramic mosaic cubes and the like, whether or not on a backing; finishing ceramics > Flags and paving, hearth or wall tiles, other than those of subheadings 6907.30 and 6907.40 > Of a water absorption coefficient by weight exceeding 10% > Glazed > Tiles with a surface area of 103 cm2 or more",
+  "6907.23.29.00": "Ceramic flags and paving, hearth or wall tiles; ceramic mosaic cubes and the like, whether or not on a backing; finishing ceramics > Flags and paving, hearth or wall tiles, other than those of subheadings 6907.30 and 6907.40 > Of a water absorption coefficient by weight exceeding 10% > Glazed > Other",
+  "6907.30.10.00": "Ceramic flags and paving, hearth or wall tiles; ceramic mosaic cubes and the like, whether or not on a backing; finishing ceramics > Mosaic cubes and the like, other than those of subheading 6907.40 > Unglazed",
+  "6907.30.21.00": "Ceramic flags and paving, hearth or wall tiles; ceramic mosaic cubes and the like, whether or not on a backing; finishing ceramics > Mosaic cubes and the like, other than those of subheading 6907.40 > Glazed > Tiles with a surface area of 103 cm2 or more",
+  "6907.30.29.00": "Ceramic flags and paving, hearth or wall tiles; ceramic mosaic cubes and the like, whether or not on a backing; finishing ceramics > Mosaic cubes and the like, other than those of subheading 6907.40 > Glazed > Other",
+  "6907.40.10.00": "Ceramic flags and paving, hearth or wall tiles; ceramic mosaic cubes and the like, whether or not on a backing; finishing ceramics > Finishing ceramics > Unglazed",
+  "6907.40.21.00": "Ceramic flags and paving, hearth or wall tiles; ceramic mosaic cubes and the like, whether or not on a backing; finishing ceramics > Finishing ceramics > Glazed > Tiles with a surface area of 103 cm2 or more",
+  "6907.40.29.00": "Ceramic flags and paving, hearth or wall tiles; ceramic mosaic cubes and the like, whether or not on a backing; finishing ceramics > Finishing ceramics > Glazed > Other",
+  "6909.11.00.00": "Ceramic wares for laboratory, chemical or other technical uses; ceramic troughs, tubs and similar receptacles of a kind used in agriculture; ceramic pots, jars and similar articles of a kind used for the conveyance or packing of goods > Ceramic wares for laboratory, chemical or other technical uses > Of porcelain or china",
+  "6909.12.10.00": "Ceramic wares for laboratory, chemical or other technical uses; ceramic troughs, tubs and similar receptacles of a kind used in agriculture; ceramic pots, jars and similar articles of a kind used for the conveyance or packing of goods > Ceramic wares for laboratory, chemical or other technical uses > Articles having a hardness equivalent to 9 or more on the Mohs scale > For use in machinery for making pulp of fibrous cellulosic material or for making or finishing paper or paperboard",
+  "6909.12.90.00": "Ceramic wares for laboratory, chemical or other technical uses; ceramic troughs, tubs and similar receptacles of a kind used in agriculture; ceramic pots, jars and similar articles of a kind used for the conveyance or packing of goods > Ceramic wares for laboratory, chemical or other technical uses > Articles having a hardness equivalent to 9 or more on the Mohs scale > Other",
+  "6909.19.10.00": "Ceramic wares for laboratory, chemical or other technical uses; ceramic troughs, tubs and similar receptacles of a kind used in agriculture; ceramic pots, jars and similar articles of a kind used for the conveyance or packing of goods > Ceramic wares for laboratory, chemical or other technical uses > Other > Ceramic rings for use in the manufacture of formaldehyde; for use in machinery for making pulp of fibrous cellulosic material or for making or finishing paper or paperboard",
+  "6909.19.90.00": "Ceramic wares for laboratory, chemical or other technical uses; ceramic troughs, tubs and similar receptacles of a kind used in agriculture; ceramic pots, jars and similar articles of a kind used for the conveyance or packing of goods > Ceramic wares for laboratory, chemical or other technical uses > Other > Other",
+  "6909.90.00.10": "Ceramic wares for laboratory, chemical or other technical uses; ceramic troughs, tubs and similar receptacles of a kind used in agriculture; ceramic pots, jars and similar articles of a kind used for the conveyance or packing of goods > Other > Subject to customs duty based on excise duty",
+  "6909.90.00.90": "Ceramic wares for laboratory, chemical or other technical uses; ceramic troughs, tubs and similar receptacles of a kind used in agriculture; ceramic pots, jars and similar articles of a kind used for the conveyance or packing of goods > Other > Other",
+  "6910.10.10.10": "Ceramic sinks, wash basins, wash basin pedestals, baths, bidets, water closet pans, flushing cisterns, urinals and similar sanitary fixtures > Of porcelain or china > Water closet pans (toilet bowls) and flushing cisterns (toilet tanks) or combinations thereof > Water closet pans (toilet bowls)",
+  "6910.10.10.20": "Ceramic sinks, wash basins, wash basin pedestals, baths, bidets, water closet pans, flushing cisterns, urinals and similar sanitary fixtures > Of porcelain or china > Water closet pans (toilet bowls) and flushing cisterns (toilet tanks) or combinations thereof > Flushing cisterns (toilet tanks)",
+  "6910.10.10.30": "Ceramic sinks, wash basins, wash basin pedestals, baths, bidets, water closet pans, flushing cisterns, urinals and similar sanitary fixtures > Of porcelain or china > Water closet pans (toilet bowls) and flushing cisterns (toilet tanks) or combinations thereof > Combinations of water closet pans and flushing cisterns",
+  "6910.10.90.30": "Ceramic sinks, wash basins, wash basin pedestals, baths, bidets, water closet pans, flushing cisterns, urinals and similar sanitary fixtures > Of porcelain or china > Other > Sinks and wash basins",
+  "6910.10.90.90": "Ceramic sinks, wash basins, wash basin pedestals, baths, bidets, water closet pans, flushing cisterns, urinals and similar sanitary fixtures > Of porcelain or china > Other > Other",
+  "6910.90.00.10": "Ceramic sinks, wash basins, wash basin pedestals, baths, bidets, water closet pans, flushing cisterns, urinals and similar sanitary fixtures > Other > Wash basins",
+  "6910.90.00.90": "Ceramic sinks, wash basins, wash basin pedestals, baths, bidets, water closet pans, flushing cisterns, urinals and similar sanitary fixtures > Other > Other",
+  "6911.10.10.00": "Tableware, kitchenware, other household articles and toilet articles, of porcelain or china > Tableware and kitchenware > Undecorated tableware, of a thickness of 3 mm or more, for use in the manufacture of decorated heavy duty tableware for hotel, restaurant or institutional use",
+  "6911.10.20.00": "Tableware, kitchenware, other household articles and toilet articles, of porcelain or china > Tableware and kitchenware > Other undecorated tableware for use in the manufacture of decorated tableware by kiln-fired decoration",
+  "6911.10.90.10": "Tableware, kitchenware, other household articles and toilet articles, of porcelain or china > Tableware and kitchenware > Other > Subject to customs duty based on excise duty",
+  "6911.10.90.90": "Tableware, kitchenware, other household articles and toilet articles, of porcelain or china > Tableware and kitchenware > Other > Other",
+  "6911.90.00.10": "Tableware, kitchenware, other household articles and toilet articles, of porcelain or china > Other > Subject to customs duty based on excise duty",
+  "6911.90.00.90": "Tableware, kitchenware, other household articles and toilet articles, of porcelain or china > Other > Other",
+  "6912.00.10.00": "Ceramic tableware, kitchenware, other household articles and toilet articles, other than of porcelain or china > Undecorated coffee mugs of earthenware or stoneware, for use in the manufacture of decorated coffee mugs by kiln-fired decoration; undecorated tableware of semi-porcelain or white granite, of a thickness of 3 mm or more, for use in the manufacture of decorated heavy duty tableware for hotel, restaurant or institutional use",
+  "6912.00.20.00": "Ceramic tableware, kitchenware, other household articles and toilet articles, other than of porcelain or china > Other, undecorated tableware of semi-porcelain or white granite for use in the manufacture of decorated tableware by kiln-fired decoration",
+  "6912.00.90.10": "Ceramic tableware, kitchenware, other household articles and toilet articles, other than of porcelain or china > Other > Tableware",
+  "6912.00.90.20": "Ceramic tableware, kitchenware, other household articles and toilet articles, other than of porcelain or china > Other > Kitchenware",
+  "6912.00.90.90": "Ceramic tableware, kitchenware, other household articles and toilet articles, other than of porcelain or china > Other > Other",
+  "6913.10.00.00": "Statuettes and other ornamental ceramic articles > Of porcelain or china",
+  "6913.90.10.00": "Statuettes and other ornamental ceramic articles > Other > Produced in Canada more than 25 years prior to the date of accounting",
+  "6913.90.90.00": "Statuettes and other ornamental ceramic articles > Other > Other",
+  "6914.10.10.00": "Other ceramic articles > Of porcelain or china > Porcelain hand forms to be employed in the manufacture of rubber gloves",
+  "6914.10.90.00": "Other ceramic articles > Of porcelain or china > Other",
+  "6914.90.00.00": "Other ceramic articles > Other"
+});
+
+Object.assign(PREF_FREE, {
+  "6904.10.00.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6904.90.10.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6904.90.20.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6905.10.00.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6905.90.00.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6907.21.10.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6907.21.21.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6907.21.29.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6907.22.10.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6907.22.21.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6907.22.29.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6907.23.10.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6907.23.21.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6907.23.29.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6907.30.10.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6907.30.21.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6907.30.29.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6907.40.10.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6907.40.21.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6907.40.29.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6909.11.00.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6909.12.90.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6909.19.90.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6909.90.00.10": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6909.90.00.90": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6910.10.10.10": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6910.10.10.20": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6910.10.10.30": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6910.10.90.30": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6910.10.90.90": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6910.90.00.10": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6910.90.00.90": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6911.10.90.10": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6911.10.90.90": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6911.90.00.10": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6911.90.00.90": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6912.00.90.10": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6912.00.90.20": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6912.00.90.90": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6913.10.00.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6913.90.90.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6914.10.90.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "6914.90.00.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"]
+});
+
+Object.assign(PREF_SPECIAL, {
+  "6904.90.20.00": {"GPT": {type:"percent", rate:5}},
+  "6905.90.00.00": {"GPT": {type:"percent", rate:5}},
+  "6907.21.29.00": {"GPT": {type:"percent", rate:5}},
+  "6907.22.29.00": {"GPT": {type:"percent", rate:5}},
+  "6907.23.29.00": {"GPT": {type:"percent", rate:5}},
+  "6907.30.29.00": {"GPT": {type:"percent", rate:5}},
+  "6907.40.29.00": {"GPT": {type:"percent", rate:5}},
+  "6910.10.10.10": {"GPT": {type:"percent", rate:5}},
+  "6910.10.10.20": {"GPT": {type:"percent", rate:5}},
+  "6910.10.10.30": {"GPT": {type:"percent", rate:5}},
+  "6911.90.00.10": {"GPT": {type:"percent", rate:5}},
+  "6911.90.00.90": {"GPT": {type:"percent", rate:5}},
+  "6912.00.90.10": {"AUT": {type:"percent", rate:1.5}, "NZT": {type:"percent", rate:1.5}, "GPT": {type:"percent", rate:3}},
+  "6912.00.90.20": {"AUT": {type:"percent", rate:1.5}, "NZT": {type:"percent", rate:1.5}, "GPT": {type:"percent", rate:3}},
+  "6912.00.90.90": {"AUT": {type:"percent", rate:1.5}, "NZT": {type:"percent", rate:1.5}, "GPT": {type:"percent", rate:3}},
+  "6914.10.90.00": {"GPT": {type:"percent", rate:5}},
+  "6914.90.00.00": {"GPT": {type:"percent", rate:5}}
+});
