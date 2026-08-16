@@ -18509,3 +18509,845 @@ Object.assign(CODE_DESCRIPTIONS, {
 Object.assign(PREF_FREE, {
   "7508.90.90.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"]
 });
+
+// ===== Chapter 76 - Aluminum and Articles Thereof (verified 10 AUG 2026
+// from CBSA Ch.76, user-provided markdown, 497-line source, full read) =====
+// Same partial-prior-work situation as Ch.73: 27 scattered rate entries
+// existed (76.04 onward) with zero descriptions and 76.01-76.03 completely
+// uncovered - rebuilt in full. All 27 pre-existing entries were confirmed
+// correct against this source during the build and re-declared with
+// matching values, not silently trusted. Chapter was already correctly
+// registered in MFN_FREE_DEFAULT_CHAPTERS from earlier work - not
+// re-pushed here, just relying on the existing membership.
+// 22 of 71 codes dutiable (31%). Same clean structural pattern as the rest
+// of Section XV (Cu/Ni/Al): raw and semi-finished aluminum (unwrought,
+// waste/scrap, powders, bars, wire, plates, foil, tubes, fittings,
+// structures, wire rope) is 100% Free; dutiable content concentrates in
+// finished doors/windows/structural components (76.10), containers
+// (76.12), household/sanitary articles (76.15), and other finished
+// articles (76.16).
+
+Object.assign(MFN_RATES, {
+  "7610.10.00.10": {type:"percent", rate:6.5, note:""},
+  "7610.10.00.20": {type:"percent", rate:6.5, note:""},
+  "7610.10.00.30": {type:"percent", rate:6.5, note:""},
+  "7610.90.90.10": {type:"percent", rate:6.5, note:""},
+  "7610.90.90.20": {type:"percent", rate:6.5, note:""},
+  "7610.90.90.30": {type:"percent", rate:6.5, note:""},
+  "7610.90.90.90": {type:"percent", rate:6.5, note:""},
+  "7612.10.00.00": {type:"percent", rate:6.5, note:""},
+  "7612.90.10.00": {type:"percent", rate:6.5, note:""},
+  "7612.90.99.10": {type:"percent", rate:6.5, note:""},
+  "7612.90.99.90": {type:"percent", rate:6.5, note:""},
+  "7615.10.00.10": {type:"percent", rate:6.5, note:""},
+  "7615.10.00.20": {type:"percent", rate:6.5, note:""},
+  "7615.10.00.90": {type:"percent", rate:6.5, note:""},
+  "7615.20.00.00": {type:"percent", rate:6.5, note:""},
+  "7616.91.00.00": {type:"percent", rate:6.5, note:""},
+  "7616.99.90.21": {type:"percent", rate:6.5, note:""},
+  "7616.99.90.29": {type:"percent", rate:6.5, note:""},
+  "7616.99.90.30": {type:"percent", rate:6.5, note:""},
+  "7616.99.90.40": {type:"percent", rate:6.5, note:""},
+  "7616.99.90.50": {type:"percent", rate:6.5, note:""},
+  "7616.99.90.90": {type:"percent", rate:6.5, note:""}
+});
+
+Object.assign(CODE_DESCRIPTIONS, {
+  "7601.10.00.20": "Unwrought aluminum > Aluminum, not alloyed > Ingots",
+  "7601.10.00.90": "Unwrought aluminum > Aluminum, not alloyed > Other",
+  "7601.20.00.10": "Unwrought aluminum > Aluminum alloys > Aluminum vanadium alloys",
+  "7601.20.00.21": "Unwrought aluminum > Aluminum alloys > Ingots, of other aluminum alloys > Remelt scrap ingot",
+  "7601.20.00.29": "Unwrought aluminum > Aluminum alloys > Ingots, of other aluminum alloys > Other",
+  "7601.20.00.90": "Unwrought aluminum > Aluminum alloys > Other",
+  "7602.00.00.00": "Aluminum waste and scrap",
+  "7603.10.00.00": "Aluminum powders and flakes > Powders of non-lamellar structure",
+  "7603.20.00.00": "Aluminum powders and flakes > Powders of lamellar structure; flakes",
+  "7604.10.00.30": "Aluminum bars, rods and profiles > Of aluminum, not alloyed > Profiles",
+  "7604.10.00.40": "Aluminum bars, rods and profiles > Of aluminum, not alloyed > Bars and rods",
+  "7604.21.00.10": "Aluminum bars, rods and profiles > Of aluminum alloys > Hollow profiles > Unworked",
+  "7604.21.00.90": "Aluminum bars, rods and profiles > Of aluminum alloys > Hollow profiles > Other",
+  "7604.29.00.11": "Aluminum bars, rods and profiles > Of aluminum alloys > Other > Bars and rods, of a maximum cross-sectional dimension exceeding 12.7 mm > Having a round cross-section",
+  "7604.29.00.19": "Aluminum bars, rods and profiles > Of aluminum alloys > Other > Bars and rods, of a maximum cross-sectional dimension exceeding 12.7 mm > Other",
+  "7604.29.00.21": "Aluminum bars, rods and profiles > Of aluminum alloys > Other > Bars and rods, of a maximum cross-sectional dimension not exceeding 12.7 mm > Having a round cross-section",
+  "7604.29.00.29": "Aluminum bars, rods and profiles > Of aluminum alloys > Other > Bars and rods, of a maximum cross-sectional dimension not exceeding 12.7 mm > Other",
+  "7604.29.00.30": "Aluminum bars, rods and profiles > Of aluminum alloys > Other > Profiles",
+  "7605.11.00.00": "Aluminum wire > Of aluminum, not alloyed > Of which the maximum cross-sectional dimension exceeds 7 mm",
+  "7605.19.00.00": "Aluminum wire > Of aluminum, not alloyed > Other",
+  "7605.21.00.00": "Aluminum wire > Of aluminum alloys > Of which the maximum cross-sectional dimension exceeds 7 mm",
+  "7605.29.00.00": "Aluminum wire > Of aluminum alloys > Other",
+  "7606.11.00.10": "Aluminum plates, sheets and strip, of a thickness exceeding 0.2 mm > Rectangular (including square) > Of aluminum, not alloyed > Clad",
+  "7606.11.00.90": "Aluminum plates, sheets and strip, of a thickness exceeding 0.2 mm > Rectangular (including square) > Of aluminum, not alloyed > Other",
+  "7606.12.00.11": "Aluminum plates, sheets and strip, of a thickness exceeding 0.2 mm > Rectangular (including square) > Of aluminum alloys > Not clad > Of a thickness exceeding 0.2 mm but less than 7 mm",
+  "7606.12.00.12": "Aluminum plates, sheets and strip, of a thickness exceeding 0.2 mm > Rectangular (including square) > Of aluminum alloys > Not clad > Of a thickness of 7 mm or more",
+  "7606.12.00.20": "Aluminum plates, sheets and strip, of a thickness exceeding 0.2 mm > Rectangular (including square) > Of aluminum alloys > Clad",
+  "7606.91.00.10": "Aluminum plates, sheets and strip, of a thickness exceeding 0.2 mm > Other > Of aluminum, not alloyed > Unworked circles or discs",
+  "7606.91.00.90": "Aluminum plates, sheets and strip, of a thickness exceeding 0.2 mm > Other > Of aluminum, not alloyed > Other",
+  "7606.92.00.00": "Aluminum plates, sheets and strip, of a thickness exceeding 0.2 mm > Other > Of aluminum alloys",
+  "7607.11.00.10": "Aluminum foil (whether or not printed or backed with paper, paperboard, plastics or similar backing materials) of a thickness (excluding any backing) not exceeding 0.2 mm > Not backed > Rolled but not further worked > Of a thickness of less than 0.005 mm",
+  "7607.11.00.20": "Aluminum foil (whether or not printed or backed with paper, paperboard, plastics or similar backing materials) of a thickness (excluding any backing) not exceeding 0.2 mm > Not backed > Rolled but not further worked > Of a thickness of 0.005 mm or more but less than 0.127 mm",
+  "7607.11.00.30": "Aluminum foil (whether or not printed or backed with paper, paperboard, plastics or similar backing materials) of a thickness (excluding any backing) not exceeding 0.2 mm > Not backed > Rolled but not further worked > Of a thickness of 0.127 mm or more",
+  "7607.19.00.00": "Aluminum foil (whether or not printed or backed with paper, paperboard, plastics or similar backing materials) of a thickness (excluding any backing) not exceeding 0.2 mm > Not backed > Other",
+  "7607.20.00.10": "Aluminum foil (whether or not printed or backed with paper, paperboard, plastics or similar backing materials) of a thickness (excluding any backing) not exceeding 0.2 mm > Backed > Printed",
+  "7607.20.00.90": "Aluminum foil (whether or not printed or backed with paper, paperboard, plastics or similar backing materials) of a thickness (excluding any backing) not exceeding 0.2 mm > Backed > Other",
+  "7608.10.00.10": "Aluminum tubes and pipes > Of aluminum, not alloyed > Seamless",
+  "7608.10.00.90": "Aluminum tubes and pipes > Of aluminum, not alloyed > Other",
+  "7608.20.00.00": "Aluminum tubes and pipes > Of aluminum alloys",
+  "7609.00.00.00": "Aluminum tube or pipe fittings (for example, couplings, elbows, sleeves)",
+  "7610.10.00.10": "Aluminum structures (excluding prefabricated buildings of heading 94.06) and parts of structures (for example, bridges and bridge-sections, towers, lattice masts, roofs, roofing frameworks, doors and windows and their frames and thresholds for doors, balustrades, pillars and columns); aluminum plates, rods, profiles, tubes and the like, prepared for use in structures > Doors, windows and their frames and thresholds for doors > Doors and their frames",
+  "7610.10.00.20": "Aluminum structures (excluding prefabricated buildings of heading 94.06) and parts of structures (for example, bridges and bridge-sections, towers, lattice masts, roofs, roofing frameworks, doors and windows and their frames and thresholds for doors, balustrades, pillars and columns); aluminum plates, rods, profiles, tubes and the like, prepared for use in structures > Doors, windows and their frames and thresholds for doors > Windows and their frames",
+  "7610.10.00.30": "Aluminum structures (excluding prefabricated buildings of heading 94.06) and parts of structures (for example, bridges and bridge-sections, towers, lattice masts, roofs, roofing frameworks, doors and windows and their frames and thresholds for doors, balustrades, pillars and columns); aluminum plates, rods, profiles, tubes and the like, prepared for use in structures > Doors, windows and their frames and thresholds for doors > Thresholds for doors",
+  "7610.90.10.00": "Aluminum structures (excluding prefabricated buildings of heading 94.06) and parts of structures (for example, bridges and bridge-sections, towers, lattice masts, roofs, roofing frameworks, doors and windows and their frames and thresholds for doors, balustrades, pillars and columns); aluminum plates, rods, profiles, tubes and the like, prepared for use in structures > Other > For use in Canadian manufactures",
+  "7610.90.90.10": "Aluminum structures (excluding prefabricated buildings of heading 94.06) and parts of structures (for example, bridges and bridge-sections, towers, lattice masts, roofs, roofing frameworks, doors and windows and their frames and thresholds for doors, balustrades, pillars and columns); aluminum plates, rods, profiles, tubes and the like, prepared for use in structures > Other > Other > Roofing",
+  "7610.90.90.20": "Aluminum structures (excluding prefabricated buildings of heading 94.06) and parts of structures (for example, bridges and bridge-sections, towers, lattice masts, roofs, roofing frameworks, doors and windows and their frames and thresholds for doors, balustrades, pillars and columns); aluminum plates, rods, profiles, tubes and the like, prepared for use in structures > Other > Other > Siding, including soffits and fascia",
+  "7610.90.90.30": "Aluminum structures (excluding prefabricated buildings of heading 94.06) and parts of structures (for example, bridges and bridge-sections, towers, lattice masts, roofs, roofing frameworks, doors and windows and their frames and thresholds for doors, balustrades, pillars and columns); aluminum plates, rods, profiles, tubes and the like, prepared for use in structures > Other > Other > Architectural and ornamental work",
+  "7610.90.90.90": "Aluminum structures (excluding prefabricated buildings of heading 94.06) and parts of structures (for example, bridges and bridge-sections, towers, lattice masts, roofs, roofing frameworks, doors and windows and their frames and thresholds for doors, balustrades, pillars and columns); aluminum plates, rods, profiles, tubes and the like, prepared for use in structures > Other > Other > Other",
+  "7611.00.00.00": "Aluminum reservoirs, tanks, vats and similar containers, for any material (other than compressed or liquefied gas), of a capacity exceeding 300 litres, whether or not lined or heat-insulated, but not fitted with mechanical or thermal equipment",
+  "7612.10.00.00": "Aluminum casks, drums, cans, boxes and similar containers (including rigid or collapsible tubular containers), for any material (other than compressed or liquefied gas), of a capacity not exceeding 300 litres, whether or not lined or heat-insulated, but not fitted with mechanical or thermal equipment > Collapsible tubular containers",
+  "7612.90.10.00": "Aluminum casks, drums, cans, boxes and similar containers (including rigid or collapsible tubular containers), for any material (other than compressed or liquefied gas), of a capacity not exceeding 300 litres, whether or not lined or heat-insulated, but not fitted with mechanical or thermal equipment > Other > Aerosol containers, excluding three-piece cans without inserts having a base diameter of 50 mm or more but not exceeding 80 mm",
+  "7612.90.91.00": "Aluminum casks, drums, cans, boxes and similar containers (including rigid or collapsible tubular containers), for any material (other than compressed or liquefied gas), of a capacity not exceeding 300 litres, whether or not lined or heat-insulated, but not fitted with mechanical or thermal equipment > Other > Other > Embossed aluminum cans for use in the packaging of beverages",
+  "7612.90.99.10": "Aluminum casks, drums, cans, boxes and similar containers (including rigid or collapsible tubular containers), for any material (other than compressed or liquefied gas), of a capacity not exceeding 300 litres, whether or not lined or heat-insulated, but not fitted with mechanical or thermal equipment > Other > Other > Other > Cans",
+  "7612.90.99.90": "Aluminum casks, drums, cans, boxes and similar containers (including rigid or collapsible tubular containers), for any material (other than compressed or liquefied gas), of a capacity not exceeding 300 litres, whether or not lined or heat-insulated, but not fitted with mechanical or thermal equipment > Other > Other > Other > Other",
+  "7613.00.00.00": "Aluminum containers for compressed or liquefied gas",
+  "7614.10.00.00": "Stranded wire, cables, plaited bands and the like, of aluminum, not electrically insulated > With steel core",
+  "7614.90.00.00": "Stranded wire, cables, plaited bands and the like, of aluminum, not electrically insulated > Other",
+  "7615.10.00.10": "Table, kitchen or other household articles and parts thereof, of aluminum; pot scourers and scouring or polishing pads, gloves and the like, of aluminum; sanitary ware and parts thereof, of aluminum > Table, kitchen or other household articles and parts thereof; pot scourers and scouring or polishing pads, gloves and the like > Cooking utensils",
+  "7615.10.00.20": "Table, kitchen or other household articles and parts thereof, of aluminum; pot scourers and scouring or polishing pads, gloves and the like, of aluminum; sanitary ware and parts thereof, of aluminum > Table, kitchen or other household articles and parts thereof; pot scourers and scouring or polishing pads, gloves and the like > Pie plates, plates for prepared meals and similar semi-rigid containers",
+  "7615.10.00.90": "Table, kitchen or other household articles and parts thereof, of aluminum; pot scourers and scouring or polishing pads, gloves and the like, of aluminum; sanitary ware and parts thereof, of aluminum > Table, kitchen or other household articles and parts thereof; pot scourers and scouring or polishing pads, gloves and the like > Other",
+  "7615.20.00.00": "Table, kitchen or other household articles and parts thereof, of aluminum; pot scourers and scouring or polishing pads, gloves and the like, of aluminum; sanitary ware and parts thereof, of aluminum > Sanitary ware and parts thereof",
+  "7616.10.00.20": "Other articles of aluminum > Nails, tacks, staples (other than those of heading 83.05), screws, bolts, nuts, screw hooks, rivets, cotters, cotter-pins, washers and similar articles > Rivets",
+  "7616.10.00.90": "Other articles of aluminum > Nails, tacks, staples (other than those of heading 83.05), screws, bolts, nuts, screw hooks, rivets, cotters, cotter-pins, washers and similar articles > Other",
+  "7616.91.00.00": "Other articles of aluminum > Other > Cloth, grill, netting and fencing, of aluminum wire",
+  "7616.99.10.00": "Other articles of aluminum > Other > Other > Cups for use in the manufacture of candles; ferrules for use in the manufacture of pencils; fish egg incubators and parts thereof; for climbing or mountaineering; identification bands for migratory birds; pigeon countermark leg bands; to be employed in the manufacture of sera, antisera, toxoids, viruses, toxins or antitoxins, virus or bacterial vaccines, bacteriophage or bacterial lysates, allergenics, liver extracts, pituitary extracts, epinephrine or its solutions, insulin (with or without zinc, globin or protamine), and blood plasma or serum of human origin, or fractions thereof, or extenders or substitutes therefor",
+  "7616.99.90.21": "Other articles of aluminum > Other > Other > Other > Castings > Die",
+  "7616.99.90.29": "Other articles of aluminum > Other > Other > Other > Castings > Other",
+  "7616.99.90.30": "Other articles of aluminum > Other > Other > Other > Forgings",
+  "7616.99.90.40": "Other articles of aluminum > Other > Other > Other > Ladders",
+  "7616.99.90.50": "Other articles of aluminum > Other > Other > Other > Venetian blinds and parts thereof",
+  "7616.99.90.90": "Other articles of aluminum > Other > Other > Other > Other"
+});
+
+Object.assign(PREF_FREE, {
+  "7610.10.00.10": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "7610.10.00.20": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "7610.10.00.30": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "7610.90.90.10": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "7610.90.90.20": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "7610.90.90.30": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "7610.90.90.90": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "7612.10.00.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "7612.90.10.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "7612.90.99.10": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "7612.90.99.90": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "7615.10.00.10": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "7615.10.00.20": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "7615.10.00.90": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "7615.20.00.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "7616.91.00.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "7616.99.90.21": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "7616.99.90.29": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "7616.99.90.30": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "7616.99.90.40": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "7616.99.90.50": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "7616.99.90.90": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"]
+});
+
+Object.assign(PREF_SPECIAL, {
+  "7610.10.00.10": {"GPT": {type:"percent", rate:5}},
+  "7610.10.00.20": {"GPT": {type:"percent", rate:5}},
+  "7610.10.00.30": {"GPT": {type:"percent", rate:5}},
+  "7610.90.90.10": {"GPT": {type:"percent", rate:5}},
+  "7610.90.90.20": {"GPT": {type:"percent", rate:5}},
+  "7610.90.90.30": {"GPT": {type:"percent", rate:5}},
+  "7610.90.90.90": {"GPT": {type:"percent", rate:5}},
+  "7612.10.00.00": {"GPT": {type:"percent", rate:5}},
+  "7612.90.10.00": {"GPT": {type:"percent", rate:2.5}},
+  "7612.90.99.10": {"GPT": {type:"percent", rate:5}},
+  "7612.90.99.90": {"GPT": {type:"percent", rate:5}},
+  "7615.10.00.10": {"GPT": {type:"percent", rate:5}},
+  "7615.10.00.20": {"GPT": {type:"percent", rate:5}},
+  "7615.10.00.90": {"GPT": {type:"percent", rate:5}},
+  "7616.91.00.00": {"GPT": {type:"percent", rate:5}},
+  "7616.99.90.21": {"GPT": {type:"percent", rate:5}},
+  "7616.99.90.29": {"GPT": {type:"percent", rate:5}},
+  "7616.99.90.30": {"GPT": {type:"percent", rate:5}},
+  "7616.99.90.40": {"GPT": {type:"percent", rate:5}},
+  "7616.99.90.50": {"GPT": {type:"percent", rate:5}},
+  "7616.99.90.90": {"GPT": {type:"percent", rate:5}}
+});
+
+// ===== Chapter 78 - Lead and Articles Thereof (verified 10 AUG 2026 from
+// CBSA Ch.78, user-provided markdown, full read) =====
+// 100% Free chapter, every code, every treaty - no dutiable exception found
+// anywhere. Same treatment as the other pure raw-material metal chapters
+// (72/75): added to MFN_FREE_CHAPTERS. Chapter 77 is reserved (no content)
+// in the HS schedule.
+const CH78_ALL_FREE = ["78"];
+MFN_FREE_CHAPTERS.push(...CH78_ALL_FREE);
+
+Object.assign(CODE_DESCRIPTIONS, {
+  "7801.10.00.00": "Unwrought lead > Refined lead",
+  "7801.91.00.00": "Unwrought lead > Other > Containing by weight antimony as the principal other element",
+  "7801.99.00.10": "Unwrought lead > Other > Other > Lead bullion",
+  "7801.99.00.20": "Unwrought lead > Other > Other > Other, alloys of lead",
+  "7801.99.00.90": "Unwrought lead > Other > Other > Other",
+  "7802.00.00.00": "Lead waste and scrap",
+  "7804.11.00.00": "Lead plates, sheets, strip and foil; lead powders and flakes > Plates, sheets, strip and foil > Sheets, strip and foil of a thickness (excluding any backing) not exceeding 0.2 mm",
+  "7804.19.00.00": "Lead plates, sheets, strip and foil; lead powders and flakes > Plates, sheets, strip and foil > Other",
+  "7804.20.00.00": "Lead plates, sheets, strip and foil; lead powders and flakes > Powders and flakes",
+  "7806.00.00.00": "Other articles of lead"
+});
+
+// ===== Chapter 79 - Zinc and Articles Thereof (verified 10 AUG 2026 from
+// CBSA Ch.79, user-provided markdown, full read) =====
+// Free-by-default (added to MFN_FREE_DEFAULT_CHAPTERS) - only 3 of 13 codes
+// dutiable, all within the single 'other articles' heading (79.07). Same
+// clean pattern as the rest of Section XV: raw/semi-finished zinc
+// (unwrought, waste/scrap, dust/powders/flakes, bars/rods/wire, plates/
+// sheets) is 100% Free. 7907.00.99 shows a GPT rate explicitly stated at
+// 3% - identical to its own MFN rate, i.e. zero real relief but written out
+// rather than omitted, the same shape seen on tires (Ch.40) and several
+// stone/ceramic codes (Ch.68/69) - resolves to the full 3%, not a false
+// discount.
+const CH79_FREE_DEFAULT = ["79"];
+MFN_FREE_DEFAULT_CHAPTERS.push(...CH79_FREE_DEFAULT);
+
+Object.assign(MFN_RATES, {
+  "7907.00.92.10": {type:"percent", rate:3, note:""},
+  "7907.00.92.90": {type:"percent", rate:3, note:""},
+  "7907.00.99.00": {type:"percent", rate:3, note:""}
+});
+
+Object.assign(CODE_DESCRIPTIONS, {
+  "7901.11.00.00": "Unwrought zinc > Zinc, not alloyed > Containing by weight 99.99% or more of zinc",
+  "7901.12.00.00": "Unwrought zinc > Zinc, not alloyed > Containing by weight less than 99.99% of zinc",
+  "7901.20.00.00": "Unwrought zinc > Zinc alloys",
+  "7902.00.00.00": "Zinc waste and scrap",
+  "7903.10.00.00": "Zinc dust, powders and flakes > Zinc dust",
+  "7903.90.00.00": "Zinc dust, powders and flakes > Other",
+  "7904.00.00.00": "Zinc bars, rods, profiles and wire",
+  "7905.00.00.00": "Zinc plates, sheets, strip and foil",
+  "7907.00.30.00": "Other articles of zinc > For use in Canadian manufactures",
+  "7907.00.91.00": "Other articles of zinc > Other > Anodes for electroplating",
+  "7907.00.92.10": "Other articles of zinc > Other > Discs or slugs, containing by weight 90% or more of zinc; gutters, roof capping, skylight frames and other fabricated building components; zinc tubes, pipes and tube or pipe fittings (for example couplings, elbows, sleeves) > Zinc tubes, pipes and tube or pipe fittings (for example, couplings, elbows, sleeves)",
+  "7907.00.92.90": "Other articles of zinc > Other > Discs or slugs, containing by weight 90% or more of zinc; gutters, roof capping, skylight frames and other fabricated building components; zinc tubes, pipes and tube or pipe fittings (for example couplings, elbows, sleeves) > Other",
+  "7907.00.99.00": "Other articles of zinc > Other > Other"
+});
+
+Object.assign(PREF_FREE, {
+  "7907.00.92.10": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "7907.00.92.90": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "7907.00.99.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"]
+});
+
+Object.assign(PREF_SPECIAL, {
+  "7907.00.99.00": {"GPT": {type:"percent", rate:3}}
+});
+
+// ===== Chapter 80 - Tin and Articles Thereof (verified 10 AUG 2026 from
+// CBSA Ch.80, user-provided markdown, full read) =====
+// Free-by-default (added to MFN_FREE_DEFAULT_CHAPTERS) - only 2 of 9 codes
+// dutiable, both within 'other articles' (8007.00.90) at a flat 3% with
+// full relief including GPT. Same clean raw-material pattern as the rest of
+// Section XV: unwrought tin, waste/scrap, bars/rods/wire, foil, plates/
+// sheets, tubes/pipes and powders/flakes are all Free.
+const CH80_FREE_DEFAULT = ["80"];
+MFN_FREE_DEFAULT_CHAPTERS.push(...CH80_FREE_DEFAULT);
+
+Object.assign(MFN_RATES, {
+  "8007.00.90.40": {type:"percent", rate:3, note:""},
+  "8007.00.90.90": {type:"percent", rate:3, note:""}
+});
+
+Object.assign(CODE_DESCRIPTIONS, {
+  "8001.10.00.00": "Unwrought tin > Tin, not alloyed",
+  "8001.20.00.00": "Unwrought tin > Tin alloys",
+  "8002.00.00.00": "Tin waste and scrap",
+  "8003.00.00.00": "Tin bars, rods, profiles and wire",
+  "8007.00.10.00": "Other articles of tin > Foil",
+  "8007.00.20.00": "Other articles of tin > Tin plates, sheets and strip, of a thickness exceeding 0.2 mm; tin tubes, pipes and tube or pipe fittings (for example, couplings, elbows, sleeves)",
+  "8007.00.30.00": "Other articles of tin > Powders and flakes",
+  "8007.00.90.40": "Other articles of tin > Other > Subject to customs duty based on excise duty",
+  "8007.00.90.90": "Other articles of tin > Other > Other"
+});
+
+Object.assign(PREF_FREE, {
+  "8007.00.90.40": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8007.00.90.90": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"]
+});
+
+// ===== Chapter 81 - Other Base Metals; Cermets; Articles Thereof (verified
+// 10 AUG 2026 from CBSA Ch.81, user-provided markdown, full read) =====
+// 100% Free chapter, every code, every treaty - no dutiable exception found
+// anywhere across tungsten, molybdenum, tantalum, magnesium, cobalt,
+// bismuth, titanium, zirconium, antimony, manganese, beryllium, chromium,
+// hafnium, rhenium, thallium, cadmium, germanium, gallium, indium, and
+// cermets. Same treatment as the other pure raw-material metal chapters
+// (72/75/78): added to MFN_FREE_CHAPTERS.
+const CH81_ALL_FREE = ["81"];
+MFN_FREE_CHAPTERS.push(...CH81_ALL_FREE);
+
+Object.assign(CODE_DESCRIPTIONS, {
+  "8101.10.00.00": "Tungsten (wolfram) and articles thereof, including waste and scrap > Powders",
+  "8101.94.00.00": "Tungsten (wolfram) and articles thereof, including waste and scrap > Other > Unwrought tungsten, including bars and rods obtained simply by sintering",
+  "8101.96.00.00": "Tungsten (wolfram) and articles thereof, including waste and scrap > Other > Wire",
+  "8101.97.00.00": "Tungsten (wolfram) and articles thereof, including waste and scrap > Other > Waste and scrap",
+  "8101.99.00.00": "Tungsten (wolfram) and articles thereof, including waste and scrap > Other > Other",
+  "8102.10.00.00": "Molybdenum and articles thereof, including waste and scrap > Powders",
+  "8102.94.00.00": "Molybdenum and articles thereof, including waste and scrap > Other > Unwrought molybdenum, including bars and rods obtained simply by sintering",
+  "8102.95.00.00": "Molybdenum and articles thereof, including waste and scrap > Other > Bars and rods, other than those obtained simply by sintering, profiles, plates, sheets, strip and foil",
+  "8102.96.00.00": "Molybdenum and articles thereof, including waste and scrap > Other > Wire",
+  "8102.97.00.00": "Molybdenum and articles thereof, including waste and scrap > Other > Waste and scrap",
+  "8102.99.00.00": "Molybdenum and articles thereof, including waste and scrap > Other > Other",
+  "8103.20.00.00": "Tantalum and articles thereof, including waste and scrap > Unwrought tantalum, including bars and rods obtained simply by sintering; powders",
+  "8103.30.00.00": "Tantalum and articles thereof, including waste and scrap > Waste and scrap",
+  "8103.91.00.00": "Tantalum and articles thereof, including waste and scrap > Other > Crucibles",
+  "8103.99.00.00": "Tantalum and articles thereof, including waste and scrap > Other > Other",
+  "8104.11.00.00": "Magnesium and articles thereof, including waste and scrap > Unwrought magnesium > Containing at least 99.8% by weight of magnesium",
+  "8104.19.00.00": "Magnesium and articles thereof, including waste and scrap > Unwrought magnesium > Other",
+  "8104.20.00.00": "Magnesium and articles thereof, including waste and scrap > Waste and scrap",
+  "8104.30.00.00": "Magnesium and articles thereof, including waste and scrap > Raspings, turnings and granules, graded according to size; powders",
+  "8104.90.00.00": "Magnesium and articles thereof, including waste and scrap > Other",
+  "8105.20.00.00": "Cobalt mattes and other intermediate products of cobalt metallurgy; cobalt and articles thereof, including waste and scrap > Cobalt mattes and other intermediate products of cobalt metallurgy; unwrought cobalt; powders",
+  "8105.30.00.00": "Cobalt mattes and other intermediate products of cobalt metallurgy; cobalt and articles thereof, including waste and scrap > Waste and scrap",
+  "8105.90.00.00": "Cobalt mattes and other intermediate products of cobalt metallurgy; cobalt and articles thereof, including waste and scrap > Other",
+  "8106.10.00.00": "Bismuth and articles thereof, including waste and scrap > Containing more than 99.99% of bismuth, by weight",
+  "8106.90.00.00": "Bismuth and articles thereof, including waste and scrap > Other",
+  "8108.20.00.00": "Titanium and articles thereof, including waste and scrap > Unwrought titanium; powders",
+  "8108.30.00.00": "Titanium and articles thereof, including waste and scrap > Waste and scrap",
+  "8108.90.00.10": "Titanium and articles thereof, including waste and scrap > Other > Plates, sheets, strip and foil, not alloyed",
+  "8108.90.00.20": "Titanium and articles thereof, including waste and scrap > Other > Tubes and pipes, not alloyed",
+  "8108.90.00.90": "Titanium and articles thereof, including waste and scrap > Other > Other",
+  "8109.21.00.00": "Zirconium and articles thereof, including waste and scrap > Unwrought zirconium; powders > Containing less than 1 part hafnium to 500 parts zirconium by weight",
+  "8109.29.00.00": "Zirconium and articles thereof, including waste and scrap > Unwrought zirconium; powders > Other",
+  "8109.31.00.00": "Zirconium and articles thereof, including waste and scrap > Waste and scrap > Containing less than 1 part hafnium to 500 parts zirconium by weight",
+  "8109.39.00.00": "Zirconium and articles thereof, including waste and scrap > Waste and scrap > Other",
+  "8109.91.00.00": "Zirconium and articles thereof, including waste and scrap > Other > Containing less than 1 part hafnium to 500 parts zirconium by weight",
+  "8109.99.00.00": "Zirconium and articles thereof, including waste and scrap > Other > Other",
+  "8110.10.00.00": "Antimony and articles thereof, including waste and scrap > Unwrought antimony; powders",
+  "8110.20.00.00": "Antimony and articles thereof, including waste and scrap > Waste and scrap",
+  "8110.90.00.00": "Antimony and articles thereof, including waste and scrap > Other",
+  "8111.00.00.00": "Manganese and articles thereof, including waste and scrap",
+  "8112.12.00.00": "Beryllium, chromium, hafnium, rhenium, thallium, cadmium, germanium, vanadium, gallium, indium and niobium (columbium), and articles of these metals, including waste and scrap > Beryllium > Unwrought; powders",
+  "8112.13.00.00": "Beryllium, chromium, hafnium, rhenium, thallium, cadmium, germanium, vanadium, gallium, indium and niobium (columbium), and articles of these metals, including waste and scrap > Beryllium > Waste and scrap",
+  "8112.19.00.00": "Beryllium, chromium, hafnium, rhenium, thallium, cadmium, germanium, vanadium, gallium, indium and niobium (columbium), and articles of these metals, including waste and scrap > Beryllium > Other",
+  "8112.21.00.00": "Beryllium, chromium, hafnium, rhenium, thallium, cadmium, germanium, vanadium, gallium, indium and niobium (columbium), and articles of these metals, including waste and scrap > Chromium > Unwrought; powders",
+  "8112.22.00.00": "Beryllium, chromium, hafnium, rhenium, thallium, cadmium, germanium, vanadium, gallium, indium and niobium (columbium), and articles of these metals, including waste and scrap > Chromium > Waste and scrap",
+  "8112.29.00.00": "Beryllium, chromium, hafnium, rhenium, thallium, cadmium, germanium, vanadium, gallium, indium and niobium (columbium), and articles of these metals, including waste and scrap > Chromium > Other",
+  "8112.31.00.00": "Beryllium, chromium, hafnium, rhenium, thallium, cadmium, germanium, vanadium, gallium, indium and niobium (columbium), and articles of these metals, including waste and scrap > Hafnium > Unwrought; waste and scrap; powders",
+  "8112.39.00.00": "Beryllium, chromium, hafnium, rhenium, thallium, cadmium, germanium, vanadium, gallium, indium and niobium (columbium), and articles of these metals, including waste and scrap > Hafnium > Other",
+  "8112.41.00.00": "Beryllium, chromium, hafnium, rhenium, thallium, cadmium, germanium, vanadium, gallium, indium and niobium (columbium), and articles of these metals, including waste and scrap > Rhenium > Unwrought; waste and scrap; powders",
+  "8112.49.00.00": "Beryllium, chromium, hafnium, rhenium, thallium, cadmium, germanium, vanadium, gallium, indium and niobium (columbium), and articles of these metals, including waste and scrap > Rhenium > Other",
+  "8112.51.00.00": "Beryllium, chromium, hafnium, rhenium, thallium, cadmium, germanium, vanadium, gallium, indium and niobium (columbium), and articles of these metals, including waste and scrap > Thallium > Unwrought; powders",
+  "8112.52.00.00": "Beryllium, chromium, hafnium, rhenium, thallium, cadmium, germanium, vanadium, gallium, indium and niobium (columbium), and articles of these metals, including waste and scrap > Thallium > Waste and scrap",
+  "8112.59.00.00": "Beryllium, chromium, hafnium, rhenium, thallium, cadmium, germanium, vanadium, gallium, indium and niobium (columbium), and articles of these metals, including waste and scrap > Thallium > Other",
+  "8112.61.00.00": "Beryllium, chromium, hafnium, rhenium, thallium, cadmium, germanium, vanadium, gallium, indium and niobium (columbium), and articles of these metals, including waste and scrap > Cadmium > Waste and scrap",
+  "8112.69.00.00": "Beryllium, chromium, hafnium, rhenium, thallium, cadmium, germanium, vanadium, gallium, indium and niobium (columbium), and articles of these metals, including waste and scrap > Cadmium > Other",
+  "8112.92.00.10": "Beryllium, chromium, hafnium, rhenium, thallium, cadmium, germanium, vanadium, gallium, indium and niobium (columbium), and articles of these metals, including waste and scrap > Other > Unwrought; waste and scrap; powders > Germanium",
+  "8112.92.00.20": "Beryllium, chromium, hafnium, rhenium, thallium, cadmium, germanium, vanadium, gallium, indium and niobium (columbium), and articles of these metals, including waste and scrap > Other > Unwrought; waste and scrap; powders > Gallium",
+  "8112.92.00.30": "Beryllium, chromium, hafnium, rhenium, thallium, cadmium, germanium, vanadium, gallium, indium and niobium (columbium), and articles of these metals, including waste and scrap > Other > Unwrought; waste and scrap; powders > Indium",
+  "8112.92.00.90": "Beryllium, chromium, hafnium, rhenium, thallium, cadmium, germanium, vanadium, gallium, indium and niobium (columbium), and articles of these metals, including waste and scrap > Other > Unwrought; waste and scrap; powders > Other",
+  "8112.99.00.00": "Beryllium, chromium, hafnium, rhenium, thallium, cadmium, germanium, vanadium, gallium, indium and niobium (columbium), and articles of these metals, including waste and scrap > Other > Other",
+  "8113.00.00.00": "Cermets and articles thereof, including waste and scrap"
+});
+
+// ===== Chapter 82 - Tools, Implements, Cutlery, Spoons and Forks, of Base
+// Metal; Parts Thereof of Base Metal (verified 10 AUG 2026 from CBSA
+// Ch.82, user-provided markdown, 1,000-line source, full read) =====
+// Free-by-default (added to MFN_FREE_DEFAULT_CHAPTERS) - genuinely close to
+// balanced: 62 of 120 codes dutiable (52%). Two clear zones: 82.01-82.06 and
+// 82.11-82.15 (hand tools, saws, files/pliers, spanners, blow lamps/vices,
+// knives, razors, scissors, cutlery, spoons/forks/tableware) are heavily
+// dutiable finished consumer/trade goods; 82.07-82.09 (interchangeable tool
+// inserts and bits, machine knife blades, cermet plates) is almost entirely
+// Free. Manufacturing-input and climbing/mountaineering-use exemptions
+// recur throughout the dutiable headings - 'heads/blanks for use in the
+// manufacture of X' and 'for climbing or mountaineering' are consistently
+// Free even within otherwise-dutiable subheadings.
+// One genuine 2-orphan/2-block extraction case resolved using both
+// positional AND semantic evidence together (8211.95.12/8211.95.13, table
+// knife handles): the natural sequential block order and the strong,
+// established 'for use in the manufacture of X' = Free pattern both agreed
+// on the same assignment (8211.95.12 dutiable at 10%, 8211.95.13 Free) -
+// not a case of guessing blind.
+const CH82_FREE_DEFAULT = ["82"];
+MFN_FREE_DEFAULT_CHAPTERS.push(...CH82_FREE_DEFAULT);
+
+Object.assign(MFN_RATES, {
+  "8201.10.90.00": {type:"percent", rate:5, note:""},
+  "8201.30.90.00": {type:"percent", rate:6, note:""},
+  "8201.40.90.00": {type:"percent", rate:6, note:""},
+  "8201.60.90.00": {type:"percent", rate:11, note:""},
+  "8201.90.29.00": {type:"percent", rate:6, note:""},
+  "8201.90.99.00": {type:"percent", rate:6.5, note:""},
+  "8202.10.00.00": {type:"percent", rate:7, note:""},
+  "8203.10.00.00": {type:"percent", rate:6.5, note:""},
+  "8203.20.00.10": {type:"percent", rate:6.5, note:""},
+  "8203.20.00.90": {type:"percent", rate:6.5, note:""},
+  "8203.30.10.00": {type:"percent", rate:11, note:""},
+  "8203.30.90.00": {type:"percent", rate:6.5, note:""},
+  "8203.40.00.00": {type:"percent", rate:6.5, note:""},
+  "8204.11.00.30": {type:"percent", rate:7, note:""},
+  "8204.11.00.40": {type:"percent", rate:7, note:""},
+  "8204.11.00.90": {type:"percent", rate:7, note:""},
+  "8204.12.00.10": {type:"percent", rate:7, note:""},
+  "8204.12.00.90": {type:"percent", rate:7, note:""},
+  "8204.20.00.10": {type:"percent", rate:6.5, note:""},
+  "8204.20.00.20": {type:"percent", rate:6.5, note:""},
+  "8205.10.10.00": {type:"percent", rate:4, note:""},
+  "8205.10.90.00": {type:"percent", rate:7, note:""},
+  "8205.20.90.00": {type:"percent", rate:7, note:""},
+  "8205.30.00.00": {type:"percent", rate:7, note:""},
+  "8205.40.00.00": {type:"percent", rate:7, note:""},
+  "8205.51.90.00": {type:"percent", rate:6.5, note:""},
+  "8205.59.20.00": {type:"percent", rate:2.5, note:""},
+  "8205.59.90.00": {type:"percent", rate:6.5, note:""},
+  "8205.60.00.00": {type:"percent", rate:6, note:""},
+  "8205.70.90.00": {type:"percent", rate:6.5, note:""},
+  "8205.90.10.00": {type:"percent", rate:7, note:""},
+  "8205.90.90.00": {type:"percent", rate:6.5, note:""},
+  "8207.90.10.00": {type:"percent", rate:9, note:""},
+  "8210.00.10.00": {type:"percent", rate:6, note:""},
+  "8211.10.10.00": {type:"percent", rate:11, note:""},
+  "8211.10.90.00": {type:"percent", rate:7, note:""},
+  "8211.91.10.00": {type:"percent", rate:7, note:""},
+  "8211.91.90.00": {type:"percent", rate:11, note:""},
+  "8211.92.00.00": {type:"percent", rate:7, note:""},
+  "8211.93.00.00": {type:"percent", rate:5, note:""},
+  "8211.94.90.00": {type:"percent", rate:3.5, note:""},
+  "8211.95.11.00": {type:"percent", rate:7, note:""},
+  "8211.95.12.00": {type:"percent", rate:10, note:""},
+  "8211.95.19.00": {type:"percent", rate:11, note:""},
+  "8211.95.20.00": {type:"percent", rate:7, note:""},
+  "8211.95.30.00": {type:"percent", rate:5, note:""},
+  "8212.10.00.00": {type:"percent", rate:6.5, note:""},
+  "8212.20.00.00": {type:"percent", rate:6, note:""},
+  "8213.00.10.00": {type:"percent", rate:11, note:""},
+  "8213.00.20.00": {type:"percent", rate:3.5, note:""},
+  "8213.00.30.00": {type:"percent", rate:6.5, note:""},
+  "8214.10.00.00": {type:"percent", rate:6.5, note:""},
+  "8214.20.00.00": {type:"percent", rate:6.5, note:""},
+  "8214.90.90.00": {type:"percent", rate:7, note:""},
+  "8215.10.10.00": {type:"percent", rate:11, note:""},
+  "8215.10.90.00": {type:"percent", rate:7, note:""},
+  "8215.20.10.00": {type:"percent", rate:11, note:""},
+  "8215.20.90.00": {type:"percent", rate:6.5, note:""},
+  "8215.91.10.00": {type:"percent", rate:11, note:""},
+  "8215.91.90.00": {type:"percent", rate:7, note:""},
+  "8215.99.10.00": {type:"percent", rate:11, note:""},
+  "8215.99.90.00": {type:"percent", rate:6.5, note:""}
+});
+
+Object.assign(CODE_DESCRIPTIONS, {
+  "8201.10.10.00": "Hand tools, the following: spades, shovels, mattocks, picks, hoes, forks and rakes; axes, bill hooks and similar hewing tools; secateurs and pruners of any kind; scythes, sickles, hay knives, hedge shears, timber wedges and other tools of a kind used in agriculture, horticulture or forestry > Spades and shovels > Heads for use in the manufacture or production of spades and shovels",
+  "8201.10.90.00": "Hand tools, the following: spades, shovels, mattocks, picks, hoes, forks and rakes; axes, bill hooks and similar hewing tools; secateurs and pruners of any kind; scythes, sickles, hay knives, hedge shears, timber wedges and other tools of a kind used in agriculture, horticulture or forestry > Spades and shovels > Other",
+  "8201.30.10.00": "Hand tools, the following: spades, shovels, mattocks, picks, hoes, forks and rakes; axes, bill hooks and similar hewing tools; secateurs and pruners of any kind; scythes, sickles, hay knives, hedge shears, timber wedges and other tools of a kind used in agriculture, horticulture or forestry > Mattocks, picks, hoes and rakes > Heads for use in the manufacture or production of mattocks, picks, hoes or rakes; mattocks and picks for climbing or mountaineering",
+  "8201.30.90.00": "Hand tools, the following: spades, shovels, mattocks, picks, hoes, forks and rakes; axes, bill hooks and similar hewing tools; secateurs and pruners of any kind; scythes, sickles, hay knives, hedge shears, timber wedges and other tools of a kind used in agriculture, horticulture or forestry > Mattocks, picks, hoes and rakes > Other",
+  "8201.40.10.00": "Hand tools, the following: spades, shovels, mattocks, picks, hoes, forks and rakes; axes, bill hooks and similar hewing tools; secateurs and pruners of any kind; scythes, sickles, hay knives, hedge shears, timber wedges and other tools of a kind used in agriculture, horticulture or forestry > Axes, bill hooks and similar hewing tools > For climbing or mountaineering; heads for use in the manufacture or production of axes, bill hooks and similar hewing tools",
+  "8201.40.90.00": "Hand tools, the following: spades, shovels, mattocks, picks, hoes, forks and rakes; axes, bill hooks and similar hewing tools; secateurs and pruners of any kind; scythes, sickles, hay knives, hedge shears, timber wedges and other tools of a kind used in agriculture, horticulture or forestry > Axes, bill hooks and similar hewing tools > Other",
+  "8201.50.00.00": "Hand tools, the following: spades, shovels, mattocks, picks, hoes, forks and rakes; axes, bill hooks and similar hewing tools; secateurs and pruners of any kind; scythes, sickles, hay knives, hedge shears, timber wedges and other tools of a kind used in agriculture, horticulture or forestry > Secateurs and similar one-handed pruners and shears (including poultry shears)",
+  "8201.60.10.00": "Hand tools, the following: spades, shovels, mattocks, picks, hoes, forks and rakes; axes, bill hooks and similar hewing tools; secateurs and pruners of any kind; scythes, sickles, hay knives, hedge shears, timber wedges and other tools of a kind used in agriculture, horticulture or forestry > Hedge shears, two-handed pruning shears and similar two-handed shears > Pruning shears",
+  "8201.60.90.00": "Hand tools, the following: spades, shovels, mattocks, picks, hoes, forks and rakes; axes, bill hooks and similar hewing tools; secateurs and pruners of any kind; scythes, sickles, hay knives, hedge shears, timber wedges and other tools of a kind used in agriculture, horticulture or forestry > Hedge shears, two-handed pruning shears and similar two-handed shears > Other",
+  "8201.90.10.00": "Hand tools, the following: spades, shovels, mattocks, picks, hoes, forks and rakes; axes, bill hooks and similar hewing tools; secateurs and pruners of any kind; scythes, sickles, hay knives, hedge shears, timber wedges and other tools of a kind used in agriculture, horticulture or forestry > Other hand tools of a kind used in agriculture, horticulture or forestry > Post-hole diggers; pruning hooks",
+  "8201.90.21.00": "Hand tools, the following: spades, shovels, mattocks, picks, hoes, forks and rakes; axes, bill hooks and similar hewing tools; secateurs and pruners of any kind; scythes, sickles, hay knives, hedge shears, timber wedges and other tools of a kind used in agriculture, horticulture or forestry > Other hand tools of a kind used in agriculture, horticulture or forestry > Forks > Forged, for use in the manufacture of pronged forks",
+  "8201.90.29.00": "Hand tools, the following: spades, shovels, mattocks, picks, hoes, forks and rakes; axes, bill hooks and similar hewing tools; secateurs and pruners of any kind; scythes, sickles, hay knives, hedge shears, timber wedges and other tools of a kind used in agriculture, horticulture or forestry > Other hand tools of a kind used in agriculture, horticulture or forestry > Forks > Other",
+  "8201.90.91.00": "Hand tools, the following: spades, shovels, mattocks, picks, hoes, forks and rakes; axes, bill hooks and similar hewing tools; secateurs and pruners of any kind; scythes, sickles, hay knives, hedge shears, timber wedges and other tools of a kind used in agriculture, horticulture or forestry > Other hand tools of a kind used in agriculture, horticulture or forestry > Other > Heads for use in the manufacture or production of other hand tools of a kind used in agriculture, horticulture or forestry",
+  "8201.90.99.00": "Hand tools, the following: spades, shovels, mattocks, picks, hoes, forks and rakes; axes, bill hooks and similar hewing tools; secateurs and pruners of any kind; scythes, sickles, hay knives, hedge shears, timber wedges and other tools of a kind used in agriculture, horticulture or forestry > Other hand tools of a kind used in agriculture, horticulture or forestry > Other > Other",
+  "8202.10.00.00": "Hand saws; blades for saws of all kinds (including slitting, slotting or toothless saw blades) > Hand saws",
+  "8202.20.00.00": "Hand saws; blades for saws of all kinds (including slitting, slotting or toothless saw blades) > Band saw blades",
+  "8202.31.00.00": "Hand saws; blades for saws of all kinds (including slitting, slotting or toothless saw blades) > Circular saw blades (including slitting or slotting saw blades) > With working part of steel",
+  "8202.39.00.00": "Hand saws; blades for saws of all kinds (including slitting, slotting or toothless saw blades) > Circular saw blades (including slitting or slotting saw blades) > Other, including parts",
+  "8202.40.00.00": "Hand saws; blades for saws of all kinds (including slitting, slotting or toothless saw blades) > Chain saw blades",
+  "8202.91.00.00": "Hand saws; blades for saws of all kinds (including slitting, slotting or toothless saw blades) > Other saw blades > Straight saw blades, for working metal",
+  "8202.99.00.00": "Hand saws; blades for saws of all kinds (including slitting, slotting or toothless saw blades) > Other saw blades > Other",
+  "8203.10.00.00": "Files, rasps, pliers (including cutting pliers), pincers, tweezers, metal cutting shears, pipe-cutters, bolt croppers, perforating punches and similar hand tools > Files, rasps and similar tools",
+  "8203.20.00.10": "Files, rasps, pliers (including cutting pliers), pincers, tweezers, metal cutting shears, pipe-cutters, bolt croppers, perforating punches and similar hand tools > Pliers (including cutting pliers), pincers, tweezers and similar tools > Pliers",
+  "8203.20.00.90": "Files, rasps, pliers (including cutting pliers), pincers, tweezers, metal cutting shears, pipe-cutters, bolt croppers, perforating punches and similar hand tools > Pliers (including cutting pliers), pincers, tweezers and similar tools > Other",
+  "8203.30.10.00": "Files, rasps, pliers (including cutting pliers), pincers, tweezers, metal cutting shears, pipe-cutters, bolt croppers, perforating punches and similar hand tools > Metal cutting shears and similar tools > Shears",
+  "8203.30.90.00": "Files, rasps, pliers (including cutting pliers), pincers, tweezers, metal cutting shears, pipe-cutters, bolt croppers, perforating punches and similar hand tools > Metal cutting shears and similar tools > Other",
+  "8203.40.00.00": "Files, rasps, pliers (including cutting pliers), pincers, tweezers, metal cutting shears, pipe-cutters, bolt croppers, perforating punches and similar hand tools > Pipe-cutters, bolt croppers, perforating punches and similar tools",
+  "8204.11.00.30": "Hand-operated spanners and wrenches (including torque meter wrenches but not including tap wrenches); interchangeable spanner sockets, with or without handles > Hand-operated spanners and wrenches > Non-adjustable > Combination open end and box end",
+  "8204.11.00.40": "Hand-operated spanners and wrenches (including torque meter wrenches but not including tap wrenches); interchangeable spanner sockets, with or without handles > Hand-operated spanners and wrenches > Non-adjustable > Torque",
+  "8204.11.00.90": "Hand-operated spanners and wrenches (including torque meter wrenches but not including tap wrenches); interchangeable spanner sockets, with or without handles > Hand-operated spanners and wrenches > Non-adjustable > Other",
+  "8204.12.00.10": "Hand-operated spanners and wrenches (including torque meter wrenches but not including tap wrenches); interchangeable spanner sockets, with or without handles > Hand-operated spanners and wrenches > Adjustable > Pipe wrench",
+  "8204.12.00.90": "Hand-operated spanners and wrenches (including torque meter wrenches but not including tap wrenches); interchangeable spanner sockets, with or without handles > Hand-operated spanners and wrenches > Adjustable > Other",
+  "8204.20.00.10": "Hand-operated spanners and wrenches (including torque meter wrenches but not including tap wrenches); interchangeable spanner sockets, with or without handles > Interchangeable spanner sockets, with or without handles > With handles",
+  "8204.20.00.20": "Hand-operated spanners and wrenches (including torque meter wrenches but not including tap wrenches); interchangeable spanner sockets, with or without handles > Interchangeable spanner sockets, with or without handles > Without handles",
+  "8205.10.10.00": "Hand tools (including glaziers' diamonds), not elsewhere specified or included; blow lamps; vices, clamps and the like, other than accessories for and parts of, machine-tools or water-jet cutting machines; anvils; portable forges; hand or pedal-operated grinding wheels with frameworks > Drilling, threading or tapping tools > Die stocks",
+  "8205.10.90.00": "Hand tools (including glaziers' diamonds), not elsewhere specified or included; blow lamps; vices, clamps and the like, other than accessories for and parts of, machine-tools or water-jet cutting machines; anvils; portable forges; hand or pedal-operated grinding wheels with frameworks > Drilling, threading or tapping tools > Other",
+  "8205.20.10.00": "Hand tools (including glaziers' diamonds), not elsewhere specified or included; blow lamps; vices, clamps and the like, other than accessories for and parts of, machine-tools or water-jet cutting machines; anvils; portable forges; hand or pedal-operated grinding wheels with frameworks > Hammers and sledge hammers > For climbing or mountaineering; heads for use in the manufacture or production of hammers and sledge hammers",
+  "8205.20.90.00": "Hand tools (including glaziers' diamonds), not elsewhere specified or included; blow lamps; vices, clamps and the like, other than accessories for and parts of, machine-tools or water-jet cutting machines; anvils; portable forges; hand or pedal-operated grinding wheels with frameworks > Hammers and sledge hammers > Other",
+  "8205.30.00.00": "Hand tools (including glaziers' diamonds), not elsewhere specified or included; blow lamps; vices, clamps and the like, other than accessories for and parts of, machine-tools or water-jet cutting machines; anvils; portable forges; hand or pedal-operated grinding wheels with frameworks > Planes, chisels, gouges and similar cutting tools for working wood",
+  "8205.40.00.00": "Hand tools (including glaziers' diamonds), not elsewhere specified or included; blow lamps; vices, clamps and the like, other than accessories for and parts of, machine-tools or water-jet cutting machines; anvils; portable forges; hand or pedal-operated grinding wheels with frameworks > Screwdrivers",
+  "8205.51.10.00": "Hand tools (including glaziers' diamonds), not elsewhere specified or included; blow lamps; vices, clamps and the like, other than accessories for and parts of, machine-tools or water-jet cutting machines; anvils; portable forges; hand or pedal-operated grinding wheels with frameworks > Other hand tools (including glaziers' diamonds) > Household tools > Portable butane hair curlers",
+  "8205.51.90.00": "Hand tools (including glaziers' diamonds), not elsewhere specified or included; blow lamps; vices, clamps and the like, other than accessories for and parts of, machine-tools or water-jet cutting machines; anvils; portable forges; hand or pedal-operated grinding wheels with frameworks > Other hand tools (including glaziers' diamonds) > Household tools > Other",
+  "8205.59.10.00": "Hand tools (including glaziers' diamonds), not elsewhere specified or included; blow lamps; vices, clamps and the like, other than accessories for and parts of, machine-tools or water-jet cutting machines; anvils; portable forges; hand or pedal-operated grinding wheels with frameworks > Other hand tools (including glaziers' diamonds) > Other > For climbing or mountaineering; heads for use in the manufacture or production of other hand tools; livestock branding irons",
+  "8205.59.20.00": "Hand tools (including glaziers' diamonds), not elsewhere specified or included; blow lamps; vices, clamps and the like, other than accessories for and parts of, machine-tools or water-jet cutting machines; anvils; portable forges; hand or pedal-operated grinding wheels with frameworks > Other hand tools (including glaziers' diamonds) > Other > Stapling or tacking guns, and hammer tackers not operated by an independent hammer",
+  "8205.59.90.00": "Hand tools (including glaziers' diamonds), not elsewhere specified or included; blow lamps; vices, clamps and the like, other than accessories for and parts of, machine-tools or water-jet cutting machines; anvils; portable forges; hand or pedal-operated grinding wheels with frameworks > Other hand tools (including glaziers' diamonds) > Other > Other",
+  "8205.60.00.00": "Hand tools (including glaziers' diamonds), not elsewhere specified or included; blow lamps; vices, clamps and the like, other than accessories for and parts of, machine-tools or water-jet cutting machines; anvils; portable forges; hand or pedal-operated grinding wheels with frameworks > Blow lamps",
+  "8205.70.10.00": "Hand tools (including glaziers' diamonds), not elsewhere specified or included; blow lamps; vices, clamps and the like, other than accessories for and parts of, machine-tools or water-jet cutting machines; anvils; portable forges; hand or pedal-operated grinding wheels with frameworks > Vices, clamps and the like > Clamps for use with the following surgical, dental, veterinary or diagnostic articles: instruments; sterilizers; cobalt therapy units; anaesthesia, surgical suction or oxygen administering apparatus",
+  "8205.70.20.00": "Hand tools (including glaziers' diamonds), not elsewhere specified or included; blow lamps; vices, clamps and the like, other than accessories for and parts of, machine-tools or water-jet cutting machines; anvils; portable forges; hand or pedal-operated grinding wheels with frameworks > Vices, clamps and the like > Precision clamps and vices, for toolmakers, machinists or metal workers",
+  "8205.70.90.00": "Hand tools (including glaziers' diamonds), not elsewhere specified or included; blow lamps; vices, clamps and the like, other than accessories for and parts of, machine-tools or water-jet cutting machines; anvils; portable forges; hand or pedal-operated grinding wheels with frameworks > Vices, clamps and the like > Other",
+  "8205.90.10.00": "Hand tools (including glaziers' diamonds), not elsewhere specified or included; blow lamps; vices, clamps and the like, other than accessories for and parts of, machine-tools or water-jet cutting machines; anvils; portable forges; hand or pedal-operated grinding wheels with frameworks > Other, including sets of articles of two or more subheadings of this heading > Anvils; portable forges; hand or pedal-operated grinding wheels with frameworks",
+  "8205.90.90.00": "Hand tools (including glaziers' diamonds), not elsewhere specified or included; blow lamps; vices, clamps and the like, other than accessories for and parts of, machine-tools or water-jet cutting machines; anvils; portable forges; hand or pedal-operated grinding wheels with frameworks > Other, including sets of articles of two or more subheadings of this heading > Other",
+  "8206.00.00.00": "Tools of two or more of the headings 82.02 to 82.05, put up in sets for retail sale",
+  "8207.13.00.10": "Interchangeable tools for hand tools, whether or not power-operated, or for machine-tools (for example, for pressing, stamping, punching, tapping, threading, drilling, boring, broaching, milling, turning or screw driving), including dies for drawing or extruding metal, and rock drilling or earth boring tools > Rock drilling or earth boring tools > With working part of cermets > Rotary rock drill bits",
+  "8207.13.00.90": "Interchangeable tools for hand tools, whether or not power-operated, or for machine-tools (for example, for pressing, stamping, punching, tapping, threading, drilling, boring, broaching, milling, turning or screw driving), including dies for drawing or extruding metal, and rock drilling or earth boring tools > Rock drilling or earth boring tools > With working part of cermets > Other",
+  "8207.19.00.40": "Interchangeable tools for hand tools, whether or not power-operated, or for machine-tools (for example, for pressing, stamping, punching, tapping, threading, drilling, boring, broaching, milling, turning or screw driving), including dies for drawing or extruding metal, and rock drilling or earth boring tools > Rock drilling or earth boring tools > Other, including parts > Rotary rock drill bits",
+  "8207.19.00.50": "Interchangeable tools for hand tools, whether or not power-operated, or for machine-tools (for example, for pressing, stamping, punching, tapping, threading, drilling, boring, broaching, milling, turning or screw driving), including dies for drawing or extruding metal, and rock drilling or earth boring tools > Rock drilling or earth boring tools > Other, including parts > Percussion rock drill bits",
+  "8207.19.00.90": "Interchangeable tools for hand tools, whether or not power-operated, or for machine-tools (for example, for pressing, stamping, punching, tapping, threading, drilling, boring, broaching, milling, turning or screw driving), including dies for drawing or extruding metal, and rock drilling or earth boring tools > Rock drilling or earth boring tools > Other, including parts > Other",
+  "8207.20.00.00": "Interchangeable tools for hand tools, whether or not power-operated, or for machine-tools (for example, for pressing, stamping, punching, tapping, threading, drilling, boring, broaching, milling, turning or screw driving), including dies for drawing or extruding metal, and rock drilling or earth boring tools > Dies for drawing or extruding metal",
+  "8207.30.00.20": "Interchangeable tools for hand tools, whether or not power-operated, or for machine-tools (for example, for pressing, stamping, punching, tapping, threading, drilling, boring, broaching, milling, turning or screw driving), including dies for drawing or extruding metal, and rock drilling or earth boring tools > Tools for pressing, stamping or punching > Suitable for cutting metal",
+  "8207.30.00.40": "Interchangeable tools for hand tools, whether or not power-operated, or for machine-tools (for example, for pressing, stamping, punching, tapping, threading, drilling, boring, broaching, milling, turning or screw driving), including dies for drawing or extruding metal, and rock drilling or earth boring tools > Tools for pressing, stamping or punching > Stamping dies",
+  "8207.30.00.50": "Interchangeable tools for hand tools, whether or not power-operated, or for machine-tools (for example, for pressing, stamping, punching, tapping, threading, drilling, boring, broaching, milling, turning or screw driving), including dies for drawing or extruding metal, and rock drilling or earth boring tools > Tools for pressing, stamping or punching > Metal forming dies, including thread-rolling dies",
+  "8207.30.00.90": "Interchangeable tools for hand tools, whether or not power-operated, or for machine-tools (for example, for pressing, stamping, punching, tapping, threading, drilling, boring, broaching, milling, turning or screw driving), including dies for drawing or extruding metal, and rock drilling or earth boring tools > Tools for pressing, stamping or punching > Other",
+  "8207.40.00.10": "Interchangeable tools for hand tools, whether or not power-operated, or for machine-tools (for example, for pressing, stamping, punching, tapping, threading, drilling, boring, broaching, milling, turning or screw driving), including dies for drawing or extruding metal, and rock drilling or earth boring tools > Tools for tapping or threading > For tapping",
+  "8207.40.00.20": "Interchangeable tools for hand tools, whether or not power-operated, or for machine-tools (for example, for pressing, stamping, punching, tapping, threading, drilling, boring, broaching, milling, turning or screw driving), including dies for drawing or extruding metal, and rock drilling or earth boring tools > Tools for tapping or threading > For threading",
+  "8207.50.00.10": "Interchangeable tools for hand tools, whether or not power-operated, or for machine-tools (for example, for pressing, stamping, punching, tapping, threading, drilling, boring, broaching, milling, turning or screw driving), including dies for drawing or extruding metal, and rock drilling or earth boring tools > Tools for drilling, other than for rock drilling > Drill bits for masonry",
+  "8207.50.00.20": "Interchangeable tools for hand tools, whether or not power-operated, or for machine-tools (for example, for pressing, stamping, punching, tapping, threading, drilling, boring, broaching, milling, turning or screw driving), including dies for drawing or extruding metal, and rock drilling or earth boring tools > Tools for drilling, other than for rock drilling > Drill bits for metal working",
+  "8207.50.00.90": "Interchangeable tools for hand tools, whether or not power-operated, or for machine-tools (for example, for pressing, stamping, punching, tapping, threading, drilling, boring, broaching, milling, turning or screw driving), including dies for drawing or extruding metal, and rock drilling or earth boring tools > Tools for drilling, other than for rock drilling > Other",
+  "8207.60.00.00": "Interchangeable tools for hand tools, whether or not power-operated, or for machine-tools (for example, for pressing, stamping, punching, tapping, threading, drilling, boring, broaching, milling, turning or screw driving), including dies for drawing or extruding metal, and rock drilling or earth boring tools > Tools for boring or broaching",
+  "8207.70.00.11": "Interchangeable tools for hand tools, whether or not power-operated, or for machine-tools (for example, for pressing, stamping, punching, tapping, threading, drilling, boring, broaching, milling, turning or screw driving), including dies for drawing or extruding metal, and rock drilling or earth boring tools > Tools for milling > Milling cutters > Tungsten carbide tipped",
+  "8207.70.00.19": "Interchangeable tools for hand tools, whether or not power-operated, or for machine-tools (for example, for pressing, stamping, punching, tapping, threading, drilling, boring, broaching, milling, turning or screw driving), including dies for drawing or extruding metal, and rock drilling or earth boring tools > Tools for milling > Milling cutters > Other",
+  "8207.70.00.90": "Interchangeable tools for hand tools, whether or not power-operated, or for machine-tools (for example, for pressing, stamping, punching, tapping, threading, drilling, boring, broaching, milling, turning or screw driving), including dies for drawing or extruding metal, and rock drilling or earth boring tools > Tools for milling > Other",
+  "8207.80.00.00": "Interchangeable tools for hand tools, whether or not power-operated, or for machine-tools (for example, for pressing, stamping, punching, tapping, threading, drilling, boring, broaching, milling, turning or screw driving), including dies for drawing or extruding metal, and rock drilling or earth boring tools > Tools for turning",
+  "8207.90.10.00": "Interchangeable tools for hand tools, whether or not power-operated, or for machine-tools (for example, for pressing, stamping, punching, tapping, threading, drilling, boring, broaching, milling, turning or screw driving), including dies for drawing or extruding metal, and rock drilling or earth boring tools > Other interchangeable tools > Ball points, bushing bits, chisels, clay spades, front spades, drivers (for pipes, pins and spikes) and star drills, for portable power tools; cutting tools, carbide tipped, for wood working; nozzles for vacuum cleaners",
+  "8207.90.90.00": "Interchangeable tools for hand tools, whether or not power-operated, or for machine-tools (for example, for pressing, stamping, punching, tapping, threading, drilling, boring, broaching, milling, turning or screw driving), including dies for drawing or extruding metal, and rock drilling or earth boring tools > Other interchangeable tools > Other",
+  "8208.10.00.00": "Knives and cutting blades, for machines or for mechanical appliances > For metal working",
+  "8208.20.00.00": "Knives and cutting blades, for machines or for mechanical appliances > For wood working",
+  "8208.30.00.00": "Knives and cutting blades, for machines or for mechanical appliances > For kitchen appliances or for machines used by the food industry",
+  "8208.40.00.10": "Knives and cutting blades, for machines or for mechanical appliances > For agricultural, horticultural or forestry machines > For mowers for lawns, parks or sports-grounds",
+  "8208.40.00.20": "Knives and cutting blades, for machines or for mechanical appliances > For agricultural, horticultural or forestry machines > For other agricultural or horticultural type machinery and parts thereof",
+  "8208.40.00.90": "Knives and cutting blades, for machines or for mechanical appliances > For agricultural, horticultural or forestry machines > Other",
+  "8208.90.00.00": "Knives and cutting blades, for machines or for mechanical appliances > Other",
+  "8209.00.00.10": "Plates, sticks, tips and the like for tools, unmounted, of cermets > Carbide inserts and bits",
+  "8209.00.00.90": "Plates, sticks, tips and the like for tools, unmounted, of cermets > Other",
+  "8210.00.10.00": "Hand-operated mechanical appliances, weighing 10 kg or less, used in the preparation, conditioning or serving of food or drink > Grape crushers for domestic purposes",
+  "8210.00.90.10": "Hand-operated mechanical appliances, weighing 10 kg or less, used in the preparation, conditioning or serving of food or drink > Other > Appliances which chop, cut, slice, mince or shred food",
+  "8210.00.90.20": "Hand-operated mechanical appliances, weighing 10 kg or less, used in the preparation, conditioning or serving of food or drink > Other > Can openers",
+  "8210.00.90.90": "Hand-operated mechanical appliances, weighing 10 kg or less, used in the preparation, conditioning or serving of food or drink > Other > Other",
+  "8211.10.10.00": "Knives with cutting blades, serrated or not (including pruning knives), other than knives of heading 82.08, and blades therefor > Sets of assorted articles > Table cutlery",
+  "8211.10.90.00": "Knives with cutting blades, serrated or not (including pruning knives), other than knives of heading 82.08, and blades therefor > Sets of assorted articles > Other",
+  "8211.91.10.00": "Knives with cutting blades, serrated or not (including pruning knives), other than knives of heading 82.08, and blades therefor > Other > Table knives having fixed blades > Carving knives",
+  "8211.91.90.00": "Knives with cutting blades, serrated or not (including pruning knives), other than knives of heading 82.08, and blades therefor > Other > Table knives having fixed blades > Other",
+  "8211.92.00.00": "Knives with cutting blades, serrated or not (including pruning knives), other than knives of heading 82.08, and blades therefor > Other > Other knives having fixed blades",
+  "8211.93.00.00": "Knives with cutting blades, serrated or not (including pruning knives), other than knives of heading 82.08, and blades therefor > Other > Knives having other than fixed blades",
+  "8211.94.10.00": "Knives with cutting blades, serrated or not (including pruning knives), other than knives of heading 82.08, and blades therefor > Other > Blades > Blanks, of stainless steel, to specification AISI 430 or AISI 300 series, of a thickness of 1.78 mm or more, not further manufactured than stamped to shape, for use in the manufacture of flatware; forged, including blanks of stainless steel, not further manufactured than wet ground, for use in the manufacture of table knives",
+  "8211.94.90.00": "Knives with cutting blades, serrated or not (including pruning knives), other than knives of heading 82.08, and blades therefor > Other > Blades > Other",
+  "8211.95.11.00": "Knives with cutting blades, serrated or not (including pruning knives), other than knives of heading 82.08, and blades therefor > Other > Handles of base metal > Of table knives having fixed blades > Of carving knives",
+  "8211.95.12.00": "Knives with cutting blades, serrated or not (including pruning knives), other than knives of heading 82.08, and blades therefor > Other > Handles of base metal > Of table knives having fixed blades > Hollow stainless steel handles, further manufactured than welded, of table knives other than carving knives",
+  "8211.95.13.00": "Knives with cutting blades, serrated or not (including pruning knives), other than knives of heading 82.08, and blades therefor > Other > Handles of base metal > Of table knives having fixed blades > Hollow stainless steel knife handles, not further manufactured than welded, for use in the manufacture of table knives",
+  "8211.95.19.00": "Knives with cutting blades, serrated or not (including pruning knives), other than knives of heading 82.08, and blades therefor > Other > Handles of base metal > Of table knives having fixed blades > Other",
+  "8211.95.20.00": "Knives with cutting blades, serrated or not (including pruning knives), other than knives of heading 82.08, and blades therefor > Other > Handles of base metal > Of other knives having fixed blades",
+  "8211.95.30.00": "Knives with cutting blades, serrated or not (including pruning knives), other than knives of heading 82.08, and blades therefor > Other > Handles of base metal > Of knives having other than fixed blades",
+  "8212.10.00.00": "Razors and razor blades (including razor blade blanks in strips) > Razors",
+  "8212.20.00.00": "Razors and razor blades (including razor blade blanks in strips) > Safety razor blades, including razor blade blanks in strips",
+  "8212.90.00.00": "Razors and razor blades (including razor blade blanks in strips) > Other parts",
+  "8213.00.10.00": "Scissors, tailors' shears and similar shears, and blades therefor > Scissors and shears",
+  "8213.00.20.00": "Scissors, tailors' shears and similar shears, and blades therefor > Blanks",
+  "8213.00.30.00": "Scissors, tailors' shears and similar shears, and blades therefor > Blades",
+  "8214.10.00.00": "Other articles of cutlery (for example, hair clippers, butchers' or kitchen cleavers, choppers and mincing knives, paper knives); manicure or pedicure sets and instruments (including nail files) > Paper knives, letter openers, erasing knives, pencil sharpeners and blades therefor",
+  "8214.20.00.00": "Other articles of cutlery (for example, hair clippers, butchers' or kitchen cleavers, choppers and mincing knives, paper knives); manicure or pedicure sets and instruments (including nail files) > Manicure or pedicure sets and instruments (including nail files)",
+  "8214.90.10.00": "Other articles of cutlery (for example, hair clippers, butchers' or kitchen cleavers, choppers and mincing knives, paper knives); manicure or pedicure sets and instruments (including nail files) > Other > Clippers for animals, for use on the farm",
+  "8214.90.90.00": "Other articles of cutlery (for example, hair clippers, butchers' or kitchen cleavers, choppers and mincing knives, paper knives); manicure or pedicure sets and instruments (including nail files) > Other > Other",
+  "8215.10.10.00": "Spoons, forks, ladles, skimmers, cake-servers, fish-knives, butter knives, sugar tongs and similar kitchen or tableware > Sets of assorted articles containing at least one article plated with precious metal > Containing spoons, knives and forks, of a kind used at the table",
+  "8215.10.90.00": "Spoons, forks, ladles, skimmers, cake-servers, fish-knives, butter knives, sugar tongs and similar kitchen or tableware > Sets of assorted articles containing at least one article plated with precious metal > Other",
+  "8215.20.10.00": "Spoons, forks, ladles, skimmers, cake-servers, fish-knives, butter knives, sugar tongs and similar kitchen or tableware > Other sets of assorted articles > Containing spoons, knives and forks, of a kind used at the table",
+  "8215.20.90.00": "Spoons, forks, ladles, skimmers, cake-servers, fish-knives, butter knives, sugar tongs and similar kitchen or tableware > Other sets of assorted articles > Other",
+  "8215.91.10.00": "Spoons, forks, ladles, skimmers, cake-servers, fish-knives, butter knives, sugar tongs and similar kitchen or tableware > Other > Plated with precious metal > Spoons or forks, of a kind used at the table",
+  "8215.91.90.00": "Spoons, forks, ladles, skimmers, cake-servers, fish-knives, butter knives, sugar tongs and similar kitchen or tableware > Other > Plated with precious metal > Other",
+  "8215.99.10.00": "Spoons, forks, ladles, skimmers, cake-servers, fish-knives, butter knives, sugar tongs and similar kitchen or tableware > Other > Other > Spoons or forks, of a kind used at the table",
+  "8215.99.20.00": "Spoons, forks, ladles, skimmers, cake-servers, fish-knives, butter knives, sugar tongs and similar kitchen or tableware > Other > Other > Spoon blanks and table forks in the rough",
+  "8215.99.90.00": "Spoons, forks, ladles, skimmers, cake-servers, fish-knives, butter knives, sugar tongs and similar kitchen or tableware > Other > Other > Other"
+});
+
+Object.assign(PREF_FREE, {
+  "8201.10.90.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8201.30.90.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8201.40.90.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8201.60.90.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8201.90.29.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8201.90.99.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8202.10.00.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8203.10.00.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8203.20.00.10": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8203.20.00.90": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8203.30.10.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8203.30.90.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8203.40.00.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8204.11.00.30": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8204.11.00.40": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8204.11.00.90": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8204.12.00.10": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8204.12.00.90": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8204.20.00.10": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8204.20.00.20": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8205.10.10.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8205.10.90.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8205.20.90.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8205.30.00.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8205.40.00.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8205.51.90.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8205.59.20.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8205.59.90.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8205.60.00.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8205.70.90.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8205.90.10.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8205.90.90.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8207.90.10.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8210.00.10.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8211.10.10.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8211.10.90.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8211.91.10.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8211.91.90.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8211.92.00.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8211.93.00.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8211.94.90.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8211.95.11.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8211.95.12.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8211.95.19.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8211.95.20.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8211.95.30.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8212.10.00.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8212.20.00.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8213.00.10.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8213.00.20.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8213.00.30.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8214.10.00.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8214.20.00.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8214.90.90.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8215.10.10.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8215.10.90.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8215.20.10.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8215.20.90.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8215.91.10.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8215.91.90.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8215.99.10.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8215.99.90.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"]
+});
+
+Object.assign(PREF_SPECIAL, {
+  "8201.10.90.00": {"GPT": {type:"percent", rate:3}},
+  "8201.30.90.00": {"GPT": {type:"percent", rate:5}},
+  "8201.40.90.00": {"GPT": {type:"percent", rate:5}},
+  "8201.90.29.00": {"GPT": {type:"percent", rate:5}},
+  "8201.90.99.00": {"GPT": {type:"percent", rate:5}},
+  "8202.10.00.00": {"AUT": {type:"percent", rate:6}, "NZT": {type:"percent", rate:6}, "GPT": {type:"percent", rate:5}},
+  "8203.20.00.10": {"GPT": {type:"percent", rate:5}},
+  "8203.20.00.90": {"GPT": {type:"percent", rate:5}},
+  "8203.30.90.00": {"GPT": {type:"percent", rate:5}},
+  "8203.40.00.00": {"GPT": {type:"percent", rate:5}},
+  "8204.11.00.30": {"AUT": {type:"percent", rate:6}, "NZT": {type:"percent", rate:6}, "GPT": {type:"percent", rate:5}},
+  "8204.11.00.40": {"AUT": {type:"percent", rate:6}, "NZT": {type:"percent", rate:6}, "GPT": {type:"percent", rate:5}},
+  "8204.11.00.90": {"AUT": {type:"percent", rate:6}, "NZT": {type:"percent", rate:6}, "GPT": {type:"percent", rate:5}},
+  "8204.12.00.10": {"AUT": {type:"percent", rate:6}, "NZT": {type:"percent", rate:6}, "GPT": {type:"percent", rate:5}},
+  "8204.12.00.90": {"AUT": {type:"percent", rate:6}, "NZT": {type:"percent", rate:6}, "GPT": {type:"percent", rate:5}},
+  "8204.20.00.10": {"GPT": {type:"percent", rate:5}},
+  "8204.20.00.20": {"GPT": {type:"percent", rate:5}},
+  "8205.10.90.00": {"GPT": {type:"percent", rate:5}},
+  "8205.20.90.00": {"AUT": {type:"percent", rate:6}, "NZT": {type:"percent", rate:6}, "GPT": {type:"percent", rate:5}},
+  "8205.30.00.00": {"AUT": {type:"percent", rate:6.5}, "NZT": {type:"percent", rate:6.5}, "GPT": {type:"percent", rate:5}},
+  "8205.40.00.00": {"AUT": {type:"percent", rate:6}, "NZT": {type:"percent", rate:6}, "GPT": {type:"percent", rate:5}},
+  "8205.51.90.00": {"GPT": {type:"percent", rate:5}},
+  "8205.59.90.00": {"GPT": {type:"percent", rate:5}},
+  "8205.70.90.00": {"GPT": {type:"percent", rate:5}},
+  "8205.90.10.00": {"GPT": {type:"percent", rate:5}},
+  "8205.90.90.00": {"GPT": {type:"percent", rate:5}},
+  "8207.90.10.00": {"AUT": {type:"percent", rate:2.5}, "NZT": {type:"percent", rate:2.5}, "GPT": {type:"percent", rate:2.5}},
+  "8211.10.10.00": {"GPT": {type:"percent", rate:8}},
+  "8211.91.90.00": {"GPT": {type:"percent", rate:8}},
+  "8211.95.19.00": {"GPT": {type:"percent", rate:8}},
+  "8214.10.00.00": {"GPT": {type:"percent", rate:5}},
+  "8214.20.00.00": {"GPT": {type:"percent", rate:5}},
+  "8214.90.90.00": {"AUT": {type:"percent", rate:2.5}, "NZT": {type:"percent", rate:2.5}, "GPT": {type:"percent", rate:5}},
+  "8215.10.10.00": {"GPT": {type:"percent", rate:8}},
+  "8215.10.90.00": {"GPT": {type:"percent", rate:5}},
+  "8215.20.10.00": {"AUT": {type:"percent", rate:8.5}, "NZT": {type:"percent", rate:8.5}, "GPT": {type:"percent", rate:8}},
+  "8215.20.90.00": {"GPT": {type:"percent", rate:5}},
+  "8215.91.10.00": {"GPT": {type:"percent", rate:8}},
+  "8215.91.90.00": {"GPT": {type:"percent", rate:5}},
+  "8215.99.10.00": {"GPT": {type:"percent", rate:8}},
+  "8215.99.90.00": {"GPT": {type:"percent", rate:5}}
+});
+
+// ===== Chapter 83 - Miscellaneous Articles of Base Metal (verified 10 AUG
+// 2026 from CBSA Ch.83, user-provided markdown, 489-line source, full
+// read) =====
+// Free-by-default (added to MFN_FREE_DEFAULT_CHAPTERS) - 28 of 71 codes
+// dutiable (39%). One pre-existing stray code (8302.41.90.00, a generic
+// bare-.00 suffix) is NOT a real code in this source's actual breakdown -
+// the true suffixes are .20/.31/.39/.41/.49/.90, all encoded here as their
+// own entries. Same orphaned-generic-suffix situation as Ch.76 - the old
+// .00 key is left as a harmless, description-less leftover rather than
+// deleted, consistent with this build's pure-append practice.
+// Two floating rate fragments in the source (a stray '7%...GPT:3%' block
+// before 83.11's numbered items, and a duplicated '6.5%...GPT:5%' pair
+// before 8305.10's real suffixes) were treated as extraction noise, not
+// phantom codes - every actual numbered code in both spots already had its
+// own clear, unambiguous rate stated elsewhere in the text.
+// Pattern: manufacturing-input exemptions ('for use in the manufacture of
+// X') recur throughout, same as Ch.82. 8302.30.90 and 8306.21.00 both show
+// a GPT rate explicitly equal to MFN (zero real relief but stated).
+const CH83_FREE_DEFAULT = ["83"];
+MFN_FREE_DEFAULT_CHAPTERS.push(...CH83_FREE_DEFAULT);
+
+Object.assign(MFN_RATES, {
+  "8301.10.00.00": {type:"percent", rate:6.5, note:""},
+  "8301.40.90.11": {type:"percent", rate:6.5, note:""},
+  "8301.40.90.19": {type:"percent", rate:6.5, note:""},
+  "8301.40.90.21": {type:"percent", rate:6.5, note:""},
+  "8301.40.90.22": {type:"percent", rate:6.5, note:""},
+  "8301.40.90.29": {type:"percent", rate:6.5, note:""},
+  "8301.40.90.40": {type:"percent", rate:6.5, note:""},
+  "8301.40.90.92": {type:"percent", rate:6.5, note:""},
+  "8301.40.90.99": {type:"percent", rate:6.5, note:""},
+  "8301.50.00.00": {type:"percent", rate:6.5, note:""},
+  "8301.70.90.00": {type:"percent", rate:6.5, note:""},
+  "8302.30.90.00": {type:"percent", rate:6, note:""},
+  "8302.41.90.20": {type:"percent", rate:3.5, note:""},
+  "8302.41.90.31": {type:"percent", rate:3.5, note:""},
+  "8302.41.90.39": {type:"percent", rate:3.5, note:""},
+  "8302.41.90.41": {type:"percent", rate:3.5, note:""},
+  "8302.41.90.49": {type:"percent", rate:3.5, note:""},
+  "8302.41.90.90": {type:"percent", rate:3.5, note:""},
+  "8302.50.00.10": {type:"percent", rate:6.5, note:""},
+  "8302.50.00.90": {type:"percent", rate:6.5, note:""},
+  "8302.60.90.00": {type:"percent", rate:6.5, note:""},
+  "8305.10.90.00": {type:"percent", rate:2.5, note:""},
+  "8305.20.00.00": {type:"percent", rate:6.5, note:""},
+  "8305.90.00.00": {type:"percent", rate:6.5, note:""},
+  "8306.10.90.00": {type:"percent", rate:6.5, note:""},
+  "8306.21.00.00": {type:"percent", rate:5, note:""},
+  "8306.29.00.00": {type:"percent", rate:6.5, note:""},
+  "8306.30.00.00": {type:"percent", rate:6, note:""}
+});
+
+Object.assign(CODE_DESCRIPTIONS, {
+  "8301.10.00.00": "Padlocks and locks (key, combination or electrically operated), of base metal; clasps and frames with clasps, incorporating locks, of base metal; keys for any of the foregoing articles, of base metal > Padlocks",
+  "8301.20.00.00": "Padlocks and locks (key, combination or electrically operated), of base metal; clasps and frames with clasps, incorporating locks, of base metal; keys for any of the foregoing articles, of base metal > Locks of a kind used for motor vehicles",
+  "8301.30.00.00": "Padlocks and locks (key, combination or electrically operated), of base metal; clasps and frames with clasps, incorporating locks, of base metal; keys for any of the foregoing articles, of base metal > Locks of a kind used for furniture",
+  "8301.40.10.00": "Padlocks and locks (key, combination or electrically operated), of base metal; clasps and frames with clasps, incorporating locks, of base metal; keys for any of the foregoing articles, of base metal > Other locks > For use in the manufacture of portfolios, luggage or tackle boxes",
+  "8301.40.20.00": "Padlocks and locks (key, combination or electrically operated), of base metal; clasps and frames with clasps, incorporating locks, of base metal; keys for any of the foregoing articles, of base metal > Other locks > Key-operated security locks for use in the manufacture of casement or awning windows",
+  "8301.40.90.11": "Padlocks and locks (key, combination or electrically operated), of base metal; clasps and frames with clasps, incorporating locks, of base metal; keys for any of the foregoing articles, of base metal > Other locks > Other > Dead bolt locks > Of brass or brass-plated",
+  "8301.40.90.19": "Padlocks and locks (key, combination or electrically operated), of base metal; clasps and frames with clasps, incorporating locks, of base metal; keys for any of the foregoing articles, of base metal > Other locks > Other > Dead bolt locks > Other",
+  "8301.40.90.21": "Padlocks and locks (key, combination or electrically operated), of base metal; clasps and frames with clasps, incorporating locks, of base metal; keys for any of the foregoing articles, of base metal > Other locks > Other > Locksets > Of brass or brass-plated",
+  "8301.40.90.22": "Padlocks and locks (key, combination or electrically operated), of base metal; clasps and frames with clasps, incorporating locks, of base metal; keys for any of the foregoing articles, of base metal > Other locks > Other > Locksets > Of iron or steel",
+  "8301.40.90.29": "Padlocks and locks (key, combination or electrically operated), of base metal; clasps and frames with clasps, incorporating locks, of base metal; keys for any of the foregoing articles, of base metal > Other locks > Other > Locksets > Other",
+  "8301.40.90.40": "Padlocks and locks (key, combination or electrically operated), of base metal; clasps and frames with clasps, incorporating locks, of base metal; keys for any of the foregoing articles, of base metal > Other locks > Other > Combination locks",
+  "8301.40.90.92": "Padlocks and locks (key, combination or electrically operated), of base metal; clasps and frames with clasps, incorporating locks, of base metal; keys for any of the foregoing articles, of base metal > Other locks > Other > Other > Of iron or steel",
+  "8301.40.90.99": "Padlocks and locks (key, combination or electrically operated), of base metal; clasps and frames with clasps, incorporating locks, of base metal; keys for any of the foregoing articles, of base metal > Other locks > Other > Other > Other",
+  "8301.50.00.00": "Padlocks and locks (key, combination or electrically operated), of base metal; clasps and frames with clasps, incorporating locks, of base metal; keys for any of the foregoing articles, of base metal > Clasps and frames with clasps, incorporating locks",
+  "8301.60.00.00": "Padlocks and locks (key, combination or electrically operated), of base metal; clasps and frames with clasps, incorporating locks, of base metal; keys for any of the foregoing articles, of base metal > Parts",
+  "8301.70.10.00": "Padlocks and locks (key, combination or electrically operated), of base metal; clasps and frames with clasps, incorporating locks, of base metal; keys for any of the foregoing articles, of base metal > Keys presented separately > To be employed as original equipment in the manufacture of passenger automobiles, trucks or buses",
+  "8301.70.90.00": "Padlocks and locks (key, combination or electrically operated), of base metal; clasps and frames with clasps, incorporating locks, of base metal; keys for any of the foregoing articles, of base metal > Keys presented separately > Other",
+  "8302.10.00.10": "Base metal mountings, fittings and similar articles suitable for furniture, doors, staircases, windows, blinds, coachwork, saddlery, trunks, chests, caskets or the like; base metal hat-racks, hat-pegs, brackets and similar fixtures; castors with mountings of base metal; automatic door closers of base metal > Hinges > For furniture",
+  "8302.10.00.20": "Base metal mountings, fittings and similar articles suitable for furniture, doors, staircases, windows, blinds, coachwork, saddlery, trunks, chests, caskets or the like; base metal hat-racks, hat-pegs, brackets and similar fixtures; castors with mountings of base metal; automatic door closers of base metal > Hinges > For motor vehicles",
+  "8302.10.00.30": "Base metal mountings, fittings and similar articles suitable for furniture, doors, staircases, windows, blinds, coachwork, saddlery, trunks, chests, caskets or the like; base metal hat-racks, hat-pegs, brackets and similar fixtures; castors with mountings of base metal; automatic door closers of base metal > Hinges > For interior or exterior doors, other than garage, overhead or sliding doors",
+  "8302.10.00.90": "Base metal mountings, fittings and similar articles suitable for furniture, doors, staircases, windows, blinds, coachwork, saddlery, trunks, chests, caskets or the like; base metal hat-racks, hat-pegs, brackets and similar fixtures; castors with mountings of base metal; automatic door closers of base metal > Hinges > Other",
+  "8302.20.00.10": "Base metal mountings, fittings and similar articles suitable for furniture, doors, staircases, windows, blinds, coachwork, saddlery, trunks, chests, caskets or the like; base metal hat-racks, hat-pegs, brackets and similar fixtures; castors with mountings of base metal; automatic door closers of base metal > Castors > For furniture",
+  "8302.20.00.90": "Base metal mountings, fittings and similar articles suitable for furniture, doors, staircases, windows, blinds, coachwork, saddlery, trunks, chests, caskets or the like; base metal hat-racks, hat-pegs, brackets and similar fixtures; castors with mountings of base metal; automatic door closers of base metal > Castors > Other",
+  "8302.30.10.00": "Base metal mountings, fittings and similar articles suitable for furniture, doors, staircases, windows, blinds, coachwork, saddlery, trunks, chests, caskets or the like; base metal hat-racks, hat-pegs, brackets and similar fixtures; castors with mountings of base metal; automatic door closers of base metal > Other mountings, fittings and similar articles suitable for motor vehicles > Brackets or clamps for use in the manufacture of aftermarket gas tanks and radiators for motor vehicles; brackets or clamps of steel for use in the manufacture of hose assemblies for brake and steering systems for motorcycles or all-terrain vehicles; for use in the manufacture of fire fighting vehicles",
+  "8302.30.90.00": "Base metal mountings, fittings and similar articles suitable for furniture, doors, staircases, windows, blinds, coachwork, saddlery, trunks, chests, caskets or the like; base metal hat-racks, hat-pegs, brackets and similar fixtures; castors with mountings of base metal; automatic door closers of base metal > Other mountings, fittings and similar articles suitable for motor vehicles > Other",
+  "8302.41.10.00": "Base metal mountings, fittings and similar articles suitable for furniture, doors, staircases, windows, blinds, coachwork, saddlery, trunks, chests, caskets or the like; base metal hat-racks, hat-pegs, brackets and similar fixtures; castors with mountings of base metal; automatic door closers of base metal > Other mountings, fittings and similar articles > Suitable for buildings > Bar or rod type door exit devices, for commercial, institutional or industrial applications; for use in the manufacture or repair of rotary gear window operators; rotary gear window operators; snub-guides, lever-lock operators, torsion bars and centre hooks for lever-lock or rotary gear window operators, sash locks (excluding peg locks) and keepers for key-operated security locks or sash locks (excluding peg-locks), for use in the manufacture of casement or awning windows",
+  "8302.41.90.20": "Base metal mountings, fittings and similar articles suitable for furniture, doors, staircases, windows, blinds, coachwork, saddlery, trunks, chests, caskets or the like; base metal hat-racks, hat-pegs, brackets and similar fixtures; castors with mountings of base metal; automatic door closers of base metal > Other mountings, fittings and similar articles > Suitable for buildings > Other > Window hardware",
+  "8302.41.90.31": "Base metal mountings, fittings and similar articles suitable for furniture, doors, staircases, windows, blinds, coachwork, saddlery, trunks, chests, caskets or the like; base metal hat-racks, hat-pegs, brackets and similar fixtures; castors with mountings of base metal; automatic door closers of base metal > Other mountings, fittings and similar articles > Suitable for buildings > Other > Door hardware > Garage door hardware",
+  "8302.41.90.39": "Base metal mountings, fittings and similar articles suitable for furniture, doors, staircases, windows, blinds, coachwork, saddlery, trunks, chests, caskets or the like; base metal hat-racks, hat-pegs, brackets and similar fixtures; castors with mountings of base metal; automatic door closers of base metal > Other mountings, fittings and similar articles > Suitable for buildings > Other > Door hardware > Other",
+  "8302.41.90.41": "Base metal mountings, fittings and similar articles suitable for furniture, doors, staircases, windows, blinds, coachwork, saddlery, trunks, chests, caskets or the like; base metal hat-racks, hat-pegs, brackets and similar fixtures; castors with mountings of base metal; automatic door closers of base metal > Other mountings, fittings and similar articles > Suitable for buildings > Other > Drapery accessories > Poles, rods or track",
+  "8302.41.90.49": "Base metal mountings, fittings and similar articles suitable for furniture, doors, staircases, windows, blinds, coachwork, saddlery, trunks, chests, caskets or the like; base metal hat-racks, hat-pegs, brackets and similar fixtures; castors with mountings of base metal; automatic door closers of base metal > Other mountings, fittings and similar articles > Suitable for buildings > Other > Drapery accessories > Other",
+  "8302.41.90.90": "Base metal mountings, fittings and similar articles suitable for furniture, doors, staircases, windows, blinds, coachwork, saddlery, trunks, chests, caskets or the like; base metal hat-racks, hat-pegs, brackets and similar fixtures; castors with mountings of base metal; automatic door closers of base metal > Other mountings, fittings and similar articles > Suitable for buildings > Other > Other",
+  "8302.42.00.10": "Base metal mountings, fittings and similar articles suitable for furniture, doors, staircases, windows, blinds, coachwork, saddlery, trunks, chests, caskets or the like; base metal hat-racks, hat-pegs, brackets and similar fixtures; castors with mountings of base metal; automatic door closers of base metal > Other mountings, fittings and similar articles > Other, suitable for furniture > Catches, knobs or pulls",
+  "8302.42.00.90": "Base metal mountings, fittings and similar articles suitable for furniture, doors, staircases, windows, blinds, coachwork, saddlery, trunks, chests, caskets or the like; base metal hat-racks, hat-pegs, brackets and similar fixtures; castors with mountings of base metal; automatic door closers of base metal > Other mountings, fittings and similar articles > Other, suitable for furniture > Other",
+  "8302.49.00.10": "Base metal mountings, fittings and similar articles suitable for furniture, doors, staircases, windows, blinds, coachwork, saddlery, trunks, chests, caskets or the like; base metal hat-racks, hat-pegs, brackets and similar fixtures; castors with mountings of base metal; automatic door closers of base metal > Other mountings, fittings and similar articles > Other > For appliances",
+  "8302.49.00.20": "Base metal mountings, fittings and similar articles suitable for furniture, doors, staircases, windows, blinds, coachwork, saddlery, trunks, chests, caskets or the like; base metal hat-racks, hat-pegs, brackets and similar fixtures; castors with mountings of base metal; automatic door closers of base metal > Other mountings, fittings and similar articles > Other > Marine hardware",
+  "8302.49.00.30": "Base metal mountings, fittings and similar articles suitable for furniture, doors, staircases, windows, blinds, coachwork, saddlery, trunks, chests, caskets or the like; base metal hat-racks, hat-pegs, brackets and similar fixtures; castors with mountings of base metal; automatic door closers of base metal > Other mountings, fittings and similar articles > Other > For the vehicles of Section XVII, other than motor vehicles or spacecraft",
+  "8302.49.00.90": "Base metal mountings, fittings and similar articles suitable for furniture, doors, staircases, windows, blinds, coachwork, saddlery, trunks, chests, caskets or the like; base metal hat-racks, hat-pegs, brackets and similar fixtures; castors with mountings of base metal; automatic door closers of base metal > Other mountings, fittings and similar articles > Other > Other",
+  "8302.50.00.10": "Base metal mountings, fittings and similar articles suitable for furniture, doors, staircases, windows, blinds, coachwork, saddlery, trunks, chests, caskets or the like; base metal hat-racks, hat-pegs, brackets and similar fixtures; castors with mountings of base metal; automatic door closers of base metal > Hat-racks, hat-pegs, brackets and similar fixtures > Brackets",
+  "8302.50.00.90": "Base metal mountings, fittings and similar articles suitable for furniture, doors, staircases, windows, blinds, coachwork, saddlery, trunks, chests, caskets or the like; base metal hat-racks, hat-pegs, brackets and similar fixtures; castors with mountings of base metal; automatic door closers of base metal > Hat-racks, hat-pegs, brackets and similar fixtures > Other",
+  "8302.60.10.00": "Base metal mountings, fittings and similar articles suitable for furniture, doors, staircases, windows, blinds, coachwork, saddlery, trunks, chests, caskets or the like; base metal hat-racks, hat-pegs, brackets and similar fixtures; castors with mountings of base metal; automatic door closers of base metal > Automatic door closers > Hydraulic; other, for use in the manufacture of railway or tramway passenger coaches",
+  "8302.60.90.00": "Base metal mountings, fittings and similar articles suitable for furniture, doors, staircases, windows, blinds, coachwork, saddlery, trunks, chests, caskets or the like; base metal hat-racks, hat-pegs, brackets and similar fixtures; castors with mountings of base metal; automatic door closers of base metal > Automatic door closers > Other",
+  "8303.00.00.00": "Armoured or reinforced safes, strong-boxes and doors and safe deposit lockers for strong-rooms, cash or deed boxes and the like, of base metal",
+  "8304.00.00.00": "Filing cabinets, card-index cabinets, paper trays, paper rests, pen trays, office-stamp stands and similar office or desk equipment, of base metal, other than office furniture of heading 94.03",
+  "8305.10.10.00": "Fittings for loose-leaf binders or files, letter clips, letter corners, paper clips, indexing tags and similar office articles, of base metal; staples in strips (for example, for offices, upholstery, packaging), of base metal > Fittings for loose-leaf binders or files > For use in the manufacture of multiple ring binders",
+  "8305.10.90.00": "Fittings for loose-leaf binders or files, letter clips, letter corners, paper clips, indexing tags and similar office articles, of base metal; staples in strips (for example, for offices, upholstery, packaging), of base metal > Fittings for loose-leaf binders or files > Other",
+  "8305.20.00.00": "Fittings for loose-leaf binders or files, letter clips, letter corners, paper clips, indexing tags and similar office articles, of base metal; staples in strips (for example, for offices, upholstery, packaging), of base metal > Staples in strips",
+  "8305.90.00.00": "Fittings for loose-leaf binders or files, letter clips, letter corners, paper clips, indexing tags and similar office articles, of base metal; staples in strips (for example, for offices, upholstery, packaging), of base metal > Other, including parts",
+  "8306.10.10.00": "Bells, gongs and the like, non-electric, of base metal; statuettes and other ornaments, of base metal; photograph, picture or similar frames, of base metal; mirrors of base metal > Bells, gongs and the like > Church bells",
+  "8306.10.90.00": "Bells, gongs and the like, non-electric, of base metal; statuettes and other ornaments, of base metal; photograph, picture or similar frames, of base metal; mirrors of base metal > Bells, gongs and the like > Other",
+  "8306.21.00.00": "Bells, gongs and the like, non-electric, of base metal; statuettes and other ornaments, of base metal; photograph, picture or similar frames, of base metal; mirrors of base metal > Statuettes and other ornaments > Plated with precious metal",
+  "8306.29.00.00": "Bells, gongs and the like, non-electric, of base metal; statuettes and other ornaments, of base metal; photograph, picture or similar frames, of base metal; mirrors of base metal > Statuettes and other ornaments > Other",
+  "8306.30.00.00": "Bells, gongs and the like, non-electric, of base metal; statuettes and other ornaments, of base metal; photograph, picture or similar frames, of base metal; mirrors of base metal > Photograph, picture or similar frames; mirrors",
+  "8307.10.00.00": "Flexible tubing of base metal, with or without fittings > Of iron or steel",
+  "8307.90.00.00": "Flexible tubing of base metal, with or without fittings > Of other base metal",
+  "8308.10.00.00": "Clasps, frames with clasps, buckles, buckle-clasps, hooks, eyes, eyelets and the like, of base metal, of a kind used for clothing or clothing accessories, footwear, jewellery, wrist-watches, books, awnings, leather goods, travel goods or saddlery or for other made up articles; tubular or bifurcated rivets, of base metal; beads and spangles, of base metal > Hooks, eyes and eyelets",
+  "8308.20.00.00": "Clasps, frames with clasps, buckles, buckle-clasps, hooks, eyes, eyelets and the like, of base metal, of a kind used for clothing or clothing accessories, footwear, jewellery, wrist-watches, books, awnings, leather goods, travel goods or saddlery or for other made up articles; tubular or bifurcated rivets, of base metal; beads and spangles, of base metal > Tubular or bifurcated rivets",
+  "8308.90.00.30": "Clasps, frames with clasps, buckles, buckle-clasps, hooks, eyes, eyelets and the like, of base metal, of a kind used for clothing or clothing accessories, footwear, jewellery, wrist-watches, books, awnings, leather goods, travel goods or saddlery or for other made up articles; tubular or bifurcated rivets, of base metal; beads and spangles, of base metal > Other, including parts > Buckles and buckle clasps and parts thereof",
+  "8308.90.00.90": "Clasps, frames with clasps, buckles, buckle-clasps, hooks, eyes, eyelets and the like, of base metal, of a kind used for clothing or clothing accessories, footwear, jewellery, wrist-watches, books, awnings, leather goods, travel goods or saddlery or for other made up articles; tubular or bifurcated rivets, of base metal; beads and spangles, of base metal > Other, including parts > Other",
+  "8309.10.00.00": "Stoppers, caps and lids (including crown corks, screw caps and pouring stoppers), capsules for bottles, threaded bungs, bung covers, seals and other packing accessories, of base metal > Crown corks",
+  "8309.90.00.00": "Stoppers, caps and lids (including crown corks, screw caps and pouring stoppers), capsules for bottles, threaded bungs, bung covers, seals and other packing accessories, of base metal > Other",
+  "8310.00.00.10": "Sign-plates, name-plates, address-plates and similar plates, numbers, letters and other symbols, of base metal, excluding those of heading 94.05 > Symbols for motor vehicles",
+  "8310.00.00.90": "Sign-plates, name-plates, address-plates and similar plates, numbers, letters and other symbols, of base metal, excluding those of heading 94.05 > Other",
+  "8311.10.00.10": "Wire, rods, tubes, plates, electrodes and similar products, of base metal or of metal carbides, coated or cored with flux material, of a kind used for soldering, brazing, welding or deposition of metal or of metal carbides; wire and rods, of agglomerated base metal powder, used for metal spraying > Coated electrodes of base metal, for electric arc-welding > Of stainless steel",
+  "8311.10.00.20": "Wire, rods, tubes, plates, electrodes and similar products, of base metal or of metal carbides, coated or cored with flux material, of a kind used for soldering, brazing, welding or deposition of metal or of metal carbides; wire and rods, of agglomerated base metal powder, used for metal spraying > Coated electrodes of base metal, for electric arc-welding > Of iron or other steel",
+  "8311.10.00.90": "Wire, rods, tubes, plates, electrodes and similar products, of base metal or of metal carbides, coated or cored with flux material, of a kind used for soldering, brazing, welding or deposition of metal or of metal carbides; wire and rods, of agglomerated base metal powder, used for metal spraying > Coated electrodes of base metal, for electric arc-welding > Other",
+  "8311.20.00.10": "Wire, rods, tubes, plates, electrodes and similar products, of base metal or of metal carbides, coated or cored with flux material, of a kind used for soldering, brazing, welding or deposition of metal or of metal carbides; wire and rods, of agglomerated base metal powder, used for metal spraying > Cored wire of base metal, for electric arc-welding > Of stainless steel",
+  "8311.20.00.20": "Wire, rods, tubes, plates, electrodes and similar products, of base metal or of metal carbides, coated or cored with flux material, of a kind used for soldering, brazing, welding or deposition of metal or of metal carbides; wire and rods, of agglomerated base metal powder, used for metal spraying > Cored wire of base metal, for electric arc-welding > Of iron or other steel",
+  "8311.20.00.90": "Wire, rods, tubes, plates, electrodes and similar products, of base metal or of metal carbides, coated or cored with flux material, of a kind used for soldering, brazing, welding or deposition of metal or of metal carbides; wire and rods, of agglomerated base metal powder, used for metal spraying > Cored wire of base metal, for electric arc-welding > Other",
+  "8311.30.00.00": "Wire, rods, tubes, plates, electrodes and similar products, of base metal or of metal carbides, coated or cored with flux material, of a kind used for soldering, brazing, welding or deposition of metal or of metal carbides; wire and rods, of agglomerated base metal powder, used for metal spraying > Coated rods and cored wire, of base metal, for soldering, brazing or welding by flame",
+  "8311.90.00.00": "Wire, rods, tubes, plates, electrodes and similar products, of base metal or of metal carbides, coated or cored with flux material, of a kind used for soldering, brazing, welding or deposition of metal or of metal carbides; wire and rods, of agglomerated base metal powder, used for metal spraying > Other"
+});
+
+Object.assign(PREF_FREE, {
+  "8301.10.00.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8301.40.90.11": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8301.40.90.19": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8301.40.90.21": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8301.40.90.22": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8301.40.90.29": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8301.40.90.40": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8301.40.90.92": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8301.40.90.99": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8301.50.00.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8301.70.90.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8302.30.90.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8302.41.90.20": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8302.41.90.31": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8302.41.90.39": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8302.41.90.41": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8302.41.90.49": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8302.41.90.90": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8302.50.00.10": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8302.50.00.90": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8302.60.90.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8305.10.90.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8305.20.00.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8305.90.00.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8306.10.90.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8306.21.00.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8306.29.00.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8306.30.00.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"]
+});
+
+Object.assign(PREF_SPECIAL, {
+  "8301.10.00.00": {"GPT": {type:"percent", rate:5}},
+  "8301.40.90.11": {"GPT": {type:"percent", rate:3}},
+  "8301.40.90.19": {"GPT": {type:"percent", rate:3}},
+  "8301.40.90.21": {"GPT": {type:"percent", rate:3}},
+  "8301.40.90.22": {"GPT": {type:"percent", rate:3}},
+  "8301.40.90.29": {"GPT": {type:"percent", rate:3}},
+  "8301.40.90.40": {"GPT": {type:"percent", rate:3}},
+  "8301.40.90.92": {"GPT": {type:"percent", rate:3}},
+  "8301.40.90.99": {"GPT": {type:"percent", rate:3}},
+  "8301.70.90.00": {"GPT": {type:"percent", rate:3}},
+  "8302.30.90.00": {"GPT": {type:"percent", rate:6}},
+  "8302.41.90.20": {"GPT": {type:"percent", rate:3}},
+  "8302.41.90.31": {"GPT": {type:"percent", rate:3}},
+  "8302.41.90.39": {"GPT": {type:"percent", rate:3}},
+  "8302.41.90.41": {"GPT": {type:"percent", rate:3}},
+  "8302.41.90.49": {"GPT": {type:"percent", rate:3}},
+  "8302.41.90.90": {"GPT": {type:"percent", rate:3}},
+  "8305.20.00.00": {"GPT": {type:"percent", rate:5}},
+  "8305.90.00.00": {"GPT": {type:"percent", rate:5}},
+  "8306.10.90.00": {"GPT": {type:"percent", rate:5}},
+  "8306.21.00.00": {"GPT": {type:"percent", rate:5}},
+  "8306.29.00.00": {"GPT": {type:"percent", rate:5}},
+  "8306.30.00.00": {"GPT": {type:"percent", rate:5}}
+});
