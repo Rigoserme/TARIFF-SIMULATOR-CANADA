@@ -20370,3 +20370,4 @@ Object.assign(PREF_SPECIAL, {
   "8450.19.00.00": {"GPT": {type:"percent", rate:5}},
   "8451.21.00.00": {"GPT": {type:"percent", rate:5}}
 });
+// Chapter 84 verified 17 AUG 2026 - re-trigger deploy after stuck GitHub Pages queue
