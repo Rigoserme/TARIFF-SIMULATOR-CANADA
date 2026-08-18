@@ -927,7 +927,15 @@ function describeSimaRate(rateObj, origin){
   if(!rateObj) return null;
   if(rateObj.type === 'percent'){
     if(rateObj.countryRates){
-      const match = rateObj.countryRates.find(cr => cr.countries.includes(origin));
+      // BUG FIX (11 AUG 2026): countries arrays store "United States",
+      // "Chinese Taipei" and "Türkiye" (the schedule's own short forms)
+      // while origin is always the canonical dropdown value - a plain
+      // .includes() never matched those three, so instead of showing the
+      // exact applicable rate for a US/Taiwan/Turkey-origin shipment, this
+      // silently fell back to showing the full range across all named
+      // exporters. Resolving aliases before comparing fixes it, same as
+      // the SIMA/surtax/safeguard fixes elsewhere in this file.
+      const match = rateObj.countryRates.find(cr => cr.countries.some(c => (COUNTRY_NAME_ALIASES[c] || c) === origin));
       if(match) return `up to ${match.rate}%`;
       const rates = rateObj.countryRates.map(cr => cr.rate);
       return `up to ${Math.min(...rates)}%–${Math.max(...rates)}%, depending on the exporter`;
@@ -980,8 +988,15 @@ function runEstimate(){
   // "Other / not listed" and no-selection skip this filter, since we can't
   // rule anything in or out for an origin outside the known list.
   const simaMatchesAll = findSimaMatches(q);
+  // BUG FIX (11 AUG 2026): this used to compare m.country directly against
+  // origin, but SIMA_CASES measures store short/alias labels ("United
+  // States", "Chinese Taipei", "Türkiye") while origin is always the
+  // canonical dropdown value ("United States of America", "Taiwan",
+  // "Turkey" per COUNTRY_NAME_ALIASES) — so anti-dumping/countervailing
+  // cases naming those three origins were silently never matching. Resolving
+  // m.country through COUNTRY_NAME_ALIASES before comparing fixes this.
   const simaMatches = (origin && origin !== 'Other')
-    ? simaMatchesAll.filter(c => c.measures.some(m => m.country === origin))
+    ? simaMatchesAll.filter(c => c.measures.some(m => (COUNTRY_NAME_ALIASES[m.country] || m.country) === origin))
     : simaMatchesAll;
   const surtaxMatches = findSurtaxMatches(q).filter(o => surtaxAppliesToCountry(o, origin));
   const safeguardMatchesAll = findSafeguardMatches(q);
@@ -992,8 +1007,14 @@ function runEstimate(){
   // ones. This filter was previously missing entirely in client.html, so a
   // legitimately-exempt US-origin shipment would incorrectly show the
   // safeguard surtax warning. Matches index.html's existing logic exactly.
+  // BUG FIX (11 AUG 2026): excludedOrigins stores "United States" (the
+  // schedule's own short form) while origin is always the canonical
+  // dropdown value "United States of America" — a plain .includes() never
+  // matched, so a genuinely-exempt US shipment incorrectly showed this
+  // surtax warning. Resolving aliases before comparing fixes it, same as
+  // the SIMA/surtax fixes above.
   const safeguardMatches = (origin && origin !== 'Other')
-    ? safeguardMatchesAll.filter(m => !m.excludedOrigins.includes(origin))
+    ? safeguardMatchesAll.filter(m => !m.excludedOrigins.some(o => (COUNTRY_NAME_ALIASES[o] || o) === origin))
     : safeguardMatchesAll;
   simaMatchesAll.forEach(c => c.hsCodes.forEach(code => {
     const nc = normCode(code);
