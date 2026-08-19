@@ -23002,3 +23002,416 @@ Object.assign(PREF_SPECIAL, {
   "9017.10.20.00": {"GPT": {type:"percent", rate:5}},
   "9017.80.10.00": {"GPT": {type:"percent", rate:5}}
 });
+
+// ===== Chapter 91 - Clocks and Watches and Parts Thereof (verified 11 AUG
+// 2026 from CBSA Ch.91, user-provided markdown, full read) =====
+// Free-by-default (added to MFN_FREE_DEFAULT_CHAPTERS) - 29 of 61 codes
+// dutiable (48%), close to balanced. Clean structural split: finished
+// watches and clocks (91.01-91.07) carry real duty - watches flat 5% MFN
+// with GPT relief to 3%, most clocks 11-14% MFN with GPT relief to 8% -
+// while movements, cases, and parts (91.08-91.14) are 100% Free. Within
+// the dutiable headings, a few narrow carve-outs recur: stop-watches within
+// otherwise-dutiable watch subheadings, aircraft/vessel chronometers within
+// otherwise-dutiable clock subheadings, and manufacturing-input watch
+// straps/bands are all Free.
+const CH91_FREE_DEFAULT = ["91"];
+MFN_FREE_DEFAULT_CHAPTERS.push(...CH91_FREE_DEFAULT);
+
+Object.assign(MFN_RATES, {
+  "9101.11.00.10": {type:"percent", rate:5, note:""},
+  "9101.11.00.90": {type:"percent", rate:5, note:""},
+  "9101.19.00.10": {type:"percent", rate:5, note:""},
+  "9101.19.00.90": {type:"percent", rate:5, note:""},
+  "9101.21.00.00": {type:"percent", rate:5, note:""},
+  "9101.29.00.00": {type:"percent", rate:5, note:""},
+  "9101.91.90.00": {type:"percent", rate:5, note:""},
+  "9101.99.00.00": {type:"percent", rate:5, note:""},
+  "9102.11.00.00": {type:"percent", rate:5, note:""},
+  "9102.12.00.00": {type:"percent", rate:5, note:""},
+  "9102.19.00.00": {type:"percent", rate:5, note:""},
+  "9102.21.00.00": {type:"percent", rate:5, note:""},
+  "9102.29.00.00": {type:"percent", rate:5, note:""},
+  "9102.91.90.00": {type:"percent", rate:5, note:""},
+  "9102.99.00.00": {type:"percent", rate:5, note:""},
+  "9103.10.00.00": {type:"percent", rate:11, note:""},
+  "9103.90.00.00": {type:"percent", rate:14, note:""},
+  "9105.11.00.00": {type:"percent", rate:14, note:""},
+  "9105.19.00.00": {type:"percent", rate:14, note:""},
+  "9105.21.10.00": {type:"percent", rate:6.5, note:""},
+  "9105.21.90.00": {type:"percent", rate:14, note:""},
+  "9105.29.00.00": {type:"percent", rate:14, note:""},
+  "9105.91.10.00": {type:"percent", rate:5, note:""},
+  "9105.91.90.00": {type:"percent", rate:14, note:""},
+  "9105.99.90.00": {type:"percent", rate:11, note:""},
+  "9106.90.10.00": {type:"percent", rate:14, note:""},
+  "9107.00.90.00": {type:"percent", rate:6.5, note:""},
+  "9113.10.90.00": {type:"percent", rate:4.5, note:""},
+  "9113.20.90.00": {type:"percent", rate:5, note:""}
+});
+
+Object.assign(CODE_DESCRIPTIONS, {
+  "9101.11.00.10": "Wrist-watches, pocket-watches and other watches, including stop watches, with case of precious metal or of metal clad with precious metal > Wrist-watches, electrically operated, whether or not incorporating a stop-watch facility > With mechanical display only > Incorporating diamonds of a weight equal to or greater than 0.5 carat each",
+  "9101.11.00.90": "Wrist-watches, pocket-watches and other watches, including stop watches, with case of precious metal or of metal clad with precious metal > Wrist-watches, electrically operated, whether or not incorporating a stop-watch facility > With mechanical display only > Other",
+  "9101.19.00.10": "Wrist-watches, pocket-watches and other watches, including stop watches, with case of precious metal or of metal clad with precious metal > Wrist-watches, electrically operated, whether or not incorporating a stop-watch facility > Other > Incorporating diamonds of a weight equal to or greater than 0.5 carat each",
+  "9101.19.00.90": "Wrist-watches, pocket-watches and other watches, including stop watches, with case of precious metal or of metal clad with precious metal > Wrist-watches, electrically operated, whether or not incorporating a stop-watch facility > Other > Other",
+  "9101.21.00.00": "Wrist-watches, pocket-watches and other watches, including stop watches, with case of precious metal or of metal clad with precious metal > Other wrist-watches, whether or not incorporating a stop-watch facility > With automatic winding",
+  "9101.29.00.00": "Wrist-watches, pocket-watches and other watches, including stop watches, with case of precious metal or of metal clad with precious metal > Other wrist-watches, whether or not incorporating a stop-watch facility > Other",
+  "9101.91.10.00": "Wrist-watches, pocket-watches and other watches, including stop watches, with case of precious metal or of metal clad with precious metal > Other > Electrically operated > Stop-watches",
+  "9101.91.90.00": "Wrist-watches, pocket-watches and other watches, including stop watches, with case of precious metal or of metal clad with precious metal > Other > Electrically operated > Other",
+  "9101.99.00.00": "Wrist-watches, pocket-watches and other watches, including stop watches, with case of precious metal or of metal clad with precious metal > Other > Other",
+  "9102.11.00.00": "Wrist-watches, pocket-watches and other watches, including stop watches, other than those of heading 91.01 > Wrist-watches, electrically operated, whether or not incorporating a stop-watch facility > With mechanical display only",
+  "9102.12.00.00": "Wrist-watches, pocket-watches and other watches, including stop watches, other than those of heading 91.01 > Wrist-watches, electrically operated, whether or not incorporating a stop-watch facility > With opto-electronic display only",
+  "9102.19.00.00": "Wrist-watches, pocket-watches and other watches, including stop watches, other than those of heading 91.01 > Wrist-watches, electrically operated, whether or not incorporating a stop-watch facility > Other",
+  "9102.21.00.00": "Wrist-watches, pocket-watches and other watches, including stop watches, other than those of heading 91.01 > Other wrist-watches, whether or not incorporating a stop-watch facility > With automatic winding",
+  "9102.29.00.00": "Wrist-watches, pocket-watches and other watches, including stop watches, other than those of heading 91.01 > Other wrist-watches, whether or not incorporating a stop-watch facility > Other",
+  "9102.91.10.00": "Wrist-watches, pocket-watches and other watches, including stop watches, other than those of heading 91.01 > Other > Electrically operated > Stop-watches",
+  "9102.91.90.00": "Wrist-watches, pocket-watches and other watches, including stop watches, other than those of heading 91.01 > Other > Electrically operated > Other",
+  "9102.99.00.00": "Wrist-watches, pocket-watches and other watches, including stop watches, other than those of heading 91.01 > Other > Other",
+  "9103.10.00.00": "Clocks with watch movements, excluding clocks of heading 91.04 > Electrically operated",
+  "9103.90.00.00": "Clocks with watch movements, excluding clocks of heading 91.04 > Other",
+  "9104.00.00.00": "Instrument panel clocks and clocks of a similar type for vehicles, aircraft, spacecraft or vessels",
+  "9105.11.00.00": "Other clocks > Alarm clocks > Electrically operated",
+  "9105.19.00.00": "Other clocks > Alarm clocks > Other",
+  "9105.21.10.00": "Other clocks > Wall clocks > Electrically operated > Clock systems",
+  "9105.21.90.00": "Other clocks > Wall clocks > Electrically operated > Other",
+  "9105.29.00.00": "Other clocks > Wall clocks > Other",
+  "9105.91.10.00": "Other clocks > Other > Electrically operated > Clock systems",
+  "9105.91.20.00": "Other clocks > Other > Electrically operated > Chronometers for aircraft or vessels",
+  "9105.91.90.00": "Other clocks > Other > Electrically operated > Other",
+  "9105.99.10.00": "Other clocks > Other > Other > Chronometers for aircraft or vessels",
+  "9105.99.90.00": "Other clocks > Other > Other > Other",
+  "9106.10.00.00": "Time of day recording apparatus and apparatus for measuring, recording or otherwise indicating intervals of time, with clock or watch movement or with synchronous motor (for example, time-registers, time-recorders) > Time-registers; time-recorders",
+  "9106.90.10.00": "Time of day recording apparatus and apparatus for measuring, recording or otherwise indicating intervals of time, with clock or watch movement or with synchronous motor (for example, time-registers, time-recorders) > Other > Parking meters",
+  "9106.90.90.00": "Time of day recording apparatus and apparatus for measuring, recording or otherwise indicating intervals of time, with clock or watch movement or with synchronous motor (for example, time-registers, time-recorders) > Other > Other",
+  "9107.00.10.00": "Time switches with clock or watch movement or with synchronous motor > Electro-mechanical irrigation controllers; time switches for use in the manufacture of machinery or equipment",
+  "9107.00.90.00": "Time switches with clock or watch movement or with synchronous motor > Other",
+  "9108.11.00.00": "Watch movements, complete and assembled > Electrically operated > With mechanical display only or with a device to which a mechanical display can be incorporated",
+  "9108.12.00.00": "Watch movements, complete and assembled > Electrically operated > With opto-electronic display only",
+  "9108.19.00.00": "Watch movements, complete and assembled > Electrically operated > Other",
+  "9108.20.00.00": "Watch movements, complete and assembled > With automatic winding",
+  "9108.90.00.00": "Watch movements, complete and assembled > Other",
+  "9109.10.00.00": "Clock movements, complete and assembled > Electrically operated",
+  "9109.90.00.00": "Clock movements, complete and assembled > Other",
+  "9110.11.00.00": "Complete watch or clock movements, unassembled or partly assembled (movement sets); incomplete watch or clock movements, assembled; rough watch or clock movements > Of watches > Complete movements, unassembled or partly assembled (movement sets)",
+  "9110.12.00.00": "Complete watch or clock movements, unassembled or partly assembled (movement sets); incomplete watch or clock movements, assembled; rough watch or clock movements > Of watches > Incomplete movements, assembled",
+  "9110.19.00.00": "Complete watch or clock movements, unassembled or partly assembled (movement sets); incomplete watch or clock movements, assembled; rough watch or clock movements > Of watches > Rough movements",
+  "9110.90.00.00": "Complete watch or clock movements, unassembled or partly assembled (movement sets); incomplete watch or clock movements, assembled; rough watch or clock movements > Other",
+  "9111.10.00.00": "Watch cases and parts thereof > Cases of precious metal or of metal clad with precious metal",
+  "9111.20.00.00": "Watch cases and parts thereof > Cases of base metal, whether or not gold- or silver-plated",
+  "9111.80.00.00": "Watch cases and parts thereof > Other cases",
+  "9111.90.00.00": "Watch cases and parts thereof > Parts",
+  "9112.20.00.00": "Clock cases and cases of a similar type for other goods of this Chapter, and parts thereof > Cases",
+  "9112.90.00.00": "Clock cases and cases of a similar type for other goods of this Chapter, and parts thereof > Parts",
+  "9113.10.10.00": "Watch straps, watch bands and watch bracelets, and parts thereof > Of precious metal or of metal clad with precious metal > For use in the manufacture of watches",
+  "9113.10.90.00": "Watch straps, watch bands and watch bracelets, and parts thereof > Of precious metal or of metal clad with precious metal > Other",
+  "9113.20.10.00": "Watch straps, watch bands and watch bracelets, and parts thereof > Of base metal, whether or not gold- or silver-plated > For use in the manufacture of watches",
+  "9113.20.90.00": "Watch straps, watch bands and watch bracelets, and parts thereof > Of base metal, whether or not gold- or silver-plated > Other",
+  "9113.90.00.10": "Watch straps, watch bands and watch bracelets, and parts thereof > Other > Of leather",
+  "9113.90.00.90": "Watch straps, watch bands and watch bracelets, and parts thereof > Other > Other",
+  "9114.30.00.00": "Other clock or watch parts > Dials",
+  "9114.40.00.00": "Other clock or watch parts > Plates and bridges",
+  "9114.90.00.00": "Other clock or watch parts > Other"
+});
+
+Object.assign(PREF_FREE, {
+  "9101.11.00.10": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "9101.11.00.90": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "9101.19.00.10": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "9101.19.00.90": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "9101.21.00.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "9101.29.00.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "9101.91.90.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "9101.99.00.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "9102.11.00.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "9102.12.00.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "9102.19.00.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "9102.21.00.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "9102.29.00.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "9102.91.90.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "9102.99.00.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "9103.10.00.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "9103.90.00.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "9105.11.00.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "9105.19.00.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "9105.21.10.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "9105.21.90.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "9105.29.00.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "9105.91.10.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "9105.91.90.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "9105.99.90.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "9106.90.10.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "9107.00.90.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "9113.10.90.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "9113.20.90.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"]
+});
+
+Object.assign(PREF_SPECIAL, {
+  "9101.11.00.10": {"GPT": {type:"percent", rate:3}},
+  "9101.11.00.90": {"GPT": {type:"percent", rate:3}},
+  "9101.19.00.10": {"GPT": {type:"percent", rate:3}},
+  "9101.19.00.90": {"GPT": {type:"percent", rate:3}},
+  "9101.21.00.00": {"GPT": {type:"percent", rate:3}},
+  "9101.29.00.00": {"GPT": {type:"percent", rate:3}},
+  "9101.91.90.00": {"GPT": {type:"percent", rate:3}},
+  "9101.99.00.00": {"GPT": {type:"percent", rate:3}},
+  "9102.11.00.00": {"GPT": {type:"percent", rate:3}},
+  "9102.12.00.00": {"GPT": {type:"percent", rate:3}},
+  "9102.19.00.00": {"GPT": {type:"percent", rate:3}},
+  "9102.21.00.00": {"GPT": {type:"percent", rate:3}},
+  "9102.29.00.00": {"GPT": {type:"percent", rate:3}},
+  "9102.91.90.00": {"GPT": {type:"percent", rate:3}},
+  "9102.99.00.00": {"GPT": {type:"percent", rate:3}},
+  "9103.10.00.00": {"GPT": {type:"percent", rate:8}},
+  "9103.90.00.00": {"GPT": {type:"percent", rate:8}},
+  "9105.11.00.00": {"GPT": {type:"percent", rate:8}},
+  "9105.19.00.00": {"GPT": {type:"percent", rate:8}},
+  "9105.21.10.00": {"GPT": {type:"percent", rate:3}},
+  "9105.21.90.00": {"GPT": {type:"percent", rate:8}},
+  "9105.29.00.00": {"GPT": {type:"percent", rate:8}},
+  "9105.91.10.00": {"GPT": {type:"percent", rate:3}},
+  "9105.91.90.00": {"GPT": {type:"percent", rate:8}},
+  "9105.99.90.00": {"GPT": {type:"percent", rate:8}},
+  "9113.20.90.00": {"GPT": {type:"percent", rate:5}}
+});
+
+// ===== Chapter 92 - Musical Instruments; Parts and Accessories of Such
+// Articles (verified 11 AUG 2026 from CBSA Ch.92, user-provided markdown,
+// full read) =====
+// Free-by-default (added to MFN_FREE_DEFAULT_CHAPTERS) - 25 of 47 codes
+// dutiable (53%), close to balanced. Distinctive pattern: specific,
+// traditionally-orchestral instrument TYPES are named and kept Free
+// (upright pianos, harpsichords, bowed string instruments, harps, brass,
+// clarinets/flutes/saxophones/keyboard pipe organs, acoustic drums/
+// cymbals/orchestral chimes, accordions/vibraphones/marimbas), while the
+// broader catch-all 'Other' within the same heading is dutiable at a fairly
+// consistent 6% MFN with GPT relief to 3% - this hits guitars, banjos,
+// ukuleles, electric/electronic instruments generally, musical boxes, and
+// harmoniums specifically. Parts and accessories (92.09) mirror the same
+// split: parts for the Free-listed traditional instruments stay Free, parts
+// for guitars/banjos/mandolins/musical boxes/metronomes are dutiable.
+const CH92_FREE_DEFAULT = ["92"];
+MFN_FREE_DEFAULT_CHAPTERS.push(...CH92_FREE_DEFAULT);
+
+Object.assign(MFN_RATES, {
+  "9201.20.00.10": {type:"percent", rate:7, note:""},
+  "9201.20.00.20": {type:"percent", rate:7, note:""},
+  "9201.90.90.00": {type:"percent", rate:7, note:""},
+  "9202.90.90.10": {type:"percent", rate:6, note:""},
+  "9202.90.90.30": {type:"percent", rate:6, note:""},
+  "9202.90.90.90": {type:"percent", rate:6, note:""},
+  "9205.90.20.00": {type:"percent", rate:7, note:""},
+  "9205.90.90.00": {type:"percent", rate:6, note:""},
+  "9206.00.90.00": {type:"percent", rate:6, note:""},
+  "9207.10.00.10": {type:"percent", rate:6, note:""},
+  "9207.10.00.20": {type:"percent", rate:6, note:""},
+  "9207.10.00.30": {type:"percent", rate:6, note:""},
+  "9207.10.00.90": {type:"percent", rate:6, note:""},
+  "9207.90.90.10": {type:"percent", rate:6, note:""},
+  "9207.90.90.20": {type:"percent", rate:6, note:""},
+  "9207.90.90.90": {type:"percent", rate:6, note:""},
+  "9208.10.00.00": {type:"percent", rate:6, note:""},
+  "9208.90.00.00": {type:"percent", rate:6, note:""},
+  "9209.30.90.00": {type:"percent", rate:4.5, note:""},
+  "9209.91.90.00": {type:"percent", rate:5, note:""},
+  "9209.92.20.00": {type:"percent", rate:6, note:""},
+  "9209.94.90.00": {type:"percent", rate:5, note:""},
+  "9209.99.20.00": {type:"percent", rate:3, note:""},
+  "9209.99.30.00": {type:"percent", rate:5.5, note:""},
+  "9209.99.90.00": {type:"percent", rate:5, note:""}
+});
+
+Object.assign(CODE_DESCRIPTIONS, {
+  "9201.10.00.10": "Pianos, including automatic pianos; harpsichords and other keyboard stringed instruments > Upright pianos > New",
+  "9201.10.00.20": "Pianos, including automatic pianos; harpsichords and other keyboard stringed instruments > Upright pianos > Used",
+  "9201.20.00.10": "Pianos, including automatic pianos; harpsichords and other keyboard stringed instruments > Grand pianos > New",
+  "9201.20.00.20": "Pianos, including automatic pianos; harpsichords and other keyboard stringed instruments > Grand pianos > Used",
+  "9201.90.10.00": "Pianos, including automatic pianos; harpsichords and other keyboard stringed instruments > Other > Harpsichords and clavichords",
+  "9201.90.90.00": "Pianos, including automatic pianos; harpsichords and other keyboard stringed instruments > Other > Other",
+  "9202.10.00.00": "Other string musical instruments (for example, guitars, violins, harps) > Played with a bow",
+  "9202.90.10.00": "Other string musical instruments (for example, guitars, violins, harps) > Other > Harps, including autoharps",
+  "9202.90.90.10": "Other string musical instruments (for example, guitars, violins, harps) > Other > Other > Guitars",
+  "9202.90.90.30": "Other string musical instruments (for example, guitars, violins, harps) > Other > Other > Ukuleles and banjos",
+  "9202.90.90.90": "Other string musical instruments (for example, guitars, violins, harps) > Other > Other > Other",
+  "9205.10.00.50": "Wind musical instruments (for example, keyboard pipe organs, accordions, clarinets, trumpets, bagpipes), other than fairground organs and mechanical street organs > Brass-wind instruments > Trumpets, cornets, flugelhorns and french horns",
+  "9205.10.00.90": "Wind musical instruments (for example, keyboard pipe organs, accordions, clarinets, trumpets, bagpipes), other than fairground organs and mechanical street organs > Brass-wind instruments > Other",
+  "9205.90.10.10": "Wind musical instruments (for example, keyboard pipe organs, accordions, clarinets, trumpets, bagpipes), other than fairground organs and mechanical street organs > Other > Accordions and similar instruments; bassoons, clarinets, English horns, fifes, flutes, oboes, piccolos, practice chanters, recorders and saxophones; keyboard pipe organs; mouth organs > Clarinets",
+  "9205.90.10.20": "Wind musical instruments (for example, keyboard pipe organs, accordions, clarinets, trumpets, bagpipes), other than fairground organs and mechanical street organs > Other > Accordions and similar instruments; bassoons, clarinets, English horns, fifes, flutes, oboes, piccolos, practice chanters, recorders and saxophones; keyboard pipe organs; mouth organs > Fifes, flutes and piccolos",
+  "9205.90.10.40": "Wind musical instruments (for example, keyboard pipe organs, accordions, clarinets, trumpets, bagpipes), other than fairground organs and mechanical street organs > Other > Accordions and similar instruments; bassoons, clarinets, English horns, fifes, flutes, oboes, piccolos, practice chanters, recorders and saxophones; keyboard pipe organs; mouth organs > Saxophones",
+  "9205.90.10.80": "Wind musical instruments (for example, keyboard pipe organs, accordions, clarinets, trumpets, bagpipes), other than fairground organs and mechanical street organs > Other > Accordions and similar instruments; bassoons, clarinets, English horns, fifes, flutes, oboes, piccolos, practice chanters, recorders and saxophones; keyboard pipe organs; mouth organs > Keyboard pipe organs",
+  "9205.90.10.90": "Wind musical instruments (for example, keyboard pipe organs, accordions, clarinets, trumpets, bagpipes), other than fairground organs and mechanical street organs > Other > Accordions and similar instruments; bassoons, clarinets, English horns, fifes, flutes, oboes, piccolos, practice chanters, recorders and saxophones; keyboard pipe organs; mouth organs > Other",
+  "9205.90.20.00": "Wind musical instruments (for example, keyboard pipe organs, accordions, clarinets, trumpets, bagpipes), other than fairground organs and mechanical street organs > Other > Harmoniums and similar keyboard instruments with free metal reeds",
+  "9205.90.90.00": "Wind musical instruments (for example, keyboard pipe organs, accordions, clarinets, trumpets, bagpipes), other than fairground organs and mechanical street organs > Other > Other",
+  "9206.00.10.10": "Percussion musical instruments (for example, drums, xylophones, cymbals, castanets, maracas) > Carillons to be employed in churches; drums and drum sets, cymbals, orchestral or concert chimes and bells, vibraharps or vibraphones, marimbas, xylophones and tuned handbells > Cymbals",
+  "9206.00.10.80": "Percussion musical instruments (for example, drums, xylophones, cymbals, castanets, maracas) > Carillons to be employed in churches; drums and drum sets, cymbals, orchestral or concert chimes and bells, vibraharps or vibraphones, marimbas, xylophones and tuned handbells > Other drums and drum sets, acoustic",
+  "9206.00.10.90": "Percussion musical instruments (for example, drums, xylophones, cymbals, castanets, maracas) > Carillons to be employed in churches; drums and drum sets, cymbals, orchestral or concert chimes and bells, vibraharps or vibraphones, marimbas, xylophones and tuned handbells > Other",
+  "9206.00.90.00": "Percussion musical instruments (for example, drums, xylophones, cymbals, castanets, maracas) > Other",
+  "9207.10.00.10": "Musical instruments, the sound of which is produced, or must be amplified, electrically (for example, organs, guitars, accordions) > Keyboard instruments, other than accordions > Electric pianos",
+  "9207.10.00.20": "Musical instruments, the sound of which is produced, or must be amplified, electrically (for example, organs, guitars, accordions) > Keyboard instruments, other than accordions > Synthesizers",
+  "9207.10.00.30": "Musical instruments, the sound of which is produced, or must be amplified, electrically (for example, organs, guitars, accordions) > Keyboard instruments, other than accordions > Portable keyboards",
+  "9207.10.00.90": "Musical instruments, the sound of which is produced, or must be amplified, electrically (for example, organs, guitars, accordions) > Keyboard instruments, other than accordions > Other",
+  "9207.90.10.00": "Musical instruments, the sound of which is produced, or must be amplified, electrically (for example, organs, guitars, accordions) > Other > Accordions, orchestral or concert chimes and bells, vibraharps or vibraphones, marimbas and xylophones",
+  "9207.90.90.10": "Musical instruments, the sound of which is produced, or must be amplified, electrically (for example, organs, guitars, accordions) > Other > Other > Guitars",
+  "9207.90.90.20": "Musical instruments, the sound of which is produced, or must be amplified, electrically (for example, organs, guitars, accordions) > Other > Other > Electronic drums and drum sets, musical instrument digital interface (MIDI)",
+  "9207.90.90.90": "Musical instruments, the sound of which is produced, or must be amplified, electrically (for example, organs, guitars, accordions) > Other > Other > Other",
+  "9208.10.00.00": "Musical boxes, fairground organs, mechanical street organs, mechanical singing birds, musical saws and other musical instruments not falling within any other heading of this Chapter; decoy calls of all kinds; whistles, call horns and other mouth-blown sound signalling instruments > Musical boxes",
+  "9208.90.00.00": "Musical boxes, fairground organs, mechanical street organs, mechanical singing birds, musical saws and other musical instruments not falling within any other heading of this Chapter; decoy calls of all kinds; whistles, call horns and other mouth-blown sound signalling instruments > Other",
+  "9209.30.10.00": "Parts (for example, mechanisms for musical boxes) and accessories (for example, cards, discs and rolls for mechanical instruments) of musical instruments; metronomes, tuning forks and pitch pipes of all kinds > Musical instrument strings > For autoharps, clavichords, harpsichords, harps, viols, violas, violins and violoncellos; for use in the manufacture of guitars, banjos or mandolins",
+  "9209.30.90.00": "Parts (for example, mechanisms for musical boxes) and accessories (for example, cards, discs and rolls for mechanical instruments) of musical instruments; metronomes, tuning forks and pitch pipes of all kinds > Musical instrument strings > Other",
+  "9209.91.10.00": "Parts (for example, mechanisms for musical boxes) and accessories (for example, cards, discs and rolls for mechanical instruments) of musical instruments; metronomes, tuning forks and pitch pipes of all kinds > Other > Parts and accessories for pianos > Agraffes, bass damper parts, bridle leather and bridle straps, damper sockets, damper rods, uncovered hammer heads and hammer head moulding, key bottoms, piano or organ sharps, tuning pins, hitch pins, bridge pins, key pins, centre brass pins, brass flange plates, pressure bars, paper or felt punchings, rail hooks, spruce sounding boards, spoons, back check wires, bridle wires, damper wires, dowel wires, lifter wires, hammer wires and piano plates",
+  "9209.91.90.00": "Parts (for example, mechanisms for musical boxes) and accessories (for example, cards, discs and rolls for mechanical instruments) of musical instruments; metronomes, tuning forks and pitch pipes of all kinds > Other > Parts and accessories for pianos > Other",
+  "9209.92.10.10": "Parts (for example, mechanisms for musical boxes) and accessories (for example, cards, discs and rolls for mechanical instruments) of musical instruments; metronomes, tuning forks and pitch pipes of all kinds > Other > Parts and accessories for the musical instruments of heading 92.02 > For harps and instruments played with a bow; for use in the manufacture of guitars, banjos or mandolins > For harps and instruments played with a bow",
+  "9209.92.10.20": "Parts (for example, mechanisms for musical boxes) and accessories (for example, cards, discs and rolls for mechanical instruments) of musical instruments; metronomes, tuning forks and pitch pipes of all kinds > Other > Parts and accessories for the musical instruments of heading 92.02 > For harps and instruments played with a bow; for use in the manufacture of guitars, banjos or mandolins > For use in the manufacture of guitars, banjos and mandolins",
+  "9209.92.20.00": "Parts (for example, mechanisms for musical boxes) and accessories (for example, cards, discs and rolls for mechanical instruments) of musical instruments; metronomes, tuning forks and pitch pipes of all kinds > Other > Parts and accessories for the musical instruments of heading 92.02 > For other string instruments, except keyboard string instruments",
+  "9209.94.10.00": "Parts (for example, mechanisms for musical boxes) and accessories (for example, cards, discs and rolls for mechanical instruments) of musical instruments; metronomes, tuning forks and pitch pipes of all kinds > Other > Parts and accessories for the musical instruments of heading 92.07 > For use in the manufacture or repair of pianos or organs; parts and accessories for use in the manufacture of guitars, banjos or mandolins, the sound of which is produced or must be amplified electrically; parts of carillons to be employed in churches",
+  "9209.94.90.00": "Parts (for example, mechanisms for musical boxes) and accessories (for example, cards, discs and rolls for mechanical instruments) of musical instruments; metronomes, tuning forks and pitch pipes of all kinds > Other > Parts and accessories for the musical instruments of heading 92.07 > Other",
+  "9209.99.10.00": "Parts (for example, mechanisms for musical boxes) and accessories (for example, cards, discs and rolls for mechanical instruments) of musical instruments; metronomes, tuning forks and pitch pipes of all kinds > Other > Other > For harpischords, clavichords, accordions and similar instruments, brass wind instruments, bassoons, clarinets, English horns, fifes, flutes, oboes, piccolos, practice chanters, recorders, saxophones, drums and drum sets, cymbals, orchestral or concert chimes and bells, vibraharps or vibraphones, marimbas, xylophones and tuned handbells, and carillons to be employed in churches; parts and accessories for keyboard pipe organs, harmoniums and similar keyboard instruments with free metal reeds",
+  "9209.99.20.00": "Parts (for example, mechanisms for musical boxes) and accessories (for example, cards, discs and rolls for mechanical instruments) of musical instruments; metronomes, tuning forks and pitch pipes of all kinds > Other > Other > Mechanisms for musical boxes",
+  "9209.99.30.00": "Parts (for example, mechanisms for musical boxes) and accessories (for example, cards, discs and rolls for mechanical instruments) of musical instruments; metronomes, tuning forks and pitch pipes of all kinds > Other > Other > Metronomes, tuning forks and pitch pipes",
+  "9209.99.90.00": "Parts (for example, mechanisms for musical boxes) and accessories (for example, cards, discs and rolls for mechanical instruments) of musical instruments; metronomes, tuning forks and pitch pipes of all kinds > Other > Other > Other"
+});
+
+Object.assign(PREF_FREE, {
+  "9201.20.00.10": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "9201.20.00.20": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "9201.90.90.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "9202.90.90.10": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "9202.90.90.30": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "9202.90.90.90": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "9205.90.20.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "9205.90.90.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "9206.00.90.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "9207.10.00.10": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "9207.10.00.20": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "9207.10.00.30": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "9207.10.00.90": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "9207.90.90.10": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "9207.90.90.20": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "9207.90.90.90": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "9208.10.00.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "9208.90.00.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "9209.30.90.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "9209.91.90.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "9209.92.20.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "9209.94.90.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "9209.99.20.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "9209.99.30.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "9209.99.90.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"]
+});
+
+Object.assign(PREF_SPECIAL, {
+  "9202.90.90.10": {"GPT": {type:"percent", rate:5}},
+  "9202.90.90.30": {"GPT": {type:"percent", rate:5}},
+  "9202.90.90.90": {"GPT": {type:"percent", rate:5}},
+  "9205.90.20.00": {"GPT": {type:"percent", rate:5}},
+  "9205.90.90.00": {"GPT": {type:"percent", rate:3}},
+  "9206.00.90.00": {"GPT": {type:"percent", rate:3}},
+  "9207.90.90.10": {"GPT": {type:"percent", rate:3}},
+  "9207.90.90.20": {"GPT": {type:"percent", rate:3}},
+  "9207.90.90.90": {"GPT": {type:"percent", rate:3}},
+  "9208.10.00.00": {"GPT": {type:"percent", rate:3}},
+  "9208.90.00.00": {"GPT": {type:"percent", rate:3}},
+  "9209.30.90.00": {"GPT": {type:"percent", rate:3}},
+  "9209.99.30.00": {"GPT": {type:"percent", rate:3}}
+});
+
+// ===== Chapter 93 - Arms and Ammunition; Parts and Accessories Thereof
+// (verified 11 AUG 2026 from CBSA Ch.93, user-provided markdown, full
+// read) =====
+// Free-by-default (added to MFN_FREE_DEFAULT_CHAPTERS) - 21 of 29 codes
+// dutiable (72%), a dutiable-majority chapter with real, meaningful duty
+// throughout (3.5-7%). A recurring Free carve-out pattern: guns/artillery
+// within military-weapon headings, apparatus for predator/wildlife control
+// (poisonous-cartridge devices, explosive bird-scaring devices) and their
+// cartridges/parts, diesel-engine starter cartridges, and general shotgun/
+// rifle parts are all Free within otherwise-dutiable headings. Several
+// codes (revolvers/pistols 9302.00, most shotguns/rifles of 93.03, shotgun
+// barrels 9305.20.10) give AUT/NZT FULL relief rather than the partial or
+// no relief typical elsewhere; one exception (.22 rimfire rifles, 9303.30.10)
+// gives AUT/NZT a real but partial 6% rate instead.
+const CH93_FREE_DEFAULT = ["93"];
+MFN_FREE_DEFAULT_CHAPTERS.push(...CH93_FREE_DEFAULT);
+
+Object.assign(MFN_RATES, {
+  "9301.10.90.00": {type:"percent", rate:7, note:""},
+  "9301.90.90.00": {type:"percent", rate:7, note:""},
+  "9302.00.00.00": {type:"percent", rate:3.5, note:""},
+  "9303.10.00.00": {type:"percent", rate:3.5, note:""},
+  "9303.20.10.00": {type:"percent", rate:3.5, note:""},
+  "9303.20.90.00": {type:"percent", rate:3.5, note:""},
+  "9303.30.10.00": {type:"percent", rate:7, note:""},
+  "9303.30.90.00": {type:"percent", rate:3.5, note:""},
+  "9303.90.90.00": {type:"percent", rate:3.5, note:""},
+  "9304.00.10.00": {type:"percent", rate:3.5, note:""},
+  "9304.00.90.00": {type:"percent", rate:7, note:""},
+  "9305.10.00.00": {type:"percent", rate:3.5, note:""},
+  "9305.20.10.00": {type:"percent", rate:2, note:""},
+  "9305.20.90.00": {type:"percent", rate:7.5, note:""},
+  "9305.91.00.00": {type:"percent", rate:3.5, note:""},
+  "9305.99.90.00": {type:"percent", rate:3.5, note:""},
+  "9306.21.00.00": {type:"percent", rate:7, note:""},
+  "9306.30.90.00": {type:"percent", rate:7, note:""},
+  "9306.90.10.00": {type:"percent", rate:3.5, note:""},
+  "9306.90.90.00": {type:"percent", rate:7, note:""},
+  "9307.00.00.00": {type:"percent", rate:7, note:""}
+});
+
+Object.assign(CODE_DESCRIPTIONS, {
+  "9301.10.10.00": "Military weapons, other than revolvers, pistols and the arms of heading 93.07 > Artillery weapons (for example, guns, howitzers and mortars) > Guns",
+  "9301.10.90.00": "Military weapons, other than revolvers, pistols and the arms of heading 93.07 > Artillery weapons (for example, guns, howitzers and mortars) > Other",
+  "9301.20.00.00": "Military weapons, other than revolvers, pistols and the arms of heading 93.07 > Rocket launchers; flame-throwers; grenade launchers; torpedo tubes and similar projectors",
+  "9301.90.10.00": "Military weapons, other than revolvers, pistols and the arms of heading 93.07 > Other > Guns",
+  "9301.90.90.00": "Military weapons, other than revolvers, pistols and the arms of heading 93.07 > Other > Other",
+  "9302.00.00.00": "Revolvers and pistols, other than those of heading 93.03 or 93.04",
+  "9303.10.00.00": "Other firearms and similar devices which operate by the firing of an explosive charge (for example, sporting shotguns and rifles, muzzle loading firearms, Very pistols and other devices designed to project only signal flares, pistols and revolvers for firing blank ammunition, captive-bolt humane killers, line-throwing guns) > Muzzle-loading firearms",
+  "9303.20.10.00": "Other firearms and similar devices which operate by the firing of an explosive charge (for example, sporting shotguns and rifles, muzzle loading firearms, Very pistols and other devices designed to project only signal flares, pistols and revolvers for firing blank ammunition, captive-bolt humane killers, line-throwing guns) > Other sporting, hunting or target-shooting shotguns, including combination shotgun-rifles > Pump or slide-action shotguns",
+  "9303.20.90.00": "Other firearms and similar devices which operate by the firing of an explosive charge (for example, sporting shotguns and rifles, muzzle loading firearms, Very pistols and other devices designed to project only signal flares, pistols and revolvers for firing blank ammunition, captive-bolt humane killers, line-throwing guns) > Other sporting, hunting or target-shooting shotguns, including combination shotgun-rifles > Other",
+  "9303.30.10.00": "Other firearms and similar devices which operate by the firing of an explosive charge (for example, sporting shotguns and rifles, muzzle loading firearms, Very pistols and other devices designed to project only signal flares, pistols and revolvers for firing blank ammunition, captive-bolt humane killers, line-throwing guns) > Other sporting, hunting or target-shooting rifles > Bolt-action or semi-automatic .22 calibre rimfire rifles, excluding target shooting rifles",
+  "9303.30.90.00": "Other firearms and similar devices which operate by the firing of an explosive charge (for example, sporting shotguns and rifles, muzzle loading firearms, Very pistols and other devices designed to project only signal flares, pistols and revolvers for firing blank ammunition, captive-bolt humane killers, line-throwing guns) > Other sporting, hunting or target-shooting rifles > Other",
+  "9303.90.10.00": "Other firearms and similar devices which operate by the firing of an explosive charge (for example, sporting shotguns and rifles, muzzle loading firearms, Very pistols and other devices designed to project only signal flares, pistols and revolvers for firing blank ammunition, captive-bolt humane killers, line-throwing guns) > Other > Apparatus for the destruction of predatory animals by the discharge of poisonous cartridges; automatic explosive bird-scaring devices",
+  "9303.90.90.00": "Other firearms and similar devices which operate by the firing of an explosive charge (for example, sporting shotguns and rifles, muzzle loading firearms, Very pistols and other devices designed to project only signal flares, pistols and revolvers for firing blank ammunition, captive-bolt humane killers, line-throwing guns) > Other > Other",
+  "9304.00.10.00": "Other arms (for example, spring, air or gas guns and pistols, truncheons), excluding those of heading 93.07 > Guns and pistols, spring or gas",
+  "9304.00.90.00": "Other arms (for example, spring, air or gas guns and pistols, truncheons), excluding those of heading 93.07 > Other",
+  "9305.10.00.00": "Parts and accessories of articles of headings 93.01 to 93.04 > Of revolvers or pistols",
+  "9305.20.10.00": "Parts and accessories of articles of headings 93.01 to 93.04 > Of shotguns or rifles of heading 93.03 > Shotgun barrels",
+  "9305.20.20.00": "Parts and accessories of articles of headings 93.01 to 93.04 > Of shotguns or rifles of heading 93.03 > Accessories for use in bolt-action or semi-automatic .22 calibre rimfire rifles, excluding accessories of target shooting rifles; parts",
+  "9305.20.90.00": "Parts and accessories of articles of headings 93.01 to 93.04 > Of shotguns or rifles of heading 93.03 > Other",
+  "9305.91.00.00": "Parts and accessories of articles of headings 93.01 to 93.04 > Other > Of military weapons of heading 93.01",
+  "9305.99.10.00": "Parts and accessories of articles of headings 93.01 to 93.04 > Other > Other > Parts for apparatus for the destruction of predatory animals by the discharge of poisonous cartridges; parts for automatic explosive bird-scaring devices",
+  "9305.99.90.00": "Parts and accessories of articles of headings 93.01 to 93.04 > Other > Other > Other",
+  "9306.21.00.00": "Bombs, grenades, torpedoes, mines, missiles and similar munitions of war and parts thereof; cartridges and other ammunition and projectiles and parts thereof, including shot and cartridge wads > Shotgun cartridges and parts thereof; air gun pellets > Cartridges",
+  "9306.29.00.00": "Bombs, grenades, torpedoes, mines, missiles and similar munitions of war and parts thereof; cartridges and other ammunition and projectiles and parts thereof, including shot and cartridge wads > Shotgun cartridges and parts thereof; air gun pellets > Other",
+  "9306.30.10.00": "Bombs, grenades, torpedoes, mines, missiles and similar munitions of war and parts thereof; cartridges and other ammunition and projectiles and parts thereof, including shot and cartridge wads > Other cartridges and parts thereof > Poisonous cartridges for apparatus for the destruction of predatory animals; starter cartridges and parts thereof, for diesel or semi-diesel engines; twin-shot cartridges designed for bird-scaring devices",
+  "9306.30.90.00": "Bombs, grenades, torpedoes, mines, missiles and similar munitions of war and parts thereof; cartridges and other ammunition and projectiles and parts thereof, including shot and cartridge wads > Other cartridges and parts thereof > Other",
+  "9306.90.10.00": "Bombs, grenades, torpedoes, mines, missiles and similar munitions of war and parts thereof; cartridges and other ammunition and projectiles and parts thereof, including shot and cartridge wads > Other > Parts of bombs, grenades, torpedoes, mines, missiles and similar munitions of war",
+  "9306.90.90.00": "Bombs, grenades, torpedoes, mines, missiles and similar munitions of war and parts thereof; cartridges and other ammunition and projectiles and parts thereof, including shot and cartridge wads > Other > Other",
+  "9307.00.00.00": "Swords, cutlasses, bayonets, lances and similar arms and parts thereof and scabbards and sheaths therefor"
+});
+
+Object.assign(PREF_FREE, {
+  "9301.10.90.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "9301.90.90.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "9302.00.00.00": ["AUT", "NZT", "CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "9303.10.00.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "9303.20.10.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "9303.20.90.00": ["AUT", "NZT", "CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "9303.30.10.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "9303.30.90.00": ["AUT", "NZT", "CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "9303.90.90.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "9304.00.10.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "9304.00.90.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "9305.10.00.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "9305.20.10.00": ["AUT", "NZT", "CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "9305.20.90.00": ["CCCT", "LDCT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "9305.91.00.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "9305.99.90.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "9306.21.00.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "9306.30.90.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "9306.90.10.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "9306.90.90.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "9307.00.00.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"]
+});
+
+Object.assign(PREF_SPECIAL, {
+  "9303.30.10.00": {"AUT": {type:"percent", rate:6}, "NZT": {type:"percent", rate:6}},
+  "9305.20.90.00": {"GPT": {type:"percent", rate:5}}
+});
