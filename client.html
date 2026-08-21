@@ -124,6 +124,7 @@
   }
   .calc-btn:hover{ background:var(--brown-mid); }
   .calc-btn:focus-visible{ outline:3px solid var(--teal); outline-offset:2px; }
+  .calc-trust{ margin:10px 0 0; font-size:13px; color:var(--ink-faint); text-align:center; }
 
   #results{ margin-top:32px; display:none; }
   #results.show{ display:block; }
@@ -286,9 +287,6 @@
     color:var(--brown-mid);
   }
   .disclaimer-bar svg{ width:18px; height:18px; color:var(--teal); flex-shrink:0; }
-  .disclaimer-bar a{ color:var(--brown-deep); font-weight:600; text-decoration:none; white-space:nowrap; margin-left:auto; }
-  .disclaimer-bar a:hover{ text-decoration:underline; }
-  .disclaimer-bar a.js-toggle{ cursor:pointer; background:none; border:none; font:inherit; }
 
   .brokerage-panel{
     display:none;
@@ -458,7 +456,7 @@
   }
   .cta div h3{ font-family:'Montserrat',sans-serif; font-weight:800; text-transform:uppercase; letter-spacing:0.2px; font-size:17px; margin:0 0 4px; color:var(--brown-deep); }
   .cta div p{ margin:0; font-size:14px; color:var(--ink-faint); max-width:44ch; }
-  .cta a{
+  .cta a, .cta button{
     background:var(--brown-deep);
     color:#fff;
     text-decoration:none;
@@ -468,8 +466,11 @@
     border-radius:8px;
     white-space:nowrap;
     transition:background 0.15s;
+    border:none;
+    font-family:inherit;
+    cursor:pointer;
   }
-  .cta a:hover{ background:var(--brown-mid); }
+  .cta a:hover, .cta button:hover{ background:var(--brown-mid); }
 
   .no-match{
     text-align:center;
@@ -526,7 +527,7 @@
   footer p{ margin:0; }
   @media print{
     body{ background:#fff; }
-    header, .field-row, .field, .calc-btn, .charge-caret, .cta, .download-btn{ display:none !important; }
+    header, .field-row, .field, .calc-btn, .calc-trust, .charge-caret, .cta, .download-btn{ display:none !important; }
     #q, .card, main{ box-shadow:none !important; border:none !important; }
     .result-hero{ background:#fff !important; color:#000 !important; border:1.5px solid #000; }
     .result-hero .label, .result-hero .amount, .result-hero .sub{ color:#000 !important; }
@@ -549,7 +550,7 @@
 <main>
   <div class="hero-head">
     <h1>What will this shipment actually cost?</h1>
-    <p>Enter a product and its origin to estimate Canadian import duty — including any current trade surtaxes that might apply.</p>
+    <p>Estimate duties, taxes, surtaxes and trade measures in seconds.</p>
   </div>
 
   <div class="card">
@@ -611,7 +612,8 @@
       <label for="freqCount">Shipments per month</label>
       <input type="number" id="freqCount" placeholder="e.g. 6" min="1">
     </div>
-    <button class="calc-btn" onclick="runEstimate()">Estimate my duty</button>
+    <button class="calc-btn" onclick="runEstimate()">Calculate Import Costs</button>
+    <p class="calc-trust">Powered by continuously maintained Canadian tariff data.</p>
   </div>
 
   <div id="results"></div>
@@ -1391,16 +1393,15 @@ function runEstimate(){
     <div class="disclaimer-bar">
       ${ICON_SHIELD}
       <div>These are estimates only and do not include freight, insurance, or brokerage fees.</div>
-      <a class="js-toggle" id="brokerageToggleLink">Learn more ›</a>
     </div>
-    <div class="brokerage-panel" id="brokeragePanel"></div>
     <div class="cta">
       <div>
         <h3>Want a number you can rely on?</h3>
         <p>This estimate doesn't account for brokerage fees, PST exemptions on specific goods, or your exact product specifications.</p>
       </div>
-      <a href="https://www.gohemisphere.ca/contact">Get a Hemisphere Import Quote</a>
+      <button type="button" id="quoteRevealBtn">Get a Hemisphere Import Quote</button>
     </div>
+    <div class="brokerage-panel" id="brokeragePanel"></div>
   `;
 
   const downloadBtn = document.getElementById('downloadReportBtn');
@@ -1435,12 +1436,15 @@ function runEstimate(){
     tradeMeasuresFlag: tradeFlagSummary,
     estimatedLandedCost: total
   };
-  document.getElementById('brokerageToggleLink').addEventListener('click', () => {
+  document.getElementById('quoteRevealBtn').addEventListener('click', () => {
     const panel = document.getElementById('brokeragePanel');
     panel.classList.toggle('show');
     if(panel.classList.contains('show') && !panel.dataset.rendered){
       renderBrokeragePanel('onetime');
       panel.dataset.rendered = '1';
+    }
+    if(panel.classList.contains('show') && typeof panel.scrollIntoView === 'function'){
+      panel.scrollIntoView({behavior:'smooth', block:'start'});
     }
   });
 }
