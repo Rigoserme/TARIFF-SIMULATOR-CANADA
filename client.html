@@ -679,7 +679,18 @@ function computeBrokerageFees(clientType){
   const bondFee = isSetup ? Math.max(c.bondFeeRate * (inputs.duty + inputs.taxOnGoods), c.bondFeeMinimum) : 0;
   const hstOnGoods = inputs.taxOnGoods;
   const feesSubtotal = entryFee + aciFee + carmFee + accountSetupFee + bondFee;
-  const hstOnFees = feesSubtotal * c.hstOnFeesRate;
+  // BUG FIX (13 AUG 2026): this used to be a flat 13% (Ontario HST) on our
+  // own fees regardless of the shipment's destination province. Confirmed
+  // with Rigo this was wrong: tax on our own fees follows the SAME
+  // destination-province logic as the goods themselves, for both
+  // commercial and personal/casual — it isn't a client-type distinction at
+  // all. Only the five HST provinces (ON/NB/NL/NS/PEI) apply their HST
+  // rate to our fees; every other destination (including Quebec, whose QST
+  // applies to the goods but never to our own service fees) gets GST only.
+  // getFeesTaxForProvince() lives in data.js next to PROVINCE_TAX_RATES so
+  // the two stay in sync if a province's rate ever changes.
+  const feesTax = getFeesTaxForProvince(inputs.province);
+  const hstOnFees = feesSubtotal * (feesTax.rate/100);
   const preDisbursement = feesSubtotal + hstOnGoods + hstOnFees;
   const disbursementFee = preDisbursement * c.disbursementFeeRate;
   const grandTotalCAD = preDisbursement + disbursementFee;
@@ -687,7 +698,8 @@ function computeBrokerageFees(clientType){
 
   return {
     overLimit: false, isSetup, entryFee, aciFee, carmFee, accountSetupFee, bondFee,
-    hstOnGoods, hstOnFees, disbursementFee, grandTotalCAD, grandTotalUSD
+    hstOnGoods, hstOnFees, feesTaxLabel: feesTax.label, feesTaxRate: feesTax.rate,
+    disbursementFee, grandTotalCAD, grandTotalUSD
   };
 }
 
@@ -827,6 +839,7 @@ function renderBrokeragePanel(clientType){
       bond_fee: fees.bondFee.toFixed(2),
       hst_on_goods: fees.hstOnGoods.toFixed(2),
       hst_on_fees: fees.hstOnFees.toFixed(2),
+      fees_tax_type: `${fees.feesTaxLabel} (${fees.feesTaxRate}%)`,
       disbursement_fee: fees.disbursementFee.toFixed(2),
       grand_total_cad: fees.grandTotalCAD.toFixed(2),
       grand_total_usd: fees.grandTotalUSD.toFixed(2)
@@ -966,6 +979,16 @@ function runEstimate(){
   if(!q || !value){
     resultsEl.className = 'show';
     resultsEl.innerHTML = '<div class="card no-match">Enter a product and a shipment value to get an estimate.</div>';
+    return;
+  }
+  // BUG FIX (13 AUG 2026): a negative shipment value (e.g. someone fat-
+  // fingering a minus sign) used to sail straight through — !value is only
+  // true for exactly 0, so -500 passed the check above and produced a
+  // nonsensical negative "Estimated Import Cost". Blocked the same way as
+  // the blank/zero case, since a shipment can't have a negative value.
+  if(value < 0){
+    resultsEl.className = 'show';
+    resultsEl.innerHTML = '<div class="card no-match">Enter a shipment value of zero or more.</div>';
     return;
   }
   if(document.getElementById('importType').value === 'personal' && !document.getElementById('province').value){

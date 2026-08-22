@@ -2165,6 +2165,15 @@ const COUNTRY_NAME_ALIASES = {
   "United States": "United States of America",
   "Chinese Taipei": "Taiwan",
   "Türkiye": "Turkey",
+  // Found 12 AUG 2026 via a full-dataset consistency sweep: same underlying
+  // bug class as the three above (a string used in SIMA/SURTAX/SAFEGUARD
+  // data doesn't byte-match the canonical COUNTRY_TREATIES/dropdown form),
+  // but caused by an accent/diacritic mismatch rather than short-vs-long
+  // naming. SAFEGUARD_MEASURES stores the accented "Côte d'Ivoire" while
+  // COUNTRY_TREATIES (and thus the origin dropdown) uses the plain-ASCII
+  // "Cote d'Ivoire" — without this alias, a Côte d'Ivoire-origin shipment
+  // would silently fail to match its safeguard exemption, the same failure
+  // mode the US/Taiwan/Turkey bug had.
   "Côte d'Ivoire": "Cote d'Ivoire"
 };
 
@@ -8809,6 +8818,23 @@ const PROVINCE_TAX_RATES = {
   "Yukon": [{label:"GST", rate:5}]
 };
 
+// Tax rate Hemisphere charges on its OWN brokerage fees (Entry Fee, ACI,
+// CARM, Account Setup, Bond Fee) — confirmed with Rigo 13 AUG 2026. This is
+// deliberately NOT the same lookup as PROVINCE_TAX_RATES above: our fees
+// only ever attract HST (in the five provinces that have it, at that
+// province's own rate) or GST — never QST, PST, or RST, regardless of what
+// the goods themselves are charged. Applies identically to commercial and
+// personal/casual clients; the fees-tax rate depends only on the
+// destination province, not the client type. Reads the HST rate straight
+// from PROVINCE_TAX_RATES so the two never drift out of sync if a
+// province's HST rate ever changes.
+function getFeesTaxForProvince(province){
+  const provinceRates = PROVINCE_TAX_RATES[province] || [];
+  const hstEntry = provinceRates.find(t => t.label === 'HST');
+  if(hstEntry) return { label: 'HST', rate: hstEntry.rate };
+  return { label: 'GST', rate: 5 };
+}
+
 // ===== Chapter 29 — Organic Chemicals (verified 07 AUG 2026 from CBSA
 // Ch.29, user-provided markdown, 4,015-line source — full read, no partial
 // views) =====
@@ -13469,12 +13495,15 @@ function lookupEntryFee(valueForDutyCAD){
 //   $100 flat minimum if that computed amount is less than $100. Only for
 //   new-account-setup clients — one-timers ship under Hemisphere's own
 //   bond, not their own.
-// - HST on Fees: flat 13% (Ontario HST) on the sum of Entry Fee + ACI +
-//   CARM + Account Setup + Bond Fee — this is tax on HEMISPHERE'S OWN
-//   SERVICES, billed from Ontario regardless of the shipment's destination
-//   province, and is a separate calculation from whatever GST/HST/PST
-//   already applies to the goods themselves via the main duty/tax
-//   calculator.
+// - HST/GST on Fees: REVISED 13 AUG 2026 (see getFeesTaxForProvince() next
+//   to PROVINCE_TAX_RATES above) — this used to be a flat 13% Ontario HST
+//   regardless of destination; Rigo confirmed that was wrong. Tax on our
+//   own fees now follows the destination province, identically for
+//   commercial and personal/casual: the five HST provinces (ON/NB/NL/NS/
+//   PEI) apply their own HST rate to the sum of Entry Fee + ACI + CARM +
+//   Account Setup + Bond Fee; every other province gets GST (5%) only on
+//   that same sum — never QST, PST, or RST, regardless of what tax the
+//   goods themselves carry via the main duty/tax calculator.
 // - Disbursement Fee: 3% of every other computed line above (Entry Fee +
 //   ACI + CARM + Account Setup + Bond Fee + HST on Goods + HST on Fees),
 //   computed last, applied whenever this fee schedule is used.
@@ -13489,7 +13518,6 @@ const BROKERAGE_FEE_CONSTANTS = {
   accountSetupFee: 100,
   bondFeeRate: 0.25,
   bondFeeMinimum: 100,
-  hstOnFeesRate: 0.13,
   disbursementFeeRate: 0.03,
   usdConversionRate: 0.9
 };
