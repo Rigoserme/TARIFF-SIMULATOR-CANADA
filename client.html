@@ -1142,7 +1142,30 @@ function runEstimate(){
   }
 
   if(surtaxMatches.length){
-    const order = surtaxMatches[0];
+    // BUG FIX (12 AUG 2026): when multiple surtax orders match the same
+    // code+origin, this used to just take surtaxMatches[0] — whichever
+    // happened to be first in SURTAX_ORDERS' array order, with no relation
+    // to which one actually applies in law. The orders' own exclusionNote
+    // fields document real, Gazette-sourced non-stacking rules (e.g. "does
+    // not stack with the China Surtax Order or the Steel TRQ Order...
+    // whichever applies takes precedence, this one steps back"). Precedence
+    // is derived here from originScope specificity rather than hardcoded
+    // order names, so it stays correct if orders are renamed or new ones
+    // added with the same scope pattern: a single-country scope (China/US)
+    // is more specific than a country-exclusion scope (exclude-US/
+    // any-except-us-china), which is more specific than a fully general
+    // "any origin" scope. Confirmed against every current exclusionNote
+    // with Rigo on 12 AUG 2026. If a future order's exclusionNote describes
+    // a different relationship, this ranking needs a manual re-check — it's
+    // a heuristic grounded in today's data, not a legal rule in itself.
+    const scopeRank = {'China':0, 'US':0, 'exclude-US':1, 'any-except-us-china':2, 'any':3};
+    const order = surtaxMatches.slice().sort((a,b) =>
+      (scopeRank[a.originScope] ?? 99) - (scopeRank[b.originScope] ?? 99)
+    )[0];
+    const otherApplicableCount = surtaxMatches.length - 1;
+    const stackingNote = otherApplicableCount > 0
+      ? ` This code/origin combination also matched ${otherApplicableCount} other surtax order${otherApplicableCount === 1 ? '' : 's'}, which don't apply here due to documented non-stacking rules.`
+      : '';
     if(order.type === 'flat'){
       const amt = value * (order.rate/100);
       total += amt;
@@ -1152,9 +1175,9 @@ function runEstimate(){
         amount: amt, warning: true, category: 'trade',
         explain: {
           headline: 'Why is this showing?',
-          body: `A Canadian surtax (${order.name}) may apply to this tariff item based on the selected country of origin.`,
+          body: `A Canadian surtax (${order.name}) may apply to this tariff item based on the selected country of origin.${stackingNote}`,
           kv: [['Regulation', order.regNo], ['Potential rate', `${order.rate}%`], ['Estimated amount', formatMoney(amt)]],
-          caution: 'Applicability depends on the specific measure and its conditions — confirm with a broker before relying on this.'
+          caution: (order.exclusionNote ? order.exclusionNote + ' ' : '') + 'Applicability depends on the specific measure and its conditions — confirm with a broker before relying on this.'
         }
       });
     } else {
@@ -1164,9 +1187,9 @@ function runEstimate(){
         amount: null, qualifier: 'Quota-dependent', warning: true, category: 'trade',
         explain: {
           headline: 'Why is this showing?',
-          body: `A quota-based trade measure (${order.regNo}) may apply depending on current import volumes.`,
+          body: `A quota-based trade measure (${order.regNo}) may apply depending on current import volumes.${stackingNote}`,
           kv: [['Regulation', order.regNo]],
-          caution: 'This requires broker review — the rate depends on whether the applicable quota has been filled.'
+          caution: (order.exclusionNote ? order.exclusionNote + ' ' : '') + 'This requires broker review — the rate depends on whether the applicable quota has been filled.'
         }
       });
     }

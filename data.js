@@ -2164,7 +2164,8 @@ const PREF_SPECIAL = Object.assign({}, PREF_SPECIAL_CH04);
 const COUNTRY_NAME_ALIASES = {
   "United States": "United States of America",
   "Chinese Taipei": "Taiwan",
-  "Türkiye": "Turkey"
+  "Türkiye": "Turkey",
+  "Côte d'Ivoire": "Cote d'Ivoire"
 };
 
 /**
