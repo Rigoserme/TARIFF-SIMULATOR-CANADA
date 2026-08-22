@@ -494,6 +494,13 @@
     z-index:20;
   }
   .suggest-list.show{ display:block; }
+  .suggest-list-inline{
+    background:#fff;
+    border:1.5px solid var(--line);
+    border-radius:8px;
+    max-height:260px;
+    overflow-y:auto;
+  }
   .suggest-header{
     padding:8px 14px;
     font-size:11px;
@@ -890,10 +897,10 @@ function populateOriginDropdown(){
 }
 populateOriginDropdown();
 
-// Type-ahead code search — only has data for Chapter 4 so far (see
-// CODE_DESCRIPTIONS in data.js). Purely a picking aid: selecting a
-// suggestion just fills the exact code into the search box, it doesn't
-// bypass the normal matching/ambiguity logic in runEstimate() below.
+// Type-ahead code search — searches the full CODE_DESCRIPTIONS dataset
+// (all 97 chapters as of the 12 AUG 2026 build). Purely a picking aid:
+// selecting a suggestion just fills the exact code into the search box, it
+// doesn't bypass the normal matching/ambiguity logic in runEstimate() below.
 const qInput = document.getElementById('q');
 const qSuggest = document.getElementById('qSuggest');
 
@@ -1093,6 +1100,31 @@ function runEstimate(){
   });
 
   if(distinctCodes.length === 0){
+    // UX FIX (13 AUG 2026): this used to be a flat dead-end even when the
+    // description search clearly had good candidates — e.g. typing the
+    // exact example text from this field's own placeholder, "aluminum
+    // windows", produced "we don't have that product" despite
+    // searchCodesByText() finding a precise match, because that search is
+    // only wired into the live typeahead dropdown, not into what happens if
+    // someone submits without clicking a suggestion first. Rather than
+    // auto-picking one (this codebase's own rule throughout is "only
+    // compute a number when the match is unambiguous"), surface the same
+    // candidates the typeahead already found and let the person confirm.
+    const textMatches = /^[0-9.]+$/.test(q) ? [] : searchCodesByText(q, 5);
+    if(textMatches.length){
+      resultsEl.className = 'show';
+      const items = textMatches.map(m =>
+        `<div class="suggest-item" data-code="${m.code}"><div class="suggest-code">${m.code}</div><div class="suggest-desc">${m.description}</div></div>`
+      ).join('');
+      resultsEl.innerHTML = `<div class="card no-match"><div style="margin-bottom:10px;">We couldn't match that to one exact classification — did you mean one of these?</div><div class="suggest-list-inline">${items}</div></div>`;
+      resultsEl.querySelectorAll('.suggest-item').forEach(item => {
+        item.addEventListener('click', () => {
+          document.getElementById('q').value = item.dataset.code;
+          runEstimate();
+        });
+      });
+      return;
+    }
     resultsEl.className = 'show';
     resultsEl.innerHTML = '<div class="card no-match">We don\'t have that product in our estimator yet. <a href="https://www.gohemisphere.ca/contact" style="color:var(--brown-mid);">Contact a broker</a> for an exact rate.</div>';
     return;
@@ -1106,8 +1138,9 @@ function runEstimate(){
   const matchedCode = distinctCodes[0];
   // getApplicableRate() auto-resolves the best rate for this code + selected
   // origin (preferential Free/special rate if the origin's trade treaty
-  // covers this code, otherwise plain MFN) — currently only has preferential
-  // data for Chapter 4, everything else transparently falls back to MFN.
+  // covers this code, otherwise plain MFN) — preferential data now covers
+  // all 97 chapters as of the 12 AUG 2026 build; codes with no specific
+  // preferential entry correctly fall back to MFN.
   const applicable = getApplicableRate(matchedCode, origin);
   const mfn = applicable.rate;
   const mfnRate = mfn && mfn.type === 'percent' ? mfn.rate : (mfn && mfn.type === 'free' ? 0 : null);
