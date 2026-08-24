@@ -360,6 +360,19 @@
   .carm-box .carm-icon svg{ width:16px; height:16px; }
   .carm-box .carm-title{ font-weight:700; font-size:14px; color:var(--brown-deep); }
   .carm-box .carm-question{ font-size:13.5px; color:var(--ink); margin:8px 0 12px; }
+  .bp-upload-notice{
+    display:none;
+    margin-top:14px;
+    padding:12px 14px;
+    background:var(--teal-soft);
+    border:1px solid var(--teal);
+    border-radius:10px;
+    font-size:12.5px;
+    color:var(--ink);
+    line-height:1.5;
+  }
+  .bp-upload-notice.show{ display:block; }
+  .bp-upload-notice svg{ width:15px; height:15px; flex-shrink:0; vertical-align:-3px; margin-right:6px; color:var(--teal-deep); }
   .carm-btn-row{ display:flex; gap:8px; }
   .carm-btn{
     flex:1;
@@ -794,6 +807,7 @@ function renderBrokeragePanel(clientType){
       <div class="field"><label for="bpCompany">Company (optional)</label><input type="text" id="bpCompany" placeholder="Your company"></div>
       <div class="field"><label for="bpEmail">Email</label><input type="email" id="bpEmail" placeholder="you@example.com"></div>
       <div class="field"><label for="bpPhone">Phone (optional)</label><input type="tel" id="bpPhone" placeholder="(xxx) xxx-xxxx"></div>
+      <div class="bp-upload-notice" id="bpUploadNotice">${ICON_DOCUMENT} Have your commercial invoice or other customs paperwork ready? You'll be able to attach it on the next screen when you submit — no need to email it separately.</div>
       <div id="bpValidationMsg" class="bp-unavailable" style="display:none;">Please enter your name and email so we can reply with your quote.</div>
       <button type="button" class="bp-submit-btn" id="bpSubmitBtn">Request Official Quote</button>
     </div>
@@ -801,6 +815,20 @@ function renderBrokeragePanel(clientType){
 
   wireBrokerageTypeButtons();
   wireCarmButtons();
+
+  // No functional file input: a file picked here can't cross the window.open() handoff to Tally's hosted form.
+  const bpNameEl = document.getElementById('bpName');
+  const bpEmailEl = document.getElementById('bpEmail');
+  const bpUploadNoticeEl = document.getElementById('bpUploadNotice');
+  function checkUploadNoticeVisibility(){
+    if(bpNameEl.value.trim() && bpEmailEl.value.trim()){
+      bpUploadNoticeEl.classList.add('show');
+    } else {
+      bpUploadNoticeEl.classList.remove('show');
+    }
+  }
+  bpNameEl.addEventListener('input', checkUploadNoticeVisibility);
+  bpEmailEl.addEventListener('input', checkUploadNoticeVisibility);
 
   document.getElementById('bpSubmitBtn').addEventListener('click', () => {
     const name = document.getElementById('bpName').value.trim();
