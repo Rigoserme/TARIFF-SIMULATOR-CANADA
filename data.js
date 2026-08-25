@@ -11607,6 +11607,15 @@ const SEARCH_SYNONYMS = {
   // furniture names - none of which existed anywhere in the data at all
   // before this fix, for any of these common synonyms.
   "sofa":["upholstered"], "couch":["upholstered"], "settee":["upholstered"], "loveseat":["upholstered"],
+  // Found via a real client-scenario test (25 AUG 2026): "industrial air
+  // compressor" returned only noise (a steel-manufacturing exemption list,
+  // hand pumps, refrigeration parts) - the formal tariff term for a
+  // non-portable compressor is "stationary", which "industrial" never maps
+  // to on its own. Note "stationary" alone is ambiguous (it's also used for
+  // steam turbines elsewhere in Ch.84) - this only works reliably combined
+  // with a second concept word like "compressor", which the multi-concept
+  // scoring in searchCodesByText() correctly favours.
+  "industrial":["stationary"],
   "toys":["toys"], "steel":["iron and steel"], "aluminum":["aluminium"], "battery":["accumulator","cell"],
   "batteries":["accumulators","cells"]
 };
@@ -11659,6 +11668,37 @@ function wholeWordMatch(text, term){
 // doors code, because "aluminum"+"aluminium" both scored while "windows"
 // only scored once.) Leaf-segment (most specific part of the description)
 // matches get extra weight over generic parent-heading matches.
+//
+// BUG FIX (25 AUG 2026): found via a real user report - searching "sofa"
+// ranked a raw polyester fibre code (5503.20.00.19) ABOVE the actual
+// upholstered seat codes. Cause: that code's leaf segment is a very long
+// parenthetical clause listing every duty-exempted downstream use the raw
+// material qualifies for, one of which happens to be "manufacture of
+// upholstered furniture" - and because the whole clause sits in the final
+// " > "-separated segment with no further separator, the scorer treated it
+// as "the leaf" and gave it the 3x specific-match bonus meant for genuine
+// product classifications. 171 codes in the dataset have this same
+// long-parenthetical-leaf pattern, so this wasn't a one-off. Fix: strip
+// parenthetical content before computing the leaf bonus specifically - a
+// word mentioned only inside an "exempted uses" aside still counts as a
+// match (so the code can still appear in results), it just no longer gets
+// treated as if it were the specific product itself.
+function stripParentheticals(text){
+  return text.replace(/\([^)]*\)/g, ' ');
+}
+// BUG FIX, PART 2 (25 AUG 2026): the parenthetical fix above didn't fully
+// solve this class of problem - some exemption lists are written as plain,
+// semicolon-separated text with NO wrapping parens at all (e.g. a steel
+// hardware code whose leaf runs 800+ characters listing dozens of unrelated
+// duty-exempt manufacturing uses, one of which happens to mention "air
+// compressor tanks" in passing). Checked the leaf-length distribution
+// across the whole dataset: genuine specific-product leaves are almost
+// always short (median 17 characters, 95th percentile only 101), while
+// exemption-list leaves run into the hundreds or low thousands. A leaf
+// over 150 characters is essentially never a real product name - treat it
+// as ordinary "matched somewhere" text instead of "the specific product",
+// regardless of whether it happens to use parentheses or not.
+const LEAF_BONUS_MAX_LENGTH = 150;
 function searchCodesByText(query, maxResults){
   const raw = (query || "").toLowerCase().trim();
   if(!raw) return [];
@@ -11677,12 +11717,13 @@ function searchCodesByText(query, maxResults){
     const desc = CODE_DESCRIPTIONS[code];
     const descLower = desc.toLowerCase();
     const segments = desc.split(" > ");
-    const leaf = segments[segments.length - 1].toLowerCase();
+    const rawLeaf = stripParentheticals(segments[segments.length - 1].toLowerCase());
+    const leafForBonus = rawLeaf.length <= LEAF_BONUS_MAX_LENGTH ? rawLeaf : null;
 
     let score = 0;
     let conceptsMatched = 0;
     wordGroups.forEach(variants => {
-      const hitLeaf = variants.some(v => wholeWordMatch(leaf, v));
+      const hitLeaf = leafForBonus !== null && variants.some(v => wholeWordMatch(leafForBonus, v));
       const hitAnywhere = hitLeaf || variants.some(v => wholeWordMatch(descLower, v));
       if(hitAnywhere){
         conceptsMatched++;

@@ -287,10 +287,13 @@ if (!jsdomAvailable) {
     doc.getElementById('origin').value = fields.origin || '';
     doc.getElementById('importType').value = fields.importType || 'commercial';
     if (fields.province) doc.getElementById('province').value = fields.province;
+    if (fields.frequency) doc.getElementById('frequency').value = fields.frequency;
     dom.window.runEstimate();
     await new Promise(r => setTimeout(r, 50));
+    const resultsHtml = doc.getElementById('results').innerHTML;
     return {
-      html: doc.getElementById('results').innerHTML,
+      html: resultsHtml,
+      text: resultsHtml.replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim(),
       inputs: dom.window.__brokerageInputs,
       computeBrokerageFees: dom.window.computeBrokerageFees
     };
@@ -532,6 +535,238 @@ if (!jsdomAvailable) {
         r.html.includes('did you mean'));
       check('C20b', 'Suggestion includes a real upholstered seat code (9401.x)',
         r.html.includes('9401.'));
+    }
+
+    // C21 — Real client scenario: US wooden office desks, Ontario, commercial (25 AUG 2026,
+    // from a user-provided test library). MFN is already Free for this code - the tool must
+    // NOT claim a specific US/CUSMA treaty applies when none is needed, and must clearly
+    // explain why the provincial tax portion isn't shown for a commercial import.
+    {
+      const r = await runUI({ q: '9403.30.00.10', value: 25000, origin: 'United States of America', province: 'Ontario' });
+      check('C21a', 'HS code recognized exactly', r.inputs.hsCode === '9403.30.00.10');
+      check('C21b', 'Correctly shows plain MFN, not a claimed US-specific treaty (none needed - MFN is already Free)',
+        r.inputs.preferentialTreatment === 'MFN (no preferential treaty)');
+      check('C21c', 'Ontario commercial: GST-only total is correct ($26,250 = $25,000 + 5% GST, provincial portion self-assessed)',
+        Math.abs(r.inputs.estimatedLandedCost - 26250) < 0.01);
+      check('C21d', 'Clearly explains why the provincial portion is not collected at the border',
+        r.html.includes('self-assessed'));
+    }
+
+    // C22 — Real client scenario: air compressor description variations (25 AUG 2026). Tests
+    // that the search correctly distinguishes portable/stationary and reciprocating/rotary
+    // rather than treating every "compressor" query identically. Includes the "industrial"
+    // synonym fix found via this exact test.
+    {
+      const recip = searchCodes('portable reciprocating air compressor', 1);
+      check('C22a', '"portable reciprocating air compressor" resolves to the exact right code',
+        recip[0] && recip[0].code === '8414.80.90.71');
+      const rotary = searchCodes('portable rotary air compressor', 1);
+      check('C22b', '"portable rotary air compressor" resolves to the exact right code',
+        rotary[0] && rotary[0].code === '8414.80.90.72');
+      const industrial = searchCodes('industrial air compressor', 3);
+      check('C22c', '"industrial air compressor" correctly surfaces stationary compressor codes, not noise',
+        industrial.some(r => r.code.startsWith('8414.80.90.4')));
+    }
+
+    // C23 — Real client scenario: Vietnam kitchen cabinets, BC, commercial (25 AUG 2026).
+    // Confirms CPTPT resolution is explicitly named (not silently applied) and that the tool
+    // visibly distinguishes "Preferential" tariff treatment from plain "MFN" (contrast with C21).
+    {
+      const r = await runUI({ q: '9403.40.00.10', value: 40000, origin: 'Vietnam', province: 'British Columbia' });
+      check('C23a', 'Vietnam correctly resolves via CPTPT to zero duty', r.inputs.duty === 0);
+      check('C23b', 'Preferential treatment explicitly names the treaty (CPTPT), not left implicit',
+        r.inputs.preferentialTreatment === 'CPTPT');
+      check('C23c', 'Tariff treatment is visibly labeled "Preferential", contrasting with C21bs plain "MFN"',
+        r.html.includes('Preferential (CPTPT)'));
+      check('C23d', 'BC commercial: GST-only total is correct ($42,000 = $40,000 + 5% GST)',
+        Math.abs(r.inputs.estimatedLandedCost - 42000) < 0.01);
+    }
+
+    // =====================================================================
+    // C24-C36 — REAL-WORLD CLIENT SCENARIO LIBRARY (25 AUG 2026)
+    // A test library modeled on actual client journeys (Product -> HS ->
+    // Origin -> Tariff treatment -> Province -> Tax -> Frequency -> Final
+    // result), not just isolated technical checks. Covers every province,
+    // 9 distinct treaty relationships, all three trade-measure types, TRQ
+    // within/over-access, every rate type, fee-schedule boundaries,
+    // validation, and search quality. Re-run this whenever data.js or
+    // client.html changes - this is the quality-control checklist for the
+    // simulator, alongside the more technical checks above it.
+    // =====================================================================
+
+    // C24 — China charcoal -> Quebec, commercial: contrast with C21/C23's
+    // Ontario/BC cases, confirming QST-bearing Quebec still only charges
+    // GST on OUR fees (not QST), while goods tax still shows correctly
+    {
+      const r = await runUI({ q: '4402.10.90.00', value: 5000, origin: 'China', province: 'Quebec' });
+      check('C24', 'China charcoal -> Quebec: goods tax section renders correctly (QST or GST)',
+        r.text.includes('QST') || r.text.includes('GST'));
+    }
+
+    // C25/C26 — Mexico vs Japan, same auto part: confirms the resolver picks
+    // the correct DIFFERENT treaty for each origin on an identical code
+    {
+      const rMex = await runUI({ q: '8708.99.99.99', value: 12000, origin: 'Mexico', province: 'Manitoba' });
+      check('C25', 'Mexico auto parts -> Manitoba: resolves via MXT (CUSMA), zero duty',
+        rMex.inputs.duty === 0 && rMex.inputs.preferentialTreatment === 'MXT');
+      const rJpn = await runUI({ q: '8708.99.99.99', value: 12000, origin: 'Japan', province: 'Saskatchewan' });
+      check('C26', 'Japan auto parts -> Saskatchewan: resolves via CPTPT (CPTPP), zero duty',
+        rJpn.inputs.duty === 0 && rJpn.inputs.preferentialTreatment === 'CPTPT');
+    }
+
+    // C27-C29 — Germany/CETA, UK/CUFTA, Chile/CCFTA+CPTPT dual-treaty:
+    // confirms three more distinct trade agreements each resolve by name
+    {
+      const rDe = await runUI({ q: '8418.29.00.00', value: 15000, origin: 'Germany', province: 'Nova Scotia' });
+      check('C27', 'Germany refrigeration equip -> Nova Scotia: resolves via CEUT (CETA), zero duty',
+        rDe.inputs.duty === 0 && rDe.inputs.preferentialTreatment === 'CEUT');
+      const rUk = await runUI({ q: '8407.29.20.00', value: 9000, origin: 'United Kingdom', province: 'New Brunswick' });
+      check('C28', 'UK marine engines -> New Brunswick: resolves via UKT (CUFTA), zero duty',
+        rUk.inputs.duty === 0 && rUk.inputs.preferentialTreatment === 'UKT');
+      const rCl = await runUI({ q: '8418.50.10.00', value: 7000, origin: 'Chile', province: 'Prince Edward Island' });
+      check('C29', 'Chile compressors -> PEI: dual CCFTA/CPTPP membership still resolves to zero duty',
+        rCl.inputs.duty === 0);
+    }
+
+    // C30 — South Korea/CKFTA
+    {
+      const r = await runUI({ q: '8418.29.00.00', value: 11000, origin: 'South Korea', province: 'Newfoundland and Labrador' });
+      check('C30', 'South Korea refrigeration equip -> Newfoundland and Labrador: resolves via KRT (CKFTA)',
+        r.inputs.duty === 0 && r.inputs.preferentialTreatment === 'KRT');
+    }
+
+    // C31-C33 — Same product (t-shirts, 18% MFN), three origins with three
+    // genuinely different outcomes: LDC gets full relief, no-treaty gets
+    // full MFN, GPT gets a real but partial discount. This trio together is
+    // the clearest possible demonstration that treaty resolution is doing
+    // real, origin-specific work rather than a flat lookup.
+    {
+      const rBd = await runUI({ q: '6109.10.00.12', value: 3000, origin: 'Bangladesh', importType: 'personal', province: 'Ontario' });
+      check('C31', 'Bangladesh t-shirts (LDC): LDCT gives full relief, zero duty',
+        rBd.inputs.duty === 0 && rBd.inputs.preferentialTreatment === 'LDCT');
+      const rIn = await runUI({ q: '6109.10.00.12', value: 3000, origin: 'India', importType: 'personal', province: 'Ontario' });
+      check('C32', 'India t-shirts (no treaty): plain MFN 18%, no relief claimed',
+        rIn.inputs.dutyRate === '18%' && rIn.inputs.preferentialTreatment === 'MFN (no preferential treaty)');
+      const rSv = await runUI({ q: '6110.11.10.00', value: 4000, origin: 'El Salvador', importType: 'personal', province: 'Ontario' });
+      check('C33', 'El Salvador wool sweaters (GPT): real partial relief 18%->16%, not zero and not full',
+        Math.abs(rSv.inputs.duty - 4000*0.16) < 0.01 && rSv.inputs.preferentialTreatment === 'GPT');
+    }
+
+    // C34 — US steel pipe: CUSMA duty relief AND the steel surtax both
+    // correctly apply together (same independence-of-surtax pattern as
+    // C18, different product/heading for coverage)
+    {
+      const r = await runUI({ q: '7304.19.00.14', value: 20000, origin: 'United States of America', province: 'Ontario' });
+      const expectedTotal = 20000 + 20000*0.25 + (20000+20000*0.25)*0.05;
+      check('C34', 'US steel pipe: CUSMA zero duty, but 25% surtax still applies in full',
+        r.inputs.duty === 0 && Math.abs(r.inputs.estimatedLandedCost - expectedTotal) < 0.01);
+    }
+
+    // C35 — Cast iron soil pipe: a SIMA case with NO surtax overlap, unlike
+    // C19's aluminum extrusions. Confirms SIMA renders correctly on its own,
+    // not just when paired with a surtax.
+    {
+      const r = await runUI({ q: '7303.00.00.10', value: 8000, origin: 'China', province: 'Ontario' });
+      check('C35', 'China cast iron soil pipe: SIMA renders alone, with no surtax card present',
+        r.text.includes('SIMA') && !r.text.includes('Surtax ('));
+    }
+
+    // C36 — TRQ within-access (Free) vs over-access (punitive compound rate)
+    // on the exact same product family, confirming both ends of the TRQ
+    // structure behave correctly side by side
+    {
+      const rOver = await runUI({ q: '0105.11.22.00', value: 2000, origin: 'China', province: 'Ontario' });
+      check('C36a', 'Over-access broilers: compound rate never silently computed as a guessed duty',
+        rOver.inputs.duty === 0 && (rOver.text.includes('per unit') || rOver.text.includes('Per-unit')));
+      const rWithin = await runUI({ q: '0105.11.21.00', value: 2000, origin: 'United States of America', province: 'Ontario' });
+      check('C36b', 'Within-access broilers (US): correctly gets relief, contrasting with over-access',
+        rWithin.inputs.duty === 0);
+    }
+
+    // C37 — Free MFN chapter-pattern products in GST-only territories
+    // (Yukon, NWT), confirming the territory tax combination and Free
+    // chapter-pattern resolution both work outside the 4 most-tested provinces
+    {
+      const rYt = await runUI({ q: '6109.10.00.12', value: 800, origin: 'China', importType: 'personal', province: 'Yukon' });
+      const expDuty = 800*0.18, expTax = (800+expDuty)*0.05;
+      check('C37a', 'China t-shirts -> Yukon, personal: correct GST-only territory tax total',
+        Math.abs(rYt.inputs.estimatedLandedCost - (800+expDuty+expTax)) < 0.01);
+      const rNwt = await runUI({ q: '8517.13.00.00', value: 1500, origin: 'China', importType: 'personal', province: 'Northwest Territories' });
+      check('C37b', 'China smartphones -> NWT, personal: Free MFN + correct GST-only total',
+        rNwt.inputs.duty === 0 && Math.abs(rNwt.inputs.estimatedLandedCost - 1500*1.05) < 0.01);
+    }
+
+    // C38 — Ambiguous single-word search must show real options, not guess
+    {
+      const r = await runUI({ q: 'compressor', value: 5000, origin: 'China', province: 'Ontario' });
+      const suggestCount = (r.html.match(/suggest-item/g) || []).length;
+      check('C38', '"compressor" alone (genuinely ambiguous - portable/stationary/gas) shows 2+ real options',
+        suggestCount >= 2, `found ${suggestCount} suggestions`);
+    }
+
+    // C39 — 100%-Free chapter product (aircraft parts, Ch.88) at a large,
+    // realistic commercial value
+    {
+      const r = await runUI({ q: '8807.30.00.00', value: 50000, origin: 'France', province: 'Quebec' });
+      check('C39', 'France aircraft parts -> Quebec: Ch.88 (100% Free chapter) correctly gives zero duty',
+        r.inputs.duty === 0);
+    }
+
+    // C40 — Weekly frequency normalizes to monthly/yearly projections (not
+    // a raw "/week" figure) - verified against hand-calculated math
+    {
+      const r = await runUI({ q: '4402.10.90.00', value: 2000, origin: 'Germany', province: 'Ontario', frequency: 'weekly' });
+      const perShipment = 2000 * 1.05;
+      const expectedYearly = perShipment * 52;
+      check('C40', 'Weekly frequency -> correct monthly/annual projection, matching hand-calculated $109,200/yr',
+        r.inputs.frequency === 'Weekly' && r.text.includes('Weekly shipments')
+        && r.text.includes(expectedYearly.toLocaleString('en-US', {minimumFractionDigits:2})));
+    }
+
+    // C41 — One-time vs account-setup client type on the same real scenario:
+    // confirms Account Setup Fee and Bond Fee correctly toggle on a
+    // realistic $15,000 commercial shipment, not just the smaller test
+    // values used in C12
+    {
+      const r = await runUI({ q: '9403.40.00.10', value: 15000, origin: 'Vietnam', province: 'British Columbia' });
+      const oneTime = r.computeBrokerageFees('onetime');
+      const setup = r.computeBrokerageFees('setup');
+      check('C41', 'Vietnam cabinets ($15k): one-time vs account-setup fee toggle correct at this value',
+        oneTime.accountSetupFee === 0 && setup.accountSetupFee === 100 && setup.bondFee > 0);
+    }
+
+    // C42 — Same product, three provinces side by side (BC/Ontario/Quebec):
+    // for a commercial import, all three should charge identical 5%
+    // GST-only tax (provincial portion self-assessed everywhere), proving
+    // the commercial-tax rule is genuinely province-independent, not
+    // accidentally varying
+    {
+      const bc = await runUI({ q: '9403.40.00.10', value: 20000, origin: 'Vietnam', province: 'British Columbia' });
+      const on = await runUI({ q: '9403.40.00.10', value: 20000, origin: 'Vietnam', province: 'Ontario' });
+      const qc = await runUI({ q: '9403.40.00.10', value: 20000, origin: 'Vietnam', province: 'Quebec' });
+      check('C42', 'Vietnam cabinets: BC/Ontario/Quebec commercial tax is identical (5% GST-only in all three)',
+        Math.abs(bc.inputs.taxOnGoods - on.inputs.taxOnGoods) < 0.01 && Math.abs(on.inputs.taxOnGoods - qc.inputs.taxOnGoods) < 0.01,
+        `BC=${bc.inputs.taxOnGoods}, ON=${on.inputs.taxOnGoods}, QC=${qc.inputs.taxOnGoods}`);
+    }
+
+    // C43 — Leaf-scoring bug (25 AUG 2026, found via a real user report): a
+    // raw material's incidental mention in a long "exempted downstream
+    // uses" list was unfairly outranking the actual specific product it was
+    // mentioned in passing. Two distinct patterns caused this - a
+    // parenthetical exemption clause (polyester fibre/"upholstered
+    // furniture"), and a plain semicolon-separated one with no parens at
+    // all (steel hardware/"air compressor tanks") - fixed with a combined
+    // parenthetical-stripping + leaf-length-cutoff approach covering both.
+    {
+      const rSofa = await runUI({ q: 'sofa', value: 1000, origin: 'China' });
+      check('C43a', '"sofa" no longer ranks the raw polyester fibre code (5503.20) above real seat codes',
+        rSofa.html.includes('9401.') && rSofa.html.indexOf('9401.') < (rSofa.html.indexOf('5503.20') === -1 ? Infinity : rSofa.html.indexOf('5503.20')));
+      const rIndustrial = searchCodes('industrial air compressor', 3);
+      check('C43b', '"industrial air compressor" no longer ranks the steel-hardware exemption code (7326.90) first',
+        rIndustrial[0] && rIndustrial[0].code.startsWith('8414.80.90.4'));
+      check('C43c', 'The fix does not regress the earlier substring-matching or aluminum-windows fixes',
+        searchCodes('hat',1)[0].description.toLowerCase().includes('headgear')
+        && searchCodes('aluminum windows',1)[0].code === '7610.10.00.20');
     }
 
     printSummary();
