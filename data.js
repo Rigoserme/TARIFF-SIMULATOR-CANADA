@@ -11592,17 +11592,62 @@ const SEARCH_SYNONYMS = {
   "styrofoam":["expansible","polystyrene"], "plexiglass":["poly(methyl methacrylate)","acrylic"],
   "tupperware":["plastic containers"], "epoxy":["epoxide resins"],
 
-  // Forward-looking — chapters not yet built, but harmless to have ready
+  // Household, apparel, footwear, electronics, misc. (Ch.42-96, largely
+  // added once those chapters existed - this section used to be a
+  // "forward-looking, not yet built" placeholder; fixed 24 AUG 2026 since
+  // all 97 chapters are complete and this stale label was misleading.
   "sneakers":["footwear"], "shoes":["footwear"], "boots":["footwear"], "sandals":["footwear"],
   "clothing":["apparel","garments"], "t-shirt":["apparel"], "jeans":["apparel","denim"],
   "jacket":["apparel"], "phone":["telephone","cellular"], "cellphone":["telephone","cellular","mobile"],
   "laptop":["computer"], "computer":["automatic data processing machine"], "tv":["television receiver"],
   "television":["television receiver"], "tires":["pneumatic tires","tyres"], "furniture":["seats"],
+  // Found via a real user report (24 AUG 2026): "sofa" returned nothing,
+  // since HS nomenclature describes multi-seat upholstered furniture by
+  // construction terms ("seats", "upholstered") rather than everyday
+  // furniture names - none of which existed anywhere in the data at all
+  // before this fix, for any of these common synonyms.
+  "sofa":["upholstered"], "couch":["upholstered"], "settee":["upholstered"], "loveseat":["upholstered"],
   "toys":["toys"], "steel":["iron and steel"], "aluminum":["aluminium"], "battery":["accumulator","cell"],
   "batteries":["accumulators","cells"]
 };
 
 const SEARCH_STOPWORDS = new Set(["of","the","and","or","a","an","for","in","to","other","with","other than"]);
+
+// BUG FIX (24 AUG 2026): found via a systematic batch test of ~114 everyday
+// search terms after a user reported a real, striking case ("sofa" led to
+// investigating why common words behaved inconsistently). The previous
+// matching used plain String.includes() — a raw substring test with no
+// word-boundary awareness — which let short, common words match INSIDE
+// unrelated longer words: "table" inside "vegetable", "hat" inside
+// "hatching", "pen" inside "spent" (fowl) and "pentanes", "mat" inside
+// "tomato"/"maté"/"primate", "dress" inside "dressing". These weren't rare
+// edge cases - they produced confidently-wrong top results for ordinary
+// searches, which is worse than an honest zero-result search.
+//
+// Fix: match whole words (or simple pluralization: cable -> cables, box ->
+// boxes) via Unicode-aware boundaries, instead of raw substring containment.
+// Uses \p{L}/\p{N} lookaround rather than plain \b, since JS's built-in \b
+// only understands ASCII [A-Za-z0-9_] as word characters and would still
+// let "mat" match inside "maté" (the beverage) otherwise. Verified this
+// still matches plurals correctly (cable/cables, pen/pens, table/tables,
+// hat/hats) while rejecting every substring false-positive found in the
+// batch test, including the accented-letter case. Regex-escapes the term
+// first since a few synonym values contain literal parentheses (e.g.
+// "poly(methyl methacrylate)").
+function escapeRegExpSpecialChars(str){
+  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+function wholeWordMatch(text, term){
+  const escaped = escapeRegExpSpecialChars(term);
+  // Unicode-aware lookaround instead of plain \b: JavaScript's \b only
+  // treats ASCII [A-Za-z0-9_] as "word" characters, so it would still
+  // create a false boundary right after an accented letter — e.g. "mat"
+  // would incorrectly match inside "maté" (the beverage), since \b sees
+  // the following "é" as non-word. \p{L}/\p{N} with the "u" flag correctly
+  // treat accented letters as real letters, closing that gap too.
+  const re = new RegExp('(?<![\\p{L}\\p{N}])' + escaped + '(s|es)?(?![\\p{L}\\p{N}])', 'iu');
+  return re.test(text);
+}
 
 // Real description search. Scoring counts DISTINCT ORIGINAL QUERY WORDS
 // matched — a word counts as matched if either the literal word or any of
@@ -11637,8 +11682,8 @@ function searchCodesByText(query, maxResults){
     let score = 0;
     let conceptsMatched = 0;
     wordGroups.forEach(variants => {
-      const hitLeaf = variants.some(v => leaf.includes(v));
-      const hitAnywhere = hitLeaf || variants.some(v => descLower.includes(v));
+      const hitLeaf = variants.some(v => wholeWordMatch(leaf, v));
+      const hitAnywhere = hitLeaf || variants.some(v => wholeWordMatch(descLower, v));
       if(hitAnywhere){
         conceptsMatched++;
         score += hitLeaf ? 3 : 1;

@@ -58,7 +58,8 @@ const exportNames = [
   'SIMA_CASES', 'SURTAX_ORDERS', 'SAFEGUARD_MEASURES',
   'COUNTRY_TREATIES', 'COUNTRY_NAME_ALIASES', 'PROVINCE_TAX_RATES',
   'getMfnRate', 'getApplicableRate', 'findSimaMatches', 'findSurtaxMatches',
-  'findSafeguardMatches', 'surtaxAppliesToCountry', 'getFeesTaxForProvince'
+  'findSafeguardMatches', 'surtaxAppliesToCountry', 'getFeesTaxForProvince',
+  'wholeWordMatch', 'searchCodes', 'searchCodesByText'
 ];
 const exportBlock = '\n' + exportNames.map(n => `try { globalThis.__EXPORT__${n} = ${n}; } catch(e) {}`).join('\n');
 const dataSandbox = { console: { log: () => {} }, globalThis: {} };
@@ -75,7 +76,8 @@ const {
   SIMA_CASES, SURTAX_ORDERS, SAFEGUARD_MEASURES,
   COUNTRY_TREATIES, COUNTRY_NAME_ALIASES, PROVINCE_TAX_RATES,
   getMfnRate, getApplicableRate, findSimaMatches, findSurtaxMatches,
-  findSafeguardMatches, surtaxAppliesToCountry, getFeesTaxForProvince
+  findSafeguardMatches, surtaxAppliesToCountry, getFeesTaxForProvince,
+  wholeWordMatch, searchCodes, searchCodesByText
 } = extracted;
 
 // A1 — Chapter coverage
@@ -177,6 +179,42 @@ const {
     orphans.length === 10, `now ${orphans.length}: ${JSON.stringify(orphans)}`);
 }
 
+// A9 — Whole-word search matching (24 AUG 2026 fix): guards against the
+// exact substring false-positives found in a systematic batch test, and
+// against over-correcting in a way that breaks legitimate plurals
+{
+  const falsePositiveCases = [
+    { term: 'table', badText: 'juice of any other single vegetable', badWord: 'vegetable' },
+    { term: 'hat', badText: 'fertilized for incubation other hatching', badWord: 'hatching' },
+    { term: 'pen', badText: 'spent fowl', badWord: 'spent' },
+    { term: 'pen', badText: 'saturated pentanes', badWord: 'pentanes' },
+    { term: 'dress', badText: 'mayonnaise and salad dressing', badWord: 'dressing' },
+    { term: 'mat', badText: 'maté', badWord: "maté (accented - JS's plain \\b doesn't treat accented letters as word chars)" },
+    { term: 'mat', badText: 'tomato juice', badWord: 'tomato' },
+    { term: 'pure', badText: 'tomatoes other purées', badWord: 'purées' },
+  ];
+  const stillFalsePositive = falsePositiveCases.filter(c => wholeWordMatch(c.badText, c.term));
+  check('A9a', 'No substring false-positives remain (table/vegetable, hat/hatching, pen/spent, etc.)',
+    stillFalsePositive.length === 0,
+    JSON.stringify(stillFalsePositive.map(c => `"${c.term}" still matches inside "${c.badWord}"`)));
+
+  const legitimatePlurals = [
+    { term: 'table', text: 'wooden furniture of a kind used in offices tables' },
+    { term: 'cable', text: 'insulated wire and cables' },
+    { term: 'hat', text: 'other headgear hats and caps' },
+    { term: 'pen', text: 'pen holders and pens' },
+  ];
+  const brokenPlurals = legitimatePlurals.filter(c => !wholeWordMatch(c.text, c.term));
+  check('A9b', 'Simple pluralization still matches correctly (the fix did not over-correct)',
+    brokenPlurals.length === 0,
+    JSON.stringify(brokenPlurals.map(c => `"${c.term}" no longer matches "${c.text}"`)));
+
+  check('A9c', '"hat" now correctly finds a real hat-related code via searchCodes',
+    searchCodes('hat', 5).some(r => r.description.toLowerCase().includes('headgear')));
+  check('A9d', '"sofa" still resolves via the earlier synonym fix, now on top of the matching fix',
+    searchCodes('sofa', 5).some(r => r.code.startsWith('9401')));
+}
+
 // =========================================================================
 // SECTION B — Known-bug regressions (specific fixes that must never revert)
 // =========================================================================
@@ -238,7 +276,7 @@ if (!jsdomAvailable) {
   console.log('jsdom not installed - skipping Section C (run "npm install jsdom" to enable)');
 } else {
   const clientHtml = fs.readFileSync(CLIENT_PATH, 'utf8')
-    .replace('<script src="data.js"></script>', `<script>${dataCode}</script>`);
+    .replace('<script src="data.js"></script>', () => `<script>${dataCode}</script>`);
 
   async function runUI(fields) {
     const dom = new JSDOM(clientHtml, { runScripts: 'dangerously', resources: 'usable' });
@@ -353,6 +391,147 @@ if (!jsdomAvailable) {
       const r2 = await runUI({ q: 'zqxvbkwpfjm', value: 1000, origin: 'Germany' });
       check('C10c', 'Genuine gibberish still falls through to the real "contact a broker" dead-end',
         r2.html.includes('Contact a broker'));
+    }
+
+    // C11 — Entry fee schedule boundaries (off-by-one risk at tier edges)
+    {
+      const r50 = await runUI({ q: '4402.10.90.00', value: 50, origin: 'Germany' });
+      check('C11a', '$50 exactly gets the $10 tier (inclusive boundary)',
+        r50.computeBrokerageFees('onetime').entryFee === 10);
+
+      const r5001 = await runUI({ q: '4402.10.90.00', value: 50.01, origin: 'Germany' });
+      check('C11b', '$50.01 correctly bumps to the next tier ($40)',
+        r5001.computeBrokerageFees('onetime').entryFee === 40);
+
+      const r25k = await runUI({ q: '4402.10.90.00', value: 25000, origin: 'Germany' });
+      check('C11c', '$25,000 exactly is still within the schedule ($950)',
+        r25k.computeBrokerageFees('onetime').entryFee === 950);
+
+      const rOver = await runUI({ q: '4402.10.90.00', value: 25000.01, origin: 'Germany' });
+      check('C11d', '$25,000.01 correctly triggers overLimit, not a guessed fee',
+        r25k.computeBrokerageFees('onetime') && rOver.computeBrokerageFees('onetime').overLimit === true);
+    }
+
+    // C12 — Client-type toggle: Account Setup Fee and Bond Fee only apply when setting up an account
+    {
+      const oneTime = await runUI({ q: '0105.12.90.00', value: 1000, origin: 'China' });
+      const oneTimeFees = oneTime.computeBrokerageFees('onetime');
+      check('C12a', 'One-time shipment: Account Setup Fee and Bond Fee are both zero',
+        oneTimeFees.accountSetupFee === 0 && oneTimeFees.bondFee === 0);
+
+      const setupSmall = await runUI({ q: '0105.12.90.00', value: 1000, origin: 'China' });
+      const setupSmallFees = setupSmall.computeBrokerageFees('setup');
+      check('C12b', 'Account setup, small shipment: Bond Fee correctly hits the $100 minimum',
+        setupSmallFees.bondFee === 100);
+
+      const setupLarge = await runUI({ q: '0105.12.90.00', value: 10000, origin: 'China' });
+      const setupLargeFees = setupLarge.computeBrokerageFees('setup');
+      const expectedBond = Math.max(0.25 * (800 + (10000+800)*0.05), 100);
+      check('C12c', 'Account setup, large shipment: Bond Fee correctly calculates 25% of duty+tax',
+        Math.abs(setupLargeFees.bondFee - expectedBond) < 0.01);
+    }
+
+    // C13 — All 13 provinces/territories compute the correct tax combination
+    {
+      const provinceExpected = {
+        'Alberta': 50, 'British Columbia': 120, 'Manitoba': 120, 'New Brunswick': 150,
+        'Newfoundland and Labrador': 150, 'Northwest Territories': 50, 'Nova Scotia': 140,
+        'Nunavut': 50, 'Ontario': 130, 'Prince Edward Island': 150, 'Quebec': 149.75,
+        'Saskatchewan': 110, 'Yukon': 50
+      };
+      let allProvincesPass = true;
+      const failures13 = [];
+      for (const [prov, expected] of Object.entries(provinceExpected)) {
+        const r = await runUI({ q: '4402.10.90.00', value: 1000, origin: 'United States of America', importType: 'personal', province: prov });
+        if (Math.abs(r.inputs.taxOnGoods - expected) > 0.01) {
+          allProvincesPass = false;
+          failures13.push(`${prov}: got ${r.inputs.taxOnGoods}, expected ${expected}`);
+        }
+      }
+      check('C13', 'All 13 provinces/territories compute their correct tax combination', allProvincesPass, JSON.stringify(failures13));
+    }
+
+    // C14 — Compound/specific rate codes never silently guess a duty amount
+    {
+      const r1 = await runUI({ q: '0105.11.22.00', value: 5000, origin: 'China' });
+      check('C14a', 'Compound-rate code (238% but not less than 30.8c/each) computes zero duty, not a guess',
+        r1.inputs.duty === 0);
+      const r2 = await runUI({ q: '0402.10.10.00', value: 5000, origin: 'China' });
+      check('C14b', 'Specific-rate code (3.32c/kg) computes zero duty, not a guess',
+        r2.inputs.duty === 0);
+      check('C14c', 'Specific-rate code clearly states per-unit, not silently implying zero duty',
+        r2.html.includes('per unit') || r2.html.includes('Per-unit'));
+    }
+
+    // C15 — Rate resolver checks ALL of a country's treaties, not just the first
+    {
+      const r = await runUI({ q: '0401.10.10.00', value: 1000, origin: 'Mexico' });
+      // Mexico is excluded from this code's MXT relief but qualifies via CPTPT instead
+      check('C15', 'Resolver finds Mexicos CPTPT relief on a code that excludes its MXT treaty',
+        r.inputs.duty === 0);
+    }
+
+    // C16 — Multiple simultaneous SIMA matches on the same code all render, not just the first
+    {
+      const r = await runUI({ q: '7610.10.00.10', value: 5000, origin: 'China' });
+      const extrusionsCount = (r.html.match(/extrusions/gi) || []).length;
+      const wallModulesCount = (r.html.match(/wall modules/gi) || []).length;
+      check('C16', 'Both simultaneous SIMA matches (aluminum extrusions + wall modules) render as separate cards',
+        extrusionsCount >= 1 && wallModulesCount >= 1, `extrusions: ${extrusionsCount}, wall modules: ${wallModulesCount}`);
+    }
+
+    // C17 — End-to-end confirmation of the Cote d'Ivoire alias fix (B1d checked the data layer;
+    // this confirms the exemption actually suppresses the warning through the real UI flow)
+    {
+      const exempt = await runUI({ q: '2005.40.00.00', value: 5000, origin: "Cote d'Ivoire" });
+      check('C17a', "Cote d'Ivoire is correctly exempt from the canned vegetable safeguard end-to-end",
+        !exempt.html.includes('Safeguard'));
+      const nonExempt = await runUI({ q: '2005.40.00.00', value: 5000, origin: 'Germany' });
+      check('C17b', 'Germany (non-exempt) still correctly shows the safeguard warning, as a contrast check',
+        nonExempt.html.includes('Safeguard'));
+    }
+
+    // C18 — Surtax applies independently of treaty duty relief (a real, practically important
+    // case: CUSMA-Free aluminum from the US still correctly carries the steel/aluminum surtax)
+    {
+      const r = await runUI({ q: '7601.10.00.90', value: 10000, origin: 'United States of America' });
+      check('C18a', 'CUSMA duty relief correctly gives zero duty', r.inputs.duty === 0);
+      const expectedSurtax = 10000 * 0.25;
+      const expectedTax = (10000 + expectedSurtax) * 0.05;
+      const expectedTotal = 10000 + expectedSurtax + expectedTax;
+      check('C18b', 'Surtax still applies in full despite zero duty, and total reflects both correctly',
+        Math.abs(r.inputs.estimatedLandedCost - expectedTotal) < 0.01,
+        `got ${r.inputs.estimatedLandedCost}, expected ${expectedTotal}`);
+    }
+
+    // C19 — SIMA and surtax applying simultaneously on the same shipment: both warnings must
+    // display, but only the surtax dollar amount enters the total (SIMA stays a screening
+    // indication, never a guessed number) - aluminum extrusions from China, a real combination
+    {
+      const r = await runUI({ q: '7604.10.00.30', value: 10000, origin: 'China' });
+      check('C19a', 'Duty is correctly Free (MFN) for this code', r.inputs.duty === 0);
+      const expectedSurtax = 10000 * 0.25;
+      const expectedTax = (10000 + expectedSurtax) * 0.05;
+      const expectedTotal = 10000 + expectedSurtax + expectedTax;
+      check('C19b', 'Total reflects surtax only (value + surtax + tax), matching hand-calculated $13,125',
+        Math.abs(r.inputs.estimatedLandedCost - expectedTotal) < 0.01,
+        `got ${r.inputs.estimatedLandedCost}, expected ${expectedTotal}`);
+      check('C19c', 'Both SIMA and surtax cards display simultaneously',
+        r.html.includes('aluminum extrusions') && r.html.includes('Surtax (25%)'));
+      check('C19d', 'SIMA stays a screening indication, never baked into the total as a guessed amount',
+        r.html.includes('Screening indication'));
+      check('C19e', 'Trade measures flag clearly lists both measures together',
+        r.inputs.tradeMeasuresFlag.includes('Surtax') && r.inputs.tradeMeasuresFlag.includes('SIMA'));
+    }
+
+    // C20 — "sofa" search-synonym fix (24 AUG 2026): a common everyday furniture term with zero
+    // literal match in the formal tariff text now correctly resolves via SEARCH_SYNONYMS
+    {
+      const r = await runUI({ q: 'sofa', value: 1000, origin: 'China' });
+      check('C20a', '"sofa" shows a "did you mean" suggestion instead of a dead-end',
+        r.html.includes('did you mean'));
+      check('C20b', 'Suggestion includes a real upholstered seat code (9401.x)',
+        r.html.includes('9401.'));
     }
 
     printSummary();
