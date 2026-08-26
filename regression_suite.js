@@ -288,6 +288,7 @@ if (!jsdomAvailable) {
     doc.getElementById('importType').value = fields.importType || 'commercial';
     if (fields.province) doc.getElementById('province').value = fields.province;
     if (fields.frequency) doc.getElementById('frequency').value = fields.frequency;
+    if (fields.currency) doc.getElementById('currency').value = fields.currency;
     dom.window.runEstimate();
     await new Promise(r => setTimeout(r, 50));
     const resultsHtml = doc.getElementById('results').innerHTML;
@@ -767,6 +768,69 @@ if (!jsdomAvailable) {
       check('C43c', 'The fix does not regress the earlier substring-matching or aluminum-windows fixes',
         searchCodes('hat',1)[0].description.toLowerCase().includes('headgear')
         && searchCodes('aluminum windows',1)[0].code === '7610.10.00.20');
+    }
+
+    // C44 — Surtax field fix (25 AUG 2026, found via a real Make/Tally setup
+    // question): the Tally payload never sent a dedicated surtax field -
+    // only duty_amount and gst_hst_pst_amount existed as separate, always-
+    // present numeric fields, while surtax info was buried as text inside
+    // the combined trade_measures_flag string alongside SIMA and safeguard.
+    // This explained why Make's field picker never offered a "surtax"
+    // option: it only offers fields it has seen real data for, and no
+    // submission had ever sent one. Fixed by adding dedicated, always-
+    // present surtax_amount/surtax_rate fields.
+    {
+      const rFlat = await runUI({ q: '7601.10.00.90', value: 10000, origin: 'United States of America' });
+      check('C44a', 'Flat-rate surtax case: surtaxAmount/surtaxRate populated correctly',
+        rFlat.inputs.surtaxAmount === 2500 && rFlat.inputs.surtaxRate === '25%');
+      const rNone = await runUI({ q: '4402.10.90.00', value: 1000, origin: 'Germany' });
+      check('C44b', 'No-surtax case: fields present as 0/"None", not missing entirely',
+        rNone.inputs.surtaxAmount === 0 && rNone.inputs.surtaxRate === 'None');
+      const rQuota = await runUI({ q: '7206.10.00.90', value: 10000, origin: 'Germany' });
+      check('C44c', 'Quota-dependent TRQ surtax case: amount=0, rate correctly labeled',
+        rQuota.inputs.surtaxAmount === 0 && rQuota.inputs.surtaxRate === 'Quota-dependent');
+    }
+
+    // C45-C46 — USD/CAD currency toggle (25 AUG 2026): client can enter a
+    // shipment value in USD, converted to CAD at a fixed 1.45 rate
+    // (deliberately higher than live market rate - confirmed with Rigo -
+    // so a client's real cost comes in under the estimate, not over it)
+    // before any duty/tax calculation runs. CAD entry (the default) must
+    // remain completely unaffected.
+    {
+      const rUsd = await runUI({ q: '4402.10.90.00', value: 10000, origin: 'Germany', currency: 'USD' });
+      check('C45a', 'USD entry converts to CAD at exactly 1.45 before calculation',
+        rUsd.inputs.value === 14500 && rUsd.inputs.originalEnteredValue === 10000 && rUsd.inputs.currency === 'USD');
+      const expectedTotal = 14500 + 14500*0.05;
+      check('C45b', 'Downstream GST/total calculated correctly on the CONVERTED CAD value, not the raw USD figure',
+        Math.abs(rUsd.inputs.estimatedLandedCost - expectedTotal) < 0.01);
+      check('C45c', 'Conversion is clearly shown in the visible results, not silently applied',
+        rUsd.text.includes('converted from') && rUsd.text.includes('USD'));
+
+      const rCad = await runUI({ q: '4402.10.90.00', value: 10000, origin: 'Germany', currency: 'CAD' });
+      check('C46', 'CAD entry (default) is completely unaffected - no conversion applied, no note shown',
+        rCad.inputs.value === 10000 && !rCad.text.includes('converted from'));
+    }
+
+    // C47 — Referral source field (25 AUG 2026): new optional field in the
+    // quote-request contact box, wired through to the Tally payload
+    {
+      const dom = new (require('jsdom').JSDOM)(clientHtml, { runScripts: 'dangerously', resources: 'usable' });
+      await new Promise(r => setTimeout(r, 100));
+      const doc = dom.window.document;
+      doc.getElementById('q').value = '4402.10.90.00';
+      doc.getElementById('value').value = '1000';
+      doc.getElementById('origin').value = 'Germany';
+      dom.window.runEstimate();
+      await new Promise(r => setTimeout(r, 50));
+      doc.getElementById('quoteRevealBtn').click();
+      await new Promise(r => setTimeout(r, 50));
+      const referralEl = doc.getElementById('bpReferral');
+      check('C47a', 'Referral source field exists in the quote-request box', !!referralEl);
+      if (referralEl) {
+        const hasExpectedOption = [...referralEl.options].some(o => o.value === 'Referral from a colleague or client');
+        check('C47b', 'Referral field includes a sensible set of options', hasExpectedOption);
+      }
     }
 
     printSummary();
