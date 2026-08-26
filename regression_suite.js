@@ -416,23 +416,33 @@ if (!jsdomAvailable) {
         r25k.computeBrokerageFees('onetime') && rOver.computeBrokerageFees('onetime').overLimit === true);
     }
 
-    // C12 — Client-type toggle: Account Setup Fee and Bond Fee only apply when setting up an account
+    // C12 — Client-type toggle (UPDATED 25 AUG 2026): Account Setup Fee
+    // remains one-time-vs-setup-differentiated, but Bond Fee was corrected
+    // to be mandatory for ALL shipments regardless of client type - the
+    // earlier assumption that one-timers ship under Hemisphere's own bond
+    // was confirmed wrong by Rigo. Kept the old check's intent (verifying
+    // the account-type distinction genuinely works) while fixing what each
+    // fee is actually supposed to do.
     {
       const oneTime = await runUI({ q: '0105.12.90.00', value: 1000, origin: 'China' });
       const oneTimeFees = oneTime.computeBrokerageFees('onetime');
-      check('C12a', 'One-time shipment: Account Setup Fee and Bond Fee are both zero',
-        oneTimeFees.accountSetupFee === 0 && oneTimeFees.bondFee === 0);
+      check('C12a', 'One-time shipment: Account Setup Fee is zero, but Bond Fee is mandatory (non-zero)',
+        oneTimeFees.accountSetupFee === 0 && oneTimeFees.bondFee > 0);
 
       const setupSmall = await runUI({ q: '0105.12.90.00', value: 1000, origin: 'China' });
       const setupSmallFees = setupSmall.computeBrokerageFees('setup');
       check('C12b', 'Account setup, small shipment: Bond Fee correctly hits the $100 minimum',
         setupSmallFees.bondFee === 100);
+      check('C12bb', 'One-time and setup Bond Fee are IDENTICAL for the same shipment (both mandatory, same formula)',
+        Math.abs(oneTimeFees.bondFee - setupSmallFees.bondFee) < 0.01);
 
       const setupLarge = await runUI({ q: '0105.12.90.00', value: 10000, origin: 'China' });
       const setupLargeFees = setupLarge.computeBrokerageFees('setup');
+      const oneTimeLarge = await runUI({ q: '0105.12.90.00', value: 10000, origin: 'China' });
+      const oneTimeLargeFees = oneTimeLarge.computeBrokerageFees('onetime');
       const expectedBond = Math.max(0.25 * (800 + (10000+800)*0.05), 100);
-      check('C12c', 'Account setup, large shipment: Bond Fee correctly calculates 25% of duty+tax',
-        Math.abs(setupLargeFees.bondFee - expectedBond) < 0.01);
+      check('C12c', 'Large shipment: Bond Fee correctly calculates 25% of duty+tax, for setup AND one-time alike',
+        Math.abs(setupLargeFees.bondFee - expectedBond) < 0.01 && Math.abs(oneTimeLargeFees.bondFee - expectedBond) < 0.01);
     }
 
     // C13 — All 13 provinces/territories compute the correct tax combination
@@ -725,15 +735,17 @@ if (!jsdomAvailable) {
     }
 
     // C41 — One-time vs account-setup client type on the same real scenario:
-    // confirms Account Setup Fee and Bond Fee correctly toggle on a
+    // confirms Account Setup Fee correctly toggles while Bond Fee (mandatory
+    // for all shipments as of 25 AUG 2026) is identical for both, on a
     // realistic $15,000 commercial shipment, not just the smaller test
     // values used in C12
     {
       const r = await runUI({ q: '9403.40.00.10', value: 15000, origin: 'Vietnam', province: 'British Columbia' });
       const oneTime = r.computeBrokerageFees('onetime');
       const setup = r.computeBrokerageFees('setup');
-      check('C41', 'Vietnam cabinets ($15k): one-time vs account-setup fee toggle correct at this value',
-        oneTime.accountSetupFee === 0 && setup.accountSetupFee === 100 && setup.bondFee > 0);
+      check('C41', 'Vietnam cabinets ($15k): Account Setup Fee toggles correctly, Bond Fee is mandatory and identical for both',
+        oneTime.accountSetupFee === 0 && setup.accountSetupFee === 100
+        && oneTime.bondFee > 0 && Math.abs(oneTime.bondFee - setup.bondFee) < 0.01);
     }
 
     // C42 — Same product, three provinces side by side (BC/Ontario/Quebec):
@@ -831,6 +843,43 @@ if (!jsdomAvailable) {
         const hasExpectedOption = [...referralEl.options].some(o => o.value === 'Referral from a colleague or client');
         check('C47b', 'Referral field includes a sensible set of options', hasExpectedOption);
       }
+    }
+
+    // C48 — Internal exchange rate must never be shown to the client
+    // (25 AUG 2026): the live typing preview note was removed entirely, and
+    // the results-header explanation keeps the "converted from X USD"
+    // wording but no longer states the 1.45 rate itself
+    {
+      const r = await runUI({ q: '4402.10.90.00', value: 1230, origin: 'Germany', currency: 'USD' });
+      check('C48a', 'Results header explains the conversion without exposing the internal rate',
+        r.text.includes('converted from') && r.text.includes('USD') && !r.text.includes('1.45'));
+      const dom = new (require('jsdom').JSDOM)(clientHtml, { runScripts: 'dangerously', resources: 'usable' });
+      await new Promise(res => setTimeout(res, 100));
+      check('C48b', 'The live typing preview note element no longer exists in the DOM at all',
+        !dom.window.document.getElementById('currencyConvertNote'));
+    }
+
+    // C49 — Referral "Other" reveal field (25 AUG 2026)
+    {
+      const dom = new (require('jsdom').JSDOM)(clientHtml, { runScripts: 'dangerously', resources: 'usable' });
+      await new Promise(r => setTimeout(r, 100));
+      const doc = dom.window.document;
+      doc.getElementById('q').value = '4402.10.90.00';
+      doc.getElementById('value').value = '1000';
+      doc.getElementById('origin').value = 'Germany';
+      dom.window.runEstimate();
+      await new Promise(r => setTimeout(r, 50));
+      doc.getElementById('quoteRevealBtn').click();
+      await new Promise(r => setTimeout(r, 50));
+      const referralSelect = doc.getElementById('bpReferral');
+      const otherInput = doc.getElementById('bpReferralOther');
+      check('C49a', 'Other text input is hidden by default', otherInput.style.display === 'none');
+      referralSelect.value = 'Other';
+      referralSelect.dispatchEvent(new dom.window.Event('change'));
+      check('C49b', 'Other text input reveals when "Other" is selected', otherInput.style.display === 'block');
+      referralSelect.value = 'Google/web search';
+      referralSelect.dispatchEvent(new dom.window.Event('change'));
+      check('C49c', 'Other text input hides again when switching to a different option', otherInput.style.display === 'none');
     }
 
     printSummary();

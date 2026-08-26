@@ -122,8 +122,8 @@
     flex:0 0 auto;
     border-top-left-radius:0;
     border-bottom-left-radius:0;
-    padding-left:10px;
-    padding-right:28px;
+    padding:0 22px 0 10px;
+    font-size:13px;
     background-color:var(--teal-soft);
     font-weight:700;
     color:var(--brown-deep);
@@ -132,11 +132,6 @@
   .value-currency-group input:focus + select,
   .value-currency-group select:focus{
     border-color:var(--teal);
-  }
-  .currency-convert-note{
-    font-size:12px;
-    color:var(--ink-faint);
-    margin-top:6px;
   }
 
   .calc-btn{
@@ -626,7 +621,6 @@
             <option value="USD">USD</option>
           </select>
         </div>
-        <div class="currency-convert-note" id="currencyConvertNote" style="display:none;"></div>
       </div>
     </div>
     <div class="field-row" style="grid-template-columns:1fr 1fr; margin-top:16px;">
@@ -731,10 +725,15 @@ function computeBrokerageFees(clientType){
   const isSetup = clientType === 'setup';
   const aciFee = c.aciFee;
   const carmFee = c.carmFee;
-  // Account Setup and Bond Fee only apply when setting up an ongoing
-  // account — one-timers ship under Hemisphere's own bond, not their own.
+  // Account Setup Fee only applies when setting up an ongoing account.
   const accountSetupFee = isSetup ? c.accountSetupFee : 0;
-  const bondFee = isSetup ? Math.max(c.bondFeeRate * (inputs.duty + inputs.taxOnGoods), c.bondFeeMinimum) : 0;
+  // BUG FIX (25 AUG 2026): Bond Fee was incorrectly gated behind isSetup,
+  // on the assumption that one-time shipments clear under Hemisphere's own
+  // bond and don't carry this cost. Confirmed with Rigo this was wrong —
+  // Bond Fee is a mandatory charge on every shipment regardless of client
+  // type, not just account-setup ones. Account Setup Fee remains correctly
+  // one-time-vs-setup-differentiated; only Bond Fee's gating was removed.
+  const bondFee = Math.max(c.bondFeeRate * (inputs.duty + inputs.taxOnGoods), c.bondFeeMinimum);
   const hstOnGoods = inputs.taxOnGoods;
   const feesSubtotal = entryFee + aciFee + carmFee + accountSetupFee + bondFee;
   // BUG FIX (13 AUG 2026): this used to be a flat 13% (Ontario HST) on our
@@ -855,6 +854,7 @@ function renderBrokeragePanel(clientType){
           <option value="Existing Hemisphere client">Existing Hemisphere client</option>
           <option value="Other">Other</option>
         </select>
+        <input type="text" id="bpReferralOther" placeholder="Please specify" style="display:none; margin-top:8px;">
       </div>
       <div class="bp-upload-notice" id="bpUploadNotice">${ICON_DOCUMENT} Have your commercial invoice or other customs paperwork ready? You'll be able to attach it on the next screen when you submit — no need to email it separately.</div>
       <div id="bpValidationMsg" class="bp-unavailable" style="display:none;">Please enter your name and email so we can reply with your quote.</div>
@@ -879,6 +879,13 @@ function renderBrokeragePanel(clientType){
   bpNameEl.addEventListener('input', checkUploadNoticeVisibility);
   bpEmailEl.addEventListener('input', checkUploadNoticeVisibility);
 
+  const bpReferralEl = document.getElementById('bpReferral');
+  const bpReferralOtherEl = document.getElementById('bpReferralOther');
+  bpReferralEl.addEventListener('change', () => {
+    bpReferralOtherEl.style.display = bpReferralEl.value === 'Other' ? 'block' : 'none';
+    if(bpReferralEl.value !== 'Other') bpReferralOtherEl.value = '';
+  });
+
   document.getElementById('bpSubmitBtn').addEventListener('click', () => {
     const name = document.getElementById('bpName').value.trim();
     const email = document.getElementById('bpEmail').value.trim();
@@ -896,7 +903,14 @@ function renderBrokeragePanel(clientType){
       company: document.getElementById('bpCompany').value.trim(),
       email,
       phone: document.getElementById('bpPhone').value.trim(),
-      referral_source: document.getElementById('bpReferral').value || 'Not specified',
+      referral_source: (() => {
+        const selected = document.getElementById('bpReferral').value;
+        if(selected === 'Other'){
+          const otherText = document.getElementById('bpReferralOther').value.trim();
+          return otherText ? `Other: ${otherText}` : 'Other (not specified)';
+        }
+        return selected || 'Not specified';
+      })(),
       // Shipment
       hs_code: inputs.hsCode,
       product_description: inputs.productDescription,
@@ -1067,22 +1081,10 @@ function findTariffDataMatch(query){
 // than over it, which is the safer direction to be wrong in for a
 // compliance tool. This is separate from and does not affect the 0.9 flat
 // rate used elsewhere to convert Hemisphere's own brokerage fees into USD.
+// UPDATE (25 AUG 2026): the live "= $X CAD at a fixed rate of Y" preview
+// below the input was removed on request - the exact rate is internal
+// pricing information, not something to expose to the client while typing.
 const USD_TO_CAD_RATE = 1.45;
-
-const currencySelect = document.getElementById('currency');
-const valueInput = document.getElementById('value');
-const currencyConvertNote = document.getElementById('currencyConvertNote');
-function updateCurrencyConvertNote(){
-  const val = parseFloat(valueInput.value);
-  if(currencySelect.value === 'USD' && val > 0){
-    currencyConvertNote.style.display = 'block';
-    currencyConvertNote.textContent = `= ${formatMoney(val * USD_TO_CAD_RATE)} CAD at a fixed rate of ${USD_TO_CAD_RATE}`;
-  } else {
-    currencyConvertNote.style.display = 'none';
-  }
-}
-currencySelect.addEventListener('change', updateCurrencyConvertNote);
-valueInput.addEventListener('input', updateCurrencyConvertNote);
 
 function runEstimate(){
   const q = document.getElementById('q').value.trim();
@@ -1576,7 +1578,7 @@ function runEstimate(){
       </div>
       <div class="amount">${formatMoney(total)}</div>
       <div class="sub-row">
-        <div class="sub">on a ${formatMoney(value)} shipment${currency === 'USD' ? ` (converted from ${formatMoney(enteredValue)} USD at ${USD_TO_CAD_RATE})` : ''}</div>
+        <div class="sub">on a ${formatMoney(value)} shipment${currency === 'USD' ? ` (converted from ${formatMoney(enteredValue)} USD to CAD)` : ''}</div>
         <div class="complete-badge">${ICON_CHECK} Estimate complete</div>
       </div>
       ${charges.some(c => c.amount !== null) ? `<div class="breakdown-bar">${barSegments}</div>` : ''}
