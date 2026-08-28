@@ -821,12 +821,16 @@
       <span class="tu-title">TARIFF UPDATES</span>
       <span class="tu-badge">LAST UPDATE: AUG 25, 2026</span>
     </div>
-    <a href="https://www.canada.ca/en/department-finance/programs/international-trade-finance-policy/canadas-response-us-tariffs/complete-list-us-products-subject-to-counter-tariffs.html" class="tu-view-all" target="_blank" rel="noopener">Official source ↗</a>
+    <a href="https://www.canada.ca/en/department-finance/programs/international-trade-finance-policy/canadas-response-us-tariffs/complete-list-us-products-subject-to-counter-tariffs.html" class="tu-view-all" target="_blank" rel="noopener">View All Updates</a>
   </div>
   <div class="tu-list">
     <div class="tu-entry">
-      <p class="tu-desc">Aug 25: Canada announced new countermeasures on U.S. imports — steel &amp; aluminum, dairy, appliances, agricultural equipment, pulp &amp; paper, plastics, and electronics — at 15%, 25%, or 50%, matching the U.S. tariff rate applied to each corresponding good, per <a href="https://www.canada.ca/en/department-finance/programs/international-trade-finance-policy/canadas-response-us-tariffs/complete-list-us-products-subject-to-counter-tariffs.html" target="_blank" rel="noopener">the Department of Finance's countermeasures list</a>. Over 700 tariff line items. <strong>Not yet reflected in the estimates on this page</strong> — the detailed item-by-item list wasn't public as of this writing; check back closer to the effective date.</p>
-      <p class="tu-effective">Effective: Sep 8, 2026</p>
+      <p class="tu-desc">Aug 25: Canada announced new countermeasures on U.S. imports at 15%, 25%, or 50%, per <a href="https://www.canada.ca/en/department-finance/programs/international-trade-finance-policy/canadas-response-us-tariffs/complete-list-us-products-subject-to-counter-tariffs.html" target="_blank" rel="noopener">this Department of Finance notice</a>.</p>
+      <p class="tu-effective">Effective: Sep 8, 2026 (pending — not yet in duty estimates)</p>
+    </div>
+    <div class="tu-entry">
+      <p class="tu-desc">Jul 28: Added the canned vegetables safeguard surtax per <a href="https://gazette.gc.ca/rp-pr/p2/2026/2026-07-01/html/sor-dors135-eng.html" target="_blank" rel="noopener">SOR/2026-135</a>. Provisional — in force for 200 days.</p>
+      <p class="tu-effective">Effective: Jun 19, 2026 (through approx. Jan 5, 2027)</p>
     </div>
   </div>
 </div>
@@ -1053,6 +1057,15 @@ function renderBrokeragePanel(clientType){
       <div class="field"><label for="bpEmail">Email</label><input type="email" id="bpEmail" placeholder="you@example.com"></div>
       <div class="field"><label for="bpPhone">Phone (optional)</label><input type="tel" id="bpPhone" placeholder="(xxx) xxx-xxxx"></div>
       <div class="field">
+        <label for="bpFreight">Do you need a freight quote too?</label>
+        <select id="bpFreight">
+          <option value="">Select…</option>
+          <option value="Yes">Yes</option>
+          <option value="No">No</option>
+          <option value="Not sure yet">Not sure yet</option>
+        </select>
+      </div>
+      <div class="field">
         <label for="bpReferral">How did you hear about us? (optional)</label>
         <select id="bpReferral">
           <option value="">Select…</option>
@@ -1111,6 +1124,7 @@ function renderBrokeragePanel(clientType){
       company: document.getElementById('bpCompany').value.trim(),
       email,
       phone: document.getElementById('bpPhone').value.trim(),
+      freight_quote_requested: document.getElementById('bpFreight').value || 'Not specified',
       referral_source: (() => {
         const selected = document.getElementById('bpReferral').value;
         if(selected === 'Other'){

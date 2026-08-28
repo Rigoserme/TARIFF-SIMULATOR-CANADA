@@ -948,9 +948,10 @@ if (!jsdomAvailable) {
         feesBC.feesTaxLabel === 'GST' && feesBC.feesTaxRate === 5);
     }
 
-    // C52 — Tariff Updates section exists at the bottom of the page
-    // (25 AUG 2026), links to a real government source, and doesn't
-    // interfere with the main estimator
+    // C52 — Tariff Updates section (UPDATED 25 AUG 2026: simplified per
+    // request to match a reference design, and now includes two entries -
+    // Sept 8 countermeasures and the canned vegetables safeguard, both with
+    // implementation date and effective date shown separately)
     {
       const dom = new (require('jsdom').JSDOM)(clientHtml, { runScripts: 'dangerously', resources: 'usable' });
       await new Promise(res => setTimeout(res, 100));
@@ -960,8 +961,36 @@ if (!jsdomAvailable) {
         !!tuSection && doc.querySelector('footer').compareDocumentPosition(tuSection) === dom.window.Node.DOCUMENT_POSITION_FOLLOWING);
       check('C52b', 'Links to the real, authoritative Department of Finance source',
         doc.querySelector('.tu-view-all').href.includes('canada.ca'));
-      check('C52c', 'Sept 8 entry explicitly notes it is not yet reflected in the calculator',
-        doc.querySelector('.tu-desc').textContent.includes('Not yet reflected'));
+      const entries = doc.querySelectorAll('.tu-entry');
+      check('C52c', 'Has exactly two entries: Sept 8 countermeasures and the canned vegetables safeguard',
+        entries.length === 2);
+      check('C52d', 'Sept 8 entry still notes it is pending, not yet reflected in duty estimates',
+        entries[0].querySelector('.tu-desc').textContent.includes('pending') || entries[0].querySelector('.tu-effective').textContent.includes('pending'));
+      check('C52e', 'Safeguard entry correctly states its 200-day provisional duration',
+        entries[1].querySelector('.tu-desc').textContent.includes('200 days'));
+    }
+
+    // C53 — Freight quote field (25 AUG 2026): three real choices plus a
+    // genuine blank default (not pre-selected to any option), positioned
+    // before the referral field as requested
+    {
+      const dom = new (require('jsdom').JSDOM)(clientHtml, { runScripts: 'dangerously', resources: 'usable' });
+      await new Promise(res => setTimeout(res, 100));
+      const doc2 = dom.window.document;
+      doc2.getElementById('q').value = '4402.10.90.00';
+      doc2.getElementById('value').value = '1000';
+      doc2.getElementById('origin').value = 'Germany';
+      doc2.getElementById('province').value = 'Ontario';
+      dom.window.runEstimate();
+      await new Promise(res => setTimeout(res, 50));
+      doc2.getElementById('quoteRevealBtn').click();
+      await new Promise(res => setTimeout(res, 50));
+      const freightEl = doc2.getElementById('bpFreight');
+      const referralEl = doc2.getElementById('bpReferral');
+      check('C53a', 'Freight quote field exists with Yes/No/Not sure yet plus a genuine blank default',
+        !!freightEl && freightEl.value === '' && [...freightEl.options].map(o=>o.value).join(',') === ',Yes,No,Not sure yet');
+      check('C53b', 'Freight quote field is positioned before the referral field',
+        !!freightEl && !!referralEl && freightEl.compareDocumentPosition(referralEl) === dom.window.Node.DOCUMENT_POSITION_FOLLOWING);
     }
 
     printSummary();
