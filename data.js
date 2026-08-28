@@ -13604,7 +13604,8 @@ const BROKERAGE_FEE_CONSTANTS = {
   accountSetupFee: 100,
   bondFeeRate: 0.25,
   bondFeeMinimum: 100,
-  disbursementFeeRate: 0.03,
+  // RATE CHANGE (25 AUG 2026): Rigo confirmed this should be 5%, not 3%.
+  disbursementFeeRate: 0.05,
   usdConversionRate: 0.9
 };
 

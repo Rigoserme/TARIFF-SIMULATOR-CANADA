@@ -905,7 +905,7 @@ if (!jsdomAvailable) {
       const fees = r.computeBrokerageFees('onetime');
       const feesSubtotal = fees.entryFee + fees.aciFee + fees.carmFee + fees.accountSetupFee + fees.bondFee;
       const expectedPreDisbursement = feesSubtotal + fees.hstOnGoods + fees.hstOnFees + r.inputs.surtaxAmount;
-      const expectedGrandTotal = expectedPreDisbursement * 1.03;
+      const expectedGrandTotal = expectedPreDisbursement * 1.05; // disbursement rate is 5% as of 25 AUG 2026, was 3%
       check('C50a', 'grand_total_cad correctly includes surtax_amount, matching hand-calculated total',
         Math.abs(fees.grandTotalCAD - expectedGrandTotal) < 0.01,
         `got ${fees.grandTotalCAD}, expected ${expectedGrandTotal}`);
@@ -915,6 +915,23 @@ if (!jsdomAvailable) {
       const feesNoSurtax = rNoSurtax.computeBrokerageFees('onetime');
       check('C50c', 'A shipment with zero surtax is unaffected by this fix (adding 0 changes nothing)',
         rNoSurtax.inputs.surtaxAmount === 0 && feesNoSurtax.grandTotalCAD > 0);
+    }
+
+    // C50d-f — Two more real fixes from the SAME real client email as C50
+    // (25 AUG 2026): Bond Fee's base was missing surtax entirely (so it
+    // silently floored at the $100 minimum whenever duty+GST alone fell
+    // short, even on shipments with a large surtax), and the disbursement
+    // rate is confirmed 5%, not 3%. Reproduces the exact real numbers from
+    // that email: $2,102.50 USD aluminum shipment, Quebec, personal,
+    // duty $0, GST/QST $393.56, surtax $525.63.
+    {
+      const r = await runUI({ q: '7601.20.00.90', value: 2102.50, origin: 'United States of America', importType: 'personal', province: 'Quebec' });
+      check('C50d', 'Reproduces the real emails exact duty/tax/surtax figures',
+        r.inputs.duty === 0 && Math.abs(r.inputs.taxOnGoods - 393.56) < 0.01 && Math.abs(r.inputs.surtaxAmount - 525.63) < 0.01);
+      const fees = r.computeBrokerageFees('onetime');
+      const expectedBond = Math.max(0.25 * (0 + r.inputs.taxOnGoods + r.inputs.surtaxAmount), 100);
+      check('C50e', 'Bond Fee now includes surtax in its base (was flat $100, now ~$229.80)',
+        Math.abs(fees.bondFee - expectedBond) < 0.01 && fees.bondFee > 100);
     }
 
     // C51 — Tariff Updates section (25 AUG 2026): a client-facing feed at

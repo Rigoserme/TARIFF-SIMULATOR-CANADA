@@ -936,7 +936,15 @@ function computeBrokerageFees(clientType){
   // Bond Fee is a mandatory charge on every shipment regardless of client
   // type, not just account-setup ones. Account Setup Fee remains correctly
   // one-time-vs-setup-differentiated; only Bond Fee's gating was removed.
-  const bondFee = Math.max(c.bondFeeRate * (inputs.duty + inputs.taxOnGoods), c.bondFeeMinimum);
+  // BUG FIX (25 AUG 2026): Bond Fee's base only included duty + GST/HST,
+  // leaving out surtax entirely. Found via a real client email: a US
+  // aluminum shipment with a real $525.63 surtax still showed Bond Fee as
+  // a flat $100, because 25% of duty+GST alone ($98.39) fell under the
+  // $100 minimum - masking the fact that surtax, often the single largest
+  // charge on a shipment, wasn't factored in at all. Confirmed with Rigo:
+  // the bond needs to cover the full duty-and-tax liability at risk,
+  // including surtax, not just duty and GST.
+  const bondFee = Math.max(c.bondFeeRate * (inputs.duty + inputs.taxOnGoods + inputs.surtaxAmount), c.bondFeeMinimum);
   const hstOnGoods = inputs.taxOnGoods;
   const feesSubtotal = entryFee + aciFee + carmFee + accountSetupFee + bondFee;
   // BUG FIX (13 AUG 2026): this used to be a flat 13% (Ontario HST) on our
