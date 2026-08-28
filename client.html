@@ -84,7 +84,7 @@
   .field-row-3{ grid-template-columns:1fr 1fr 1fr; }
   @media (max-width:640px){
     .field-row, .field-row-3{ grid-template-columns:1fr; }
-    .tariff-updates{ padding:24px 20px; }
+    .tariff-updates-section{ padding:24px 20px; }
   }
 
   .field{ position:relative; }
@@ -154,62 +154,6 @@
   .calc-btn:hover{ background:var(--brown-mid); }
   .calc-btn:focus-visible{ outline:3px solid var(--teal); outline-offset:2px; }
   .calc-trust{ margin:10px 0 0; font-size:13px; color:var(--ink-faint); text-align:center; }
-
-  .tariff-updates{
-    max-width:880px;
-    margin:40px auto;
-    margin-left:max(24px, calc((100% - 880px) / 2));
-    margin-right:max(24px, calc((100% - 880px) / 2));
-    background:var(--brown-deep);
-    border-radius:14px;
-    padding:32px 36px;
-    color:#fff;
-  }
-  .tariff-updates-head{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    flex-wrap:wrap;
-    gap:12px;
-    margin-bottom:22px;
-  }
-  .tariff-updates-title{
-    font-size:13px;
-    font-weight:700;
-    letter-spacing:0.08em;
-    text-transform:uppercase;
-    color:#fff;
-    margin:0;
-  }
-  .tariff-updates-badge{
-    background:rgba(255,255,255,0.12);
-    color:#fff;
-    font-size:12px;
-    font-weight:600;
-    padding:5px 12px;
-    border-radius:999px;
-    white-space:nowrap;
-  }
-  .tariff-updates-list{
-    display:flex;
-    flex-direction:column;
-  }
-  .tariff-update-item{
-    padding:16px 0;
-    border-bottom:1px solid rgba(255,255,255,0.12);
-  }
-  .tariff-update-item:last-child{ border-bottom:none; padding-bottom:0; }
-  .tariff-update-item:first-child{ padding-top:0; }
-  .tariff-update-text{
-    font-size:14.5px;
-    line-height:1.55;
-    color:#fff;
-    margin:0 0 6px;
-  }
-  .tariff-update-effective{
-    font-size:12.5px;
-    color:rgba(255,255,255,0.65);
-  }
 
   #results{ margin-top:32px; display:none; }
   #results.show{ display:block; }
@@ -797,24 +741,16 @@
   <div id="results"></div>
 </main>
 
-<div class="tariff-updates" id="tariffUpdates"></div>
-
-<footer>
-  <p>This is an estimate for general informational purposes only, based on publicly available CBSA tariff, surtax, and trade-remedy data. It is not a binding tariff classification, valuation, or duty determination, and does not replace advice from a licensed customs broker. Actual duty owed depends on your specific product's classification, origin qualification, and value for duty as determined by the Canada Border Services Agency. For a precise, defensible number — <a href="https://www.gohemisphere.ca/contact" style="color:var(--brown-mid);">talk to a Hemisphere broker</a>.</p>
-</footer>
-
-<!-- Tariff Updates widget (added 25 AUG 2026), requested to sit at the
-     bottom of the page. Styled after a reference screenshot (dark card,
-     badge, dated entries) but using Hemisphere's own brown/teal brand
-     colors instead of the reference's navy blue. Only contains entries
-     that have been directly, personally verified against an authoritative
-     source (the Department of Finance Canada page itself, fetched and read
-     directly) - this is NOT a hard-coded static list that should just
-     accumulate unverified entries over time. The Sept 8 entry is
-     explicitly marked as not yet reflected in the calculator's actual duty
-     engine, since the detailed line-item table wasn't public yet as of
-     this writing - update that note once data.js is actually updated with
-     the real measures. -->
+<!-- Tariff Updates widget (added 25 AUG 2026), reordered 25 AUG 2026 to sit
+     before the disclaimer footer rather than after it. Only contains
+     entries that have been directly, personally verified against an
+     authoritative source (the Department of Finance Canada page itself,
+     fetched and read directly) - this is NOT a hard-coded static list
+     that should just accumulate unverified entries over time. The Sept 8
+     entry is explicitly marked as not yet reflected in the calculator's
+     actual duty engine, since the detailed line-item table wasn't public
+     yet as of this writing - update that note once data.js is actually
+     updated with the real measures. -->
 <div class="tariff-updates-section">
   <div class="tu-header">
     <div class="tu-title-row">
@@ -834,6 +770,10 @@
     </div>
   </div>
 </div>
+
+<footer>
+  <p>This is an estimate for general informational purposes only, based on publicly available CBSA tariff, surtax, and trade-remedy data. It is not a binding tariff classification, valuation, or duty determination, and does not replace advice from a licensed customs broker. Actual duty owed depends on your specific product's classification, origin qualification, and value for duty as determined by the Canada Border Services Agency. For a precise, defensible number — <a href="https://www.gohemisphere.ca/contact" style="color:var(--brown-mid);">talk to a Hemisphere broker</a>.</p>
+</footer>
 
 <script src="data.js"></script>
 <script>
@@ -862,40 +802,6 @@ function formatMoney(n){
 // haven't actually confirmed. Regulation numbers (SOR/YYYY-NNN) are the
 // safest, most verifiable thing to cite when an exact effective date isn't
 // confirmed - use "Per regulation" rather than guessing a date.
-const TARIFF_UPDATES = [
-  {
-    text: "Canada's expanded countermeasures on U.S. goods — covering steel and aluminum, dairy, appliances, agricultural equipment, pulp and paper, plastics, and electronics, at 15%, 25%, or 50% depending on the item — are set to take effect. This simulator will be updated with the detailed item list once the Department of Finance publishes it.",
-    effective: 'September 8, 2026 (pending — not yet reflected in duty estimates)'
-  },
-  {
-    text: 'Safeguard surtax added for certain canned vegetable products (SOR/2026-135).',
-    effective: 'Per regulation'
-  },
-  {
-    text: "Surtax on U.S.-origin steel and aluminum products (SOR/2025-95), plus related steel/aluminum derivative goods and motor vehicle surtax orders.",
-    effective: 'Per regulation'
-  }
-];
-
-function renderTariffUpdates(){
-  const container = document.getElementById('tariffUpdates');
-  if(!container || !TARIFF_UPDATES.length) return;
-  const items = TARIFF_UPDATES.map(u => `
-    <div class="tariff-update-item">
-      <p class="tariff-update-text">${u.text}</p>
-      <div class="tariff-update-effective">Effective: ${u.effective}</div>
-    </div>
-  `).join('');
-  container.innerHTML = `
-    <div class="tariff-updates-head">
-      <p class="tariff-updates-title">Tariff updates</p>
-      <span class="tariff-updates-badge">Reviewed regularly</span>
-    </div>
-    <div class="tariff-updates-list">${items}</div>
-  `;
-}
-renderTariffUpdates();
-
 // Tally form URL for the "Request Official Quote" flow — REPLACE with the
 // real form URL once it's created in Tally. Tally supports pre-filling a
 // form via URL query params when the form has a matching Hidden Field
@@ -1070,7 +976,6 @@ function renderBrokeragePanel(clientType){
           <option value="">Select…</option>
           <option value="Yes">Yes</option>
           <option value="No">No</option>
-          <option value="Not sure yet">Not sure yet</option>
         </select>
       </div>
       <div class="field">

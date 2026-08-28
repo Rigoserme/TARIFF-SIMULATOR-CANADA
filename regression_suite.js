@@ -934,19 +934,6 @@ if (!jsdomAvailable) {
         Math.abs(fees.bondFee - expectedBond) < 0.01 && fees.bondFee > 100);
     }
 
-    // C51 — Tariff Updates section (25 AUG 2026): a client-facing feed at
-    // the bottom of the page. Only checks that it renders with content -
-    // the actual entries are maintained by Rigo directly in the
-    // TARIFF_UPDATES array and aren't something this suite should assert
-    // specific wording for, since they're expected to change over time.
-    {
-      const dom = new (require('jsdom').JSDOM)(clientHtml, { runScripts: 'dangerously', resources: 'usable' });
-      await new Promise(r => setTimeout(r, 100));
-      const container = dom.window.document.getElementById('tariffUpdates');
-      check('C51', 'Tariff Updates section exists and renders at least one entry',
-        !!container && container.innerHTML.includes('tariff-update-item'));
-    }
-
     // C51 — The actual real-world consequence of the province/commercial
     // bug (25 AUG 2026), confirmed end-to-end: before this fix, EVERY
     // commercial shipment silently got GST-only on Hemisphere's own fees,
@@ -966,16 +953,17 @@ if (!jsdomAvailable) {
     }
 
     // C52 — Tariff Updates section (UPDATED 25 AUG 2026: simplified per
-    // request to match a reference design, and now includes two entries -
-    // Sept 8 countermeasures and the canned vegetables safeguard, both with
-    // implementation date and effective date shown separately)
+    // request to match a reference design, reordered to sit BEFORE the
+    // disclaimer footer rather than after it, and a duplicate older widget
+    // - found still live and rendering separately, apparently added by an
+    // earlier Code session without my awareness - was removed entirely)
     {
       const dom = new (require('jsdom').JSDOM)(clientHtml, { runScripts: 'dangerously', resources: 'usable' });
       await new Promise(res => setTimeout(res, 100));
       const doc = dom.window.document;
       const tuSection = doc.querySelector('.tariff-updates-section');
-      check('C52a', 'Section exists and sits after the footer (true bottom of page)',
-        !!tuSection && doc.querySelector('footer').compareDocumentPosition(tuSection) === dom.window.Node.DOCUMENT_POSITION_FOLLOWING);
+      check('C52a', 'Section exists and sits BEFORE the footer (order reversed 25 AUG 2026)',
+        !!tuSection && tuSection.compareDocumentPosition(doc.querySelector('footer')) === dom.window.Node.DOCUMENT_POSITION_FOLLOWING);
       check('C52b', 'Links to the real, authoritative Department of Finance source',
         doc.querySelector('.tu-view-all').href.includes('canada.ca'));
       const entries = doc.querySelectorAll('.tu-entry');
@@ -985,6 +973,8 @@ if (!jsdomAvailable) {
         entries[0].querySelector('.tu-desc').textContent.includes('pending') || entries[0].querySelector('.tu-effective').textContent.includes('pending'));
       check('C52e', 'Safeguard entry correctly states its 200-day provisional duration',
         entries[1].querySelector('.tu-desc').textContent.includes('200 days'));
+      check('C52f', 'The old duplicate widget (separate tariffUpdates div/array) is confirmed fully removed',
+        !doc.getElementById('tariffUpdates') && typeof dom.window.TARIFF_UPDATES === 'undefined');
     }
 
     // C53 — Freight quote field (25 AUG 2026): three real choices plus a
@@ -1004,8 +994,8 @@ if (!jsdomAvailable) {
       await new Promise(res => setTimeout(res, 50));
       const freightEl = doc2.getElementById('bpFreight');
       const referralEl = doc2.getElementById('bpReferral');
-      check('C53a', 'Freight quote field exists with Yes/No/Not sure yet plus a genuine blank default',
-        !!freightEl && freightEl.value === '' && [...freightEl.options].map(o=>o.value).join(',') === ',Yes,No,Not sure yet');
+      check('C53a', 'Freight quote field exists with Yes/No plus a genuine blank default',
+        !!freightEl && freightEl.value === '' && [...freightEl.options].map(o=>o.value).join(',') === ',Yes,No');
       check('C53b', 'Freight quote field is positioned before the referral field',
         !!freightEl && !!referralEl && freightEl.compareDocumentPosition(referralEl) === dom.window.Node.DOCUMENT_POSITION_FOLLOWING);
     }
