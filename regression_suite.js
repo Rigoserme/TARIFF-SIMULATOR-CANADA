@@ -286,7 +286,13 @@ if (!jsdomAvailable) {
     doc.getElementById('value').value = fields.value != null ? String(fields.value) : '';
     doc.getElementById('origin').value = fields.origin || '';
     doc.getElementById('importType').value = fields.importType || 'commercial';
-    if (fields.province) doc.getElementById('province').value = fields.province;
+    // Province is now required for BOTH import types (25 AUG 2026 fix) -
+    // default to Ontario when a test doesn't specify one at all, so the
+    // dozens of existing checks that were never testing province-specific
+    // behavior don't all need individual edits. Uses strict undefined
+    // checking (not ||) so a test can still explicitly pass province: ''
+    // to deliberately test the "no province selected" validation path.
+    doc.getElementById('province').value = fields.province !== undefined ? fields.province : 'Ontario';
     if (fields.frequency) doc.getElementById('frequency').value = fields.frequency;
     if (fields.currency) doc.getElementById('currency').value = fields.currency;
     dom.window.runEstimate();
@@ -350,11 +356,16 @@ if (!jsdomAvailable) {
       check('C5b', 'Ontario shows HST, not QST', ontario.html.includes('HST') && !ontario.html.includes('QST'));
     }
 
-    // C6 — Personal import without province is blocked
+    // C6 — Import without a province is blocked, for BOTH import types
+    // (25 AUG 2026: extended from personal-only, since province is now
+    // required for commercial too - see the runUI note above for why)
     {
-      const r = await runUI({ q: '4402.10.90.00', value: 1000, origin: 'Germany', importType: 'personal' });
-      check('C6', 'Personal import without a province selected is blocked',
-        r.html.includes('Select your province'));
+      const r = await runUI({ q: '4402.10.90.00', value: 1000, origin: 'Germany', importType: 'personal', province: '' });
+      check('C6a', 'Personal import without a province selected is blocked',
+        r.html.includes('Select the destination province'));
+      const r2 = await runUI({ q: '4402.10.90.00', value: 1000, origin: 'Germany', importType: 'commercial', province: '' });
+      check('C6b', 'Commercial import without a province selected is ALSO now blocked (this was the real bug found 25 AUG 2026)',
+        r2.html.includes('Select the destination province'));
     }
 
     // C7 — Fees-tax-on-province fix, end to end through computeBrokerageFees
@@ -833,6 +844,7 @@ if (!jsdomAvailable) {
       doc.getElementById('q').value = '4402.10.90.00';
       doc.getElementById('value').value = '1000';
       doc.getElementById('origin').value = 'Germany';
+      doc.getElementById('province').value = 'Ontario';
       dom.window.runEstimate();
       await new Promise(r => setTimeout(r, 50));
       doc.getElementById('quoteRevealBtn').click();
@@ -867,6 +879,7 @@ if (!jsdomAvailable) {
       doc.getElementById('q').value = '4402.10.90.00';
       doc.getElementById('value').value = '1000';
       doc.getElementById('origin').value = 'Germany';
+      doc.getElementById('province').value = 'Ontario';
       dom.window.runEstimate();
       await new Promise(r => setTimeout(r, 50));
       doc.getElementById('quoteRevealBtn').click();
@@ -880,6 +893,75 @@ if (!jsdomAvailable) {
       referralSelect.value = 'Google/web search';
       referralSelect.dispatchEvent(new dom.window.Event('change'));
       check('C49c', 'Other text input hides again when switching to a different option', otherInput.style.display === 'none');
+    }
+
+    // C50 — grand_total_cad/usd must include surtax_amount (25 AUG 2026,
+    // found via a real Tally submission where the received email's total
+    // didn't reflect the surtax shown in the same email). surtax_amount
+    // was already sent to Tally as its own field, but preDisbursement never
+    // actually added it into the sum used for grand_total_cad/usd.
+    {
+      const r = await runUI({ q: '7601.10.00.90', value: 10000, origin: 'United States of America', province: 'Quebec' });
+      const fees = r.computeBrokerageFees('onetime');
+      const feesSubtotal = fees.entryFee + fees.aciFee + fees.carmFee + fees.accountSetupFee + fees.bondFee;
+      const expectedPreDisbursement = feesSubtotal + fees.hstOnGoods + fees.hstOnFees + r.inputs.surtaxAmount;
+      const expectedGrandTotal = expectedPreDisbursement * 1.03;
+      check('C50a', 'grand_total_cad correctly includes surtax_amount, matching hand-calculated total',
+        Math.abs(fees.grandTotalCAD - expectedGrandTotal) < 0.01,
+        `got ${fees.grandTotalCAD}, expected ${expectedGrandTotal}`);
+      check('C50b', 'grand_total_usd is correctly derived from the corrected grand_total_cad',
+        Math.abs(fees.grandTotalUSD - fees.grandTotalCAD * 0.9) < 0.01);
+      const rNoSurtax = await runUI({ q: '4402.10.90.00', value: 2102.50, origin: 'China', province: 'Quebec' });
+      const feesNoSurtax = rNoSurtax.computeBrokerageFees('onetime');
+      check('C50c', 'A shipment with zero surtax is unaffected by this fix (adding 0 changes nothing)',
+        rNoSurtax.inputs.surtaxAmount === 0 && feesNoSurtax.grandTotalCAD > 0);
+    }
+
+    // C51 — Tariff Updates section (25 AUG 2026): a client-facing feed at
+    // the bottom of the page. Only checks that it renders with content -
+    // the actual entries are maintained by Rigo directly in the
+    // TARIFF_UPDATES array and aren't something this suite should assert
+    // specific wording for, since they're expected to change over time.
+    {
+      const dom = new (require('jsdom').JSDOM)(clientHtml, { runScripts: 'dangerously', resources: 'usable' });
+      await new Promise(r => setTimeout(r, 100));
+      const container = dom.window.document.getElementById('tariffUpdates');
+      check('C51', 'Tariff Updates section exists and renders at least one entry',
+        !!container && container.innerHTML.includes('tariff-update-item'));
+    }
+
+    // C51 — The actual real-world consequence of the province/commercial
+    // bug (25 AUG 2026), confirmed end-to-end: before this fix, EVERY
+    // commercial shipment silently got GST-only on Hemisphere's own fees,
+    // even ones genuinely going to an HST province, because there was no
+    // visible way to enter one. Confirms the fix actually reaches the fee
+    // calculation, not just that the field is visible.
+    {
+      const rOntario = await runUI({ q: '4402.10.90.00', value: 1000, origin: 'Germany', importType: 'commercial', province: 'Ontario' });
+      const feesOntario = rOntario.computeBrokerageFees('onetime');
+      check('C51a', 'Commercial shipment to Ontario now correctly gets HST (not GST-only) on our own fees',
+        feesOntario.feesTaxLabel === 'HST' && feesOntario.feesTaxRate === 13);
+
+      const rBC = await runUI({ q: '4402.10.90.00', value: 1000, origin: 'Germany', importType: 'commercial', province: 'British Columbia' });
+      const feesBC = rBC.computeBrokerageFees('onetime');
+      check('C51b', 'Commercial shipment to BC still correctly gets GST-only on our own fees (contrast case)',
+        feesBC.feesTaxLabel === 'GST' && feesBC.feesTaxRate === 5);
+    }
+
+    // C52 — Tariff Updates section exists at the bottom of the page
+    // (25 AUG 2026), links to a real government source, and doesn't
+    // interfere with the main estimator
+    {
+      const dom = new (require('jsdom').JSDOM)(clientHtml, { runScripts: 'dangerously', resources: 'usable' });
+      await new Promise(res => setTimeout(res, 100));
+      const doc = dom.window.document;
+      const tuSection = doc.querySelector('.tariff-updates-section');
+      check('C52a', 'Section exists and sits after the footer (true bottom of page)',
+        !!tuSection && doc.querySelector('footer').compareDocumentPosition(tuSection) === dom.window.Node.DOCUMENT_POSITION_FOLLOWING);
+      check('C52b', 'Links to the real, authoritative Department of Finance source',
+        doc.querySelector('.tu-view-all').href.includes('canada.ca'));
+      check('C52c', 'Sept 8 entry explicitly notes it is not yet reflected in the calculator',
+        doc.querySelector('.tu-desc').textContent.includes('Not yet reflected'));
     }
 
     printSummary();

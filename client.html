@@ -82,7 +82,10 @@
     gap:16px;
   }
   .field-row-3{ grid-template-columns:1fr 1fr 1fr; }
-  @media (max-width:640px){ .field-row, .field-row-3{ grid-template-columns:1fr; } }
+  @media (max-width:640px){
+    .field-row, .field-row-3{ grid-template-columns:1fr; }
+    .tariff-updates{ padding:24px 20px; }
+  }
 
   .field{ position:relative; }
   .field label{
@@ -151,6 +154,62 @@
   .calc-btn:hover{ background:var(--brown-mid); }
   .calc-btn:focus-visible{ outline:3px solid var(--teal); outline-offset:2px; }
   .calc-trust{ margin:10px 0 0; font-size:13px; color:var(--ink-faint); text-align:center; }
+
+  .tariff-updates{
+    max-width:880px;
+    margin:40px auto;
+    margin-left:max(24px, calc((100% - 880px) / 2));
+    margin-right:max(24px, calc((100% - 880px) / 2));
+    background:var(--brown-deep);
+    border-radius:14px;
+    padding:32px 36px;
+    color:#fff;
+  }
+  .tariff-updates-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:12px;
+    margin-bottom:22px;
+  }
+  .tariff-updates-title{
+    font-size:13px;
+    font-weight:700;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:#fff;
+    margin:0;
+  }
+  .tariff-updates-badge{
+    background:rgba(255,255,255,0.12);
+    color:#fff;
+    font-size:12px;
+    font-weight:600;
+    padding:5px 12px;
+    border-radius:999px;
+    white-space:nowrap;
+  }
+  .tariff-updates-list{
+    display:flex;
+    flex-direction:column;
+  }
+  .tariff-update-item{
+    padding:16px 0;
+    border-bottom:1px solid rgba(255,255,255,0.12);
+  }
+  .tariff-update-item:last-child{ border-bottom:none; padding-bottom:0; }
+  .tariff-update-item:first-child{ padding-top:0; }
+  .tariff-update-text{
+    font-size:14.5px;
+    line-height:1.55;
+    color:#fff;
+    margin:0 0 6px;
+  }
+  .tariff-update-effective{
+    font-size:12.5px;
+    color:rgba(255,255,255,0.65);
+  }
 
   #results{ margin-top:32px; display:none; }
   #results.show{ display:block; }
@@ -571,6 +630,73 @@
     line-height:1.6;
   }
   footer p{ margin:0; }
+
+  .tariff-updates-section{
+    max-width:880px;
+    margin:0 auto 60px;
+    padding:32px 36px;
+    background:var(--brown-deep);
+    border-radius:16px;
+    color:#fff;
+  }
+  .tu-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:12px;
+    margin-bottom:22px;
+  }
+  .tu-title-row{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    flex-wrap:wrap;
+  }
+  .tu-title{
+    font-size:15px;
+    font-weight:800;
+    letter-spacing:0.04em;
+    color:#fff;
+  }
+  .tu-badge{
+    display:inline-block;
+    padding:5px 12px;
+    background:rgba(95,207,196,0.22);
+    color:var(--teal);
+    font-size:11.5px;
+    font-weight:700;
+    letter-spacing:0.03em;
+    border-radius:999px;
+  }
+  .tu-view-all{
+    font-size:13px;
+    font-weight:600;
+    color:var(--teal);
+    text-decoration:underline;
+    white-space:nowrap;
+  }
+  .tu-entry{
+    padding:16px 0;
+    border-top:1px solid rgba(255,255,255,0.12);
+  }
+  .tu-entry:first-child{ border-top:none; padding-top:0; }
+  .tu-desc{
+    font-size:14px;
+    line-height:1.6;
+    color:rgba(255,255,255,0.92);
+    margin:0 0 8px;
+  }
+  .tu-desc a{ color:var(--teal); text-decoration:underline; }
+  .tu-effective{
+    font-size:12.5px;
+    color:rgba(255,255,255,0.55);
+    margin:0;
+    letter-spacing:0.02em;
+  }
+  @media print{
+    .tariff-updates-section{ display:none !important; }
+  }
   @media print{
     body{ background:#fff; }
     header, .field-row, .field, .calc-btn, .calc-trust, .charge-caret, .cta, .download-btn{ display:none !important; }
@@ -671,9 +797,39 @@
   <div id="results"></div>
 </main>
 
+<div class="tariff-updates" id="tariffUpdates"></div>
+
 <footer>
   <p>This is an estimate for general informational purposes only, based on publicly available CBSA tariff, surtax, and trade-remedy data. It is not a binding tariff classification, valuation, or duty determination, and does not replace advice from a licensed customs broker. Actual duty owed depends on your specific product's classification, origin qualification, and value for duty as determined by the Canada Border Services Agency. For a precise, defensible number — <a href="https://www.gohemisphere.ca/contact" style="color:var(--brown-mid);">talk to a Hemisphere broker</a>.</p>
 </footer>
+
+<!-- Tariff Updates widget (added 25 AUG 2026), requested to sit at the
+     bottom of the page. Styled after a reference screenshot (dark card,
+     badge, dated entries) but using Hemisphere's own brown/teal brand
+     colors instead of the reference's navy blue. Only contains entries
+     that have been directly, personally verified against an authoritative
+     source (the Department of Finance Canada page itself, fetched and read
+     directly) - this is NOT a hard-coded static list that should just
+     accumulate unverified entries over time. The Sept 8 entry is
+     explicitly marked as not yet reflected in the calculator's actual duty
+     engine, since the detailed line-item table wasn't public yet as of
+     this writing - update that note once data.js is actually updated with
+     the real measures. -->
+<div class="tariff-updates-section">
+  <div class="tu-header">
+    <div class="tu-title-row">
+      <span class="tu-title">TARIFF UPDATES</span>
+      <span class="tu-badge">LAST UPDATE: AUG 25, 2026</span>
+    </div>
+    <a href="https://www.canada.ca/en/department-finance/programs/international-trade-finance-policy/canadas-response-us-tariffs/complete-list-us-products-subject-to-counter-tariffs.html" class="tu-view-all" target="_blank" rel="noopener">Official source ↗</a>
+  </div>
+  <div class="tu-list">
+    <div class="tu-entry">
+      <p class="tu-desc">Aug 25: Canada announced new countermeasures on U.S. imports — steel &amp; aluminum, dairy, appliances, agricultural equipment, pulp &amp; paper, plastics, and electronics — at 15%, 25%, or 50%, matching the U.S. tariff rate applied to each corresponding good, per <a href="https://www.canada.ca/en/department-finance/programs/international-trade-finance-policy/canadas-response-us-tariffs/complete-list-us-products-subject-to-counter-tariffs.html" target="_blank" rel="noopener">the Department of Finance's countermeasures list</a>. Over 700 tariff line items. <strong>Not yet reflected in the estimates on this page</strong> — the detailed item-by-item list wasn't public as of this writing; check back closer to the effective date.</p>
+      <p class="tu-effective">Effective: Sep 8, 2026</p>
+    </div>
+  </div>
+</div>
 
 <script src="data.js"></script>
 <script>
@@ -692,6 +848,49 @@ const ICON_DOCUMENT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor
 function formatMoney(n){
   return '$' + n.toLocaleString('en-CA', {minimumFractionDigits:2, maximumFractionDigits:2});
 }
+
+// Tariff Updates feed shown at the bottom of the page. Add a new entry to
+// the TOP of this array whenever a new surtax, safeguard, or other trade
+// measure is added to data.js, so clients can see what changed without
+// digging into a duty result themselves. Keep dates as genuinely verified
+// effective dates from the Canada Gazette / Department of Finance - never
+// a build or commit date, and never invent a specific day/month you
+// haven't actually confirmed. Regulation numbers (SOR/YYYY-NNN) are the
+// safest, most verifiable thing to cite when an exact effective date isn't
+// confirmed - use "Per regulation" rather than guessing a date.
+const TARIFF_UPDATES = [
+  {
+    text: "Canada's expanded countermeasures on U.S. goods — covering steel and aluminum, dairy, appliances, agricultural equipment, pulp and paper, plastics, and electronics, at 15%, 25%, or 50% depending on the item — are set to take effect. This simulator will be updated with the detailed item list once the Department of Finance publishes it.",
+    effective: 'September 8, 2026 (pending — not yet reflected in duty estimates)'
+  },
+  {
+    text: 'Safeguard surtax added for certain canned vegetable products (SOR/2026-135).',
+    effective: 'Per regulation'
+  },
+  {
+    text: "Surtax on U.S.-origin steel and aluminum products (SOR/2025-95), plus related steel/aluminum derivative goods and motor vehicle surtax orders.",
+    effective: 'Per regulation'
+  }
+];
+
+function renderTariffUpdates(){
+  const container = document.getElementById('tariffUpdates');
+  if(!container || !TARIFF_UPDATES.length) return;
+  const items = TARIFF_UPDATES.map(u => `
+    <div class="tariff-update-item">
+      <p class="tariff-update-text">${u.text}</p>
+      <div class="tariff-update-effective">Effective: ${u.effective}</div>
+    </div>
+  `).join('');
+  container.innerHTML = `
+    <div class="tariff-updates-head">
+      <p class="tariff-updates-title">Tariff updates</p>
+      <span class="tariff-updates-badge">Reviewed regularly</span>
+    </div>
+    <div class="tariff-updates-list">${items}</div>
+  `;
+}
+renderTariffUpdates();
 
 // Tally form URL for the "Request Official Quote" flow — REPLACE with the
 // real form URL once it's created in Tally. Tally supports pre-filling a
@@ -748,7 +947,16 @@ function computeBrokerageFees(clientType){
   // the two stay in sync if a province's rate ever changes.
   const feesTax = getFeesTaxForProvince(inputs.province);
   const hstOnFees = feesSubtotal * (feesTax.rate/100);
-  const preDisbursement = feesSubtotal + hstOnGoods + hstOnFees;
+  // BUG FIX (25 AUG 2026): surtax_amount was already being sent to Tally
+  // as its own dedicated field (see the surtax field fix earlier), but it
+  // was never actually included in this total - preDisbursement only
+  // summed feesSubtotal + hstOnGoods + hstOnFees, silently leaving out the
+  // real dollar surtax amount entirely. Confirmed with Rigo: grand_total_cad
+  // must include it. Added here (before the disbursement fee percentage is
+  // applied), matching how duty/tax/fees already all factor into that same
+  // percentage - surtax is a real, mandatory cost the client pays, so it
+  // belongs in the disbursement-fee base the same way the others do.
+  const preDisbursement = feesSubtotal + hstOnGoods + hstOnFees + inputs.surtaxAmount;
   const disbursementFee = preDisbursement * c.disbursementFeeRate;
   const grandTotalCAD = preDisbursement + disbursementFee;
   const grandTotalUSD = grandTotalCAD * c.usdConversionRate;
@@ -1114,9 +1322,14 @@ function runEstimate(){
     resultsEl.innerHTML = '<div class="card no-match">Enter a shipment value of zero or more.</div>';
     return;
   }
-  if(document.getElementById('importType').value === 'personal' && !document.getElementById('province').value){
+  // BUG FIX (25 AUG 2026): this used to only require a province for
+  // Personal imports. Now required for Commercial too, since Hemisphere's
+  // own fee tax (getFeesTaxForProvince()) depends on destination province
+  // for every client — leaving it optional risked "our charges" silently
+  // defaulting to GST-only even for HST-province shipments.
+  if(!document.getElementById('province').value){
     resultsEl.className = 'show';
-    resultsEl.innerHTML = '<div class="card no-match">Select your province to estimate personal import tax — it changes the rate.</div>';
+    resultsEl.innerHTML = '<div class="card no-match">Select the destination province — it affects both the import tax and our own brokerage fees.</div>';
     return;
   }
 
@@ -1689,23 +1902,25 @@ document.getElementById('frequency').addEventListener('change', () => {
     document.getElementById('frequency').value === 'custom' ? 'block' : 'none';
 });
 
-// Province only matters for Personal imports — Commercial is always flat 5%
-// GST nationwide, so asking for a province there would just be a field that
-// visibly does nothing. Shown (and required) only when Personal is
-// selected; hidden and cleared otherwise so Commercial stays a single,
-// unambiguous number with nothing extra to pick.
+// BUG FIX (25 AUG 2026): this used to hide and clear the province field
+// entirely for Commercial imports, on the reasoning that goods-tax for
+// Commercial is always flat 5% GST nationwide regardless of destination.
+// That reasoning was correct for the GOODS tax specifically, but it broke
+// something else this file also needs province for: Hemisphere's OWN fee
+// tax (see getFeesTaxForProvince() in data.js) depends on destination
+// province for EVERY client, Commercial included — HST provinces get HST
+// on our fees, everyone else gets GST only. Since Commercial clients had
+// no visible way to enter a province at all, that logic silently defaulted
+// to GST-only on every single Commercial shipment, even ones genuinely
+// going to Ontario or another HST province, where it should have charged
+// HST on our own fees instead. Found via a real support report. Province
+// is now always shown and required, for both import types.
 const importTypeSelect = document.getElementById('importType');
 const provinceField = document.getElementById('provinceField');
 const provinceSelect = document.getElementById('province');
 function toggleProvinceField(){
-  if(importTypeSelect.value === 'personal'){
-    provinceField.style.display = 'block';
-    provinceSelect.required = true;
-  } else {
-    provinceField.style.display = 'none';
-    provinceSelect.required = false;
-    provinceSelect.value = '';
-  }
+  provinceField.style.display = 'block';
+  provinceSelect.required = true;
 }
 toggleProvinceField();
 importTypeSelect.addEventListener('change', toggleProvinceField);
