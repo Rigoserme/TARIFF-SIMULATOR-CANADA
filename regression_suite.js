@@ -994,8 +994,8 @@ if (!jsdomAvailable) {
       await new Promise(res => setTimeout(res, 50));
       const freightEl = doc2.getElementById('bpFreight');
       const referralEl = doc2.getElementById('bpReferral');
-      check('C53a', 'Freight quote field exists with Yes/No/Not sure yet plus a genuine blank default',
-        !!freightEl && freightEl.value === '' && [...freightEl.options].map(o=>o.value).join(',') === ',Yes,No,Not sure yet');
+      check('C53a', 'Freight quote field exists with just Yes/No (simplified 25 AUG 2026) plus a genuine blank default',
+        !!freightEl && freightEl.value === '' && [...freightEl.options].map(o=>o.value).join(',') === ',Yes,No');
       check('C53b', 'Freight quote field is positioned before the referral field',
         !!freightEl && !!referralEl && freightEl.compareDocumentPosition(referralEl) === dom.window.Node.DOCUMENT_POSITION_FOLLOWING);
     }
@@ -1063,6 +1063,64 @@ if (!jsdomAvailable) {
       const rNonUS = await runUI({ q: '9401.71.10.10', value: 10000, origin: 'Germany', province: 'Ontario' });
       check('C56c', 'Non-US origin on an overlapping code still correctly gets the any-origin order on its own',
         rNonUS.inputs.surtaxAmount === 2500 && rNonUS.inputs.surtaxRate === '25%');
+    }
+
+    // C57 — Sept 8, 2026 countermeasures order, Batch 3 (26 AUG 2026):
+    // steel pipe fittings, heavy overlap with pre-existing steel surtax
+    // orders. Confirms today's date correctly keeps the new order dormant
+    // on a real Batch 3 code, matching the same finding as Batch 2.
+    {
+      const r = await runUI({ q: '7306.90.00.10', value: 10000, origin: 'United States of America', province: 'Ontario' });
+      const isBeforeEffective = new Date() < new Date('2026-09-08');
+      if (isBeforeEffective) {
+        check('C57', 'Batch 3 order correctly stays dormant before Sept 8 (pre-existing 25% order applies, undisturbed)',
+          r.inputs.surtaxAmount === 2500 && r.inputs.surtaxRate === '25%');
+      } else {
+        check('C57', 'Past Sept 8: Batch 3 order should now be active (50%) - update this check',
+          r.inputs.surtaxAmount === 5000 && r.inputs.surtaxRate === '50%');
+      }
+    }
+
+    // C58 — Pending surtax "heads up" notice (26 AUG 2026): informs clients
+    // ahead of the real Sept 8 effective date, without affecting the
+    // actual calculation at all. Requested directly - clients have been
+    // asking whether their products will be subject to the new measure.
+    {
+      const rUS = await runUI({ q: '9401.71.10.10', value: 10000, origin: 'United States of America', province: 'Ontario' });
+      const headsUpCount = (rUS.text.match(/Heads up/g) || []).length;
+      check('C58a', 'US-origin code with a pending surtax shows the notice EXACTLY once (not duplicated)',
+        headsUpCount === 1);
+      check('C58b', 'The actual calculation total is completely unaffected by the notice (still the old rate, not the future one)',
+        rUS.inputs.surtaxAmount === 2500 && rUS.inputs.surtaxRate === '25%');
+
+      const rNonUS = await runUI({ q: '9401.71.10.10', value: 10000, origin: 'Germany', province: 'Ontario' });
+      check('C58c', 'Non-US origin on the same code correctly shows NO pending notice (order only applies to US-origin goods)',
+        !rNonUS.text.includes('Heads up'));
+
+      const rNone = await runUI({ q: '4402.10.90.00', value: 1000, origin: 'United States of America', province: 'Ontario' });
+      check('C58d', 'A code with no pending surtax at all shows no notice',
+        !rNone.text.includes('Heads up'));
+    }
+
+    // C59 — Duplicate SurtaxOrder fix (26 AUG 2026): a real bug found and
+    // fixed mid-session - Batch 2's entire surtax addition (~275 items) had
+    // been accidentally duplicated in data.js during file handling, and
+    // that duplicated version was already live in production before this
+    // was caught. Confirms zero duplicate order names remain, checked via
+    // raw text count rather than window scoping (top-level const doesn't
+    // attach to window the way function declarations or var do).
+    {
+      const rawData = fs.readFileSync(DATA_PATH, 'utf8');
+      const nameMatches = rawData.match(/name:\s*"([^"]+)"/g) || [];
+      const names = nameMatches.map(m => m.match(/name:\s*"([^"]+)"/)[1]);
+      const seen = {};
+      const dupeNames = [];
+      names.forEach(n => {
+        seen[n] = (seen[n] || 0) + 1;
+        if (seen[n] === 2) dupeNames.push(n);
+      });
+      check('C59', 'Zero duplicate SurtaxOrder names exist anywhere in the live data.js text',
+        dupeNames.length === 0, JSON.stringify(dupeNames));
     }
 
     printSummary();

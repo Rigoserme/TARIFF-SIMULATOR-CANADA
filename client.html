@@ -317,6 +317,22 @@
   }
   .disclaimer-bar svg{ width:18px; height:18px; color:var(--teal); flex-shrink:0; }
 
+  .pending-surtax-bar{
+    display:flex;
+    align-items:flex-start;
+    gap:12px;
+    margin-top:16px;
+    padding:14px 18px;
+    background:var(--tax-soft);
+    border:1px solid var(--tax);
+    border-radius:12px;
+    font-size:13px;
+    color:var(--brown-mid);
+    line-height:1.5;
+  }
+  .pending-surtax-bar svg{ width:18px; height:18px; color:var(--tax); flex-shrink:0; margin-top:1px; }
+  .pending-surtax-bar strong{ color:var(--brown-deep); }
+
   .brokerage-panel{
     display:none;
     margin-top:16px;
@@ -1287,6 +1303,12 @@ function runEstimate(){
     ? simaMatchesAll.filter(c => c.measures.some(m => (COUNTRY_NAME_ALIASES[m.country] || m.country) === origin))
     : simaMatchesAll;
   const surtaxMatches = findSurtaxMatches(q).filter(o => surtaxAppliesToCountry(o, origin));
+  // ADDED 26 AUG 2026: a "heads up, this is coming" notice for surtax
+  // orders that exist and are confirmed but not yet in effect (currently
+  // the Sept 8, 2026 countermeasures). This is deliberately kept OUT of
+  // surtaxMatches/tradeCharges/the total - it must never affect the actual
+  // calculation, only inform the client ahead of the real effective date.
+  const pendingSurtaxMatches = findPendingSurtaxMatches(q).filter(o => surtaxAppliesToCountry(o, origin));
   const safeguardMatchesAll = findSafeguardMatches(q);
   // Safeguard measures apply globally EXCEPT specific exempt origins (e.g.
   // mandatory FTA-partner exclusions like the US/Mexico/Chile/Israel, plus
@@ -1309,6 +1331,14 @@ function runEstimate(){
     if(nc.startsWith(nq) || nq.startsWith(nc)) codeSet.add(code);
   }));
   surtaxMatches.forEach(o => o.hsCodes.forEach(code => {
+    const nc = normCode(code);
+    if(nc.startsWith(nq) || nq.startsWith(nc)) codeSet.add(code);
+  }));
+  // Same reasoning as the surtax/safeguard fixes above: a code flagged ONLY
+  // by a pending (not-yet-effective) surtax order would otherwise fall
+  // through to "we don't have that product" before the warning ever had a
+  // chance to render.
+  pendingSurtaxMatches.forEach(o => o.hsCodes.forEach(code => {
     const nc = normCode(code);
     if(nc.startsWith(nq) || nq.startsWith(nc)) codeSet.add(code);
   }));
@@ -1724,6 +1754,11 @@ function runEstimate(){
       ${charges.some(c => c.amount !== null) ? `<div class="breakdown-bar">${barSegments}</div>` : ''}
     </div>
     <div class="charge-card">${chargeRows}</div>
+    ${pendingSurtaxMatches.length ? `
+    <div class="pending-surtax-bar">
+      ${ICON_SCALES}
+      <div>${pendingSurtaxMatches.map(o => `<strong>Heads up:</strong> this product will be subject to a new ${o.rate}% surtax starting <strong>September 8, 2026</strong>, once Canada's countermeasures against U.S. imports take effect. Not included in the estimate above.`).join(' ')}</div>
+    </div>` : ''}
     ${projHtml}
     <div class="disclaimer-bar">
       ${ICON_SHIELD}
