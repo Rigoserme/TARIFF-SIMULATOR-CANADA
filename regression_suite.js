@@ -994,10 +994,43 @@ if (!jsdomAvailable) {
       await new Promise(res => setTimeout(res, 50));
       const freightEl = doc2.getElementById('bpFreight');
       const referralEl = doc2.getElementById('bpReferral');
-      check('C53a', 'Freight quote field exists with Yes/No plus a genuine blank default',
-        !!freightEl && freightEl.value === '' && [...freightEl.options].map(o=>o.value).join(',') === ',Yes,No');
+      check('C53a', 'Freight quote field exists with Yes/No/Not sure yet plus a genuine blank default',
+        !!freightEl && freightEl.value === '' && [...freightEl.options].map(o=>o.value).join(',') === ',Yes,No,Not sure yet');
       check('C53b', 'Freight quote field is positioned before the referral field',
         !!freightEl && !!referralEl && freightEl.compareDocumentPosition(referralEl) === dom.window.Node.DOCUMENT_POSITION_FOLLOWING);
+    }
+
+    // C54 — Chapter 84, headings 84.72-84.81 (26 AUG 2026): fills a real,
+    // previously-undocumented gap - these headings were entirely missing
+    // from the original Chapter 84 build, discovered while cross-
+    // referencing the Sept 8, 2026 counter-tariff data. Confirms the exact
+    // 3 items that started this investigation now resolve correctly, plus
+    // the dutiable exceptions and the one AUT/NZT special case.
+    {
+      const r1 = await runUI({ q: '8480.79.00.00', value: 3000, origin: 'Germany' });
+      check('C54a', 'The original gap item (mould for rubber/plastics, 8480.79) now resolves correctly',
+        r1.inputs.duty === 0 && Math.abs(r1.inputs.estimatedLandedCost - 3150) < 0.01);
+      const r2 = await runUI({ q: '8479.89.20.90', value: 1000, origin: 'China' });
+      check('C54b', 'Dutiable exception (carpet sweepers/humidifiers, 7.5%) computes correctly',
+        Math.abs(r2.inputs.duty - 75) < 0.01 && Math.abs(r2.inputs.estimatedLandedCost - 1128.75) < 0.01);
+      const r3 = await runUI({ q: 'ball valve', value: 5000, origin: 'China' });
+      check('C54c', '"ball valve" search surfaces the newly-added heading 84.81 valve codes',
+        r3.text.includes('8481.'));
+    }
+
+    // C55 — Chapter 84 gap fully closed (26 AUG 2026): headings 84.82-84.87
+    // (ball/roller bearings, transmission parts, gaskets, 3D printers,
+    // semiconductor equipment, misc. machinery parts) complete the range
+    // first found missing while cross-referencing Sept 8 counter-tariff
+    // data. 8469 remains absent - confirmed correct, not a gap (removed
+    // from the current tariff schedule entirely).
+    {
+      const r = await runUI({ q: '8483.60.00.90', value: 2000, origin: 'Germany' });
+      check('C55a', 'Clutches/shaft couplings (84.83, AUT/NZT special case) resolves correctly',
+        r.inputs.duty === 0 && Math.abs(r.inputs.estimatedLandedCost - 2100) < 0.01);
+      const r2 = await runUI({ q: '3D printer', value: 15000, origin: 'United States of America' });
+      check('C55b', '"3D printer" search correctly resolves to additive manufacturing (84.85), not image projectors',
+        r2.text.includes('additive manufacturing') || r2.html.includes('8485.'));
     }
 
     printSummary();
