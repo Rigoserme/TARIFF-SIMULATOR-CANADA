@@ -1033,6 +1033,38 @@ if (!jsdomAvailable) {
         r2.text.includes('additive manufacturing') || r2.html.includes('8485.'));
     }
 
+    // C56 — Sept 8, 2026 countermeasures order (Batch 2, 26 AUG 2026):
+    // three critical, real findings from this build, all verified
+    {
+      // 56a: the new order must NOT apply yet, since today is before its
+      // effective date. This guards against a real, serious risk - without
+      // date-gating, clients would be charged this surtax up to 2 weeks
+      // early. If this check ever fails after Sept 8, 2026, that's
+      // EXPECTED (the order should activate then) - update/remove this
+      // specific check once that date has passed.
+      const rBefore = await runUI({ q: '9401.71.10.10', value: 10000, origin: 'United States of America', province: 'Ontario' });
+      const isBeforeEffective = new Date() < new Date('2026-09-08');
+      if (isBeforeEffective) {
+        check('C56a', 'New Sept 8 order correctly stays dormant before its effective date (old 25% order still applies)',
+          rBefore.inputs.surtaxAmount === 2500 && rBefore.inputs.surtaxRate === '25%');
+      } else {
+        check('C56a', 'Past Sept 8: new order should now be active (50%, not the old 25%) - update this check',
+          rBefore.inputs.surtaxAmount === 5000 && rBefore.inputs.surtaxRate === '50%');
+      }
+
+      // 56b: pre-existing orders (no effectiveDate field) are completely
+      // unaffected by the date-gating fix
+      const rExisting = await runUI({ q: '7601.10.00.90', value: 10000, origin: 'United States of America', province: 'Ontario' });
+      check('C56b', 'Pre-existing surtax orders (no effectiveDate field) are unaffected by the date-gating fix',
+        rExisting.inputs.surtaxAmount === 2500 && rExisting.inputs.surtaxRate === '25%');
+
+      // 56c: confirm the overlap-resolution precedence still works correctly
+      // for a non-US origin on the same overlapping code
+      const rNonUS = await runUI({ q: '9401.71.10.10', value: 10000, origin: 'Germany', province: 'Ontario' });
+      check('C56c', 'Non-US origin on an overlapping code still correctly gets the any-origin order on its own',
+        rNonUS.inputs.surtaxAmount === 2500 && rNonUS.inputs.surtaxRate === '25%');
+    }
+
     printSummary();
   })();
 }
