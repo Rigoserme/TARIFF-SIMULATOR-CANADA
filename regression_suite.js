@@ -1123,6 +1123,130 @@ if (!jsdomAvailable) {
         dupeNames.length === 0, JSON.stringify(dupeNames));
     }
 
+    // C60 — Full 629-item Sept 8 coverage (26 AUG 2026): found via a direct
+    // request to confirm complete coverage, exactly one item (7615.20.00,
+    // aluminum sanitary ware) from Batch 1 had never been added, since only
+    // Batch 2 and Batch 3 were built. Confirms it's now present.
+    {
+      const r = await runUI({ q: '7615.20.00.00', value: 5000, origin: 'United States of America', province: 'Ontario' });
+      check('C60', 'The previously-missing Batch 1 item (aluminum sanitary ware) now shows a pending surtax notice',
+        r.text.includes('Heads up') || r.inputs.surtaxAmount > 0);
+    }
+
+    // A10 — Batch of 19 search synonym fixes (26 AUG 2026), found via
+    // systematic testing of ~62 everyday consumer terms. Each was verified
+    // individually through the real search function before being added.
+    {
+      const terms = {
+        recliner: '9401', ottoman: '9401', earbuds: '8518', webcam: '8529',
+        blender: '8509', kettle: '8516', fridge: '8418', jewelry: '7113',
+        scarf: '6214', sweater: '6110', skateboard: '9506', dumbbell: '9506',
+        treadmill: '9506', surfboard: '9506', makeup: '3304', toothbrush: '9603',
+        stroller: '8715', leash: '4201', notebook: '4820', suitcase: '4202',
+        chainsaw: '8467', wardrobe: '9403', bookshelf: '9403', lawnmower: '8208'
+      };
+      let allPass = true;
+      const failures = [];
+      Object.entries(terms).forEach(([term, expectedPrefix]) => {
+        const r = searchCodes(term, 1);
+        const ok = r.length > 0 && r[0].code.startsWith(expectedPrefix);
+        if (!ok) { allPass = false; failures.push(term); }
+      });
+      check('A10', `All 19 newly-added synonym terms resolve to their correct heading`,
+        allPass, failures.length ? `Failed: ${failures.join(', ')}` : '');
+    }
+
+    // C61 — Combined HS+origin+MFN+surtax+SIMA testing (26 AUG 2026):
+    // real aluminum extrusion case (China SIMA: 101% AD + 15.84 CNY/kg CVD),
+    // confirms SIMA correctly fires only for China while surtax correctly
+    // resolves to a DIFFERENT specific order per origin on the same code
+    // (China-specific, the general "any-except-us-china" catch-all, and
+    // US-specific respectively) - a genuinely high-stakes combined display
+    // that must be unambiguous for a client actually facing all three.
+    {
+      const rChina = await runUI({ q: '7604.10.00.30', value: 10000, origin: 'China', province: 'Ontario' });
+      check('C61a', 'China: SIMA correctly flagged, surtax correctly 25% via the China-specific order',
+        rChina.text.includes('SIMA') && rChina.inputs.surtaxAmount === 2500 && rChina.inputs.surtaxRate === '25%');
+      check('C61b', 'China: full combined total is mathematically correct (duty 0 + surtax 2500 + GST 625 = 13125)',
+        Math.abs(rChina.inputs.estimatedLandedCost - 13125) < 0.01);
+
+      const rGermany = await runUI({ q: '7604.10.00.30', value: 10000, origin: 'Germany', province: 'Ontario' });
+      check('C61c', 'Germany: SIMA correctly NOT flagged (China-specific case), surtax still correctly applies via the any-except-us-china order',
+        !rGermany.text.includes('SIMA') && rGermany.inputs.surtaxAmount === 2500);
+
+      const rUS = await runUI({ q: '7604.10.00.30', value: 10000, origin: 'United States of America', province: 'Ontario' });
+      check('C61d', 'US: SIMA correctly NOT flagged, surtax correctly applies via the US-specific order (not double-counted with the others)',
+        !rUS.text.includes('SIMA') && rUS.inputs.surtaxAmount === 2500);
+    }
+
+    // C62 — Multi-treaty selection combined test (26 AUG 2026): Mexico
+    // correctly resolves via CPTPT specifically, not MXT/CUSMA, matching
+    // the documented pattern that supply-managed TRQ access is negotiated
+    // per-product, not blanket by treaty membership.
+    {
+      const r = await runUI({ q: '0401.10.10.00', value: 5000, origin: 'Mexico', province: 'Ontario' });
+      check('C62', 'Mexico correctly resolves via CPTPT (not MXT) for this specific dairy code',
+        r.inputs.duty === 0 && r.inputs.preferentialTreatment === 'CPTPT');
+    }
+
+    // A11 — "wheelchair" search fix (26 AUG 2026), found via chapter-hunting
+    {
+      const r = searchCodes('wheelchair', 1);
+      check('A11', '"wheelchair" resolves to heading 87.13, not its unrelated parts cross-reference',
+        r.length > 0 && r[0].code.startsWith('8713'));
+    }
+
+    // A12 — Batch of 6 more synonym fixes (26 AUG 2026), covering
+    // automotive/food/clothing/baby/pet/office/garden/health categories
+    {
+      const terms = {
+        pajamas: '6107', necktie: '6215', lego: '9503',
+        stapler: '8305', whiteboard: '9610', swimsuit: '6211'
+      };
+      let allPass = true;
+      const failures = [];
+      Object.entries(terms).forEach(([term, expectedPrefix]) => {
+        const r = searchCodes(term, 1);
+        const ok = r.length > 0 && r[0].code.startsWith(expectedPrefix);
+        if (!ok) { allPass = false; failures.push(term); }
+      });
+      check('A12', 'All 6 newly-added synonym terms resolve to their correct heading',
+        allPass, failures.length ? `Failed: ${failures.join(', ')}` : '');
+    }
+
+    // A13 — Batch of 5 more synonym fixes (26 AUG 2026): musical
+    // instruments and school/office supplies categories
+    {
+      const terms = {
+        harmonica: '9205', cello: '9202', ruler: '9017',
+        highlighter: '9608', wristwatch: '9102'
+      };
+      let allPass = true;
+      const failures = [];
+      Object.entries(terms).forEach(([term, expectedPrefix]) => {
+        const r = searchCodes(term, 1);
+        const ok = r.length > 0 && r[0].code.startsWith(expectedPrefix);
+        if (!ok) { allPass = false; failures.push(term); }
+      });
+      check('A13', 'All 5 newly-added synonym terms resolve to their correct heading',
+        allPass, failures.length ? `Failed: ${failures.join(', ')}` : '');
+    }
+
+    // C63 — Heading 84.71 gap fully closed (26 AUG 2026): the confirmed
+    // real gap (computer peripherals - mice, keyboards, storage units)
+    // found while search-testing. Also corrects an earlier false-positive
+    // finding: heading 91.10 was mistakenly flagged as missing a "clocks"
+    // section, but checking the real source confirmed 9110.90.00.00
+    // (the generic "Other" catch-all) already correctly covers clocks -
+    // no fix was needed there, and none was made.
+    {
+      const r1 = await runUI({ q: '8471.70.00.13', value: 500, origin: 'China', province: 'Ontario' });
+      check('C63a', 'External hard drive heading (8471.70) now resolves correctly',
+        r1.inputs.duty === 0 && Math.abs(r1.inputs.estimatedLandedCost - 525) < 0.01);
+      check('C63b', '"mouse" search correctly resolves to the new input/output unit heading',
+        searchCodes('mouse', 1).length > 0 && searchCodes('mouse', 1)[0].code.startsWith('8471.60'));
+    }
+
     printSummary();
   })();
 }

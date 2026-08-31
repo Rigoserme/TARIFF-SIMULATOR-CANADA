@@ -11656,6 +11656,63 @@ const SEARCH_SYNONYMS = {
   // nor "printer" appears anywhere in the formal tariff term, which is
   // "additive manufacturing" (heading 84.85, newly added).
   "3d":["additive manufacturing"], "printer":["additive manufacturing"],
+  // Batch of 19 synonym fixes found during systematic search testing
+  // (26 AUG 2026) - each verified individually through the real search
+  // function before being added, not just checked for raw substring
+  // presence (several early candidates looked fine on a raw text check but
+  // actually ranked a wrong, unrelated code first once run through the
+  // real whole-word + leaf-scoring algorithm - e.g. "furniture" alone hit
+  // a furniture POLISH product, "trunks" alone hit wicker baskets).
+  "recliner":["upholstered"], "ottoman":["upholstered"],
+  "earbuds":["headphones"],
+  "webcam":["television"],
+  "blender":["food grinders"],
+  "kettle":["immersion"],
+  "fridge":["refrigerators"],
+  "jewelry":["jewellery and parts"],
+  "scarf":["shawls"], "sweater":["jerseys"],
+  "skateboard":["gymnastics"], "dumbbell":["gymnastics"], "dumbbells":["gymnastics"], "treadmill":["gymnastics"], "surfboard":["gymnastics"],
+  "makeup":["beauty"],
+  "toothbrush":["tooth brushes"],
+  "stroller":["carriages"],
+  "leash":["harness"],
+  "notebook":["note books"],
+  "suitcase":["suit-cases"],
+  "chainsaw":["chain saws"],
+  "wardrobe":["bedroom"],
+  "bookshelf":["shelving"],
+  "lawnmower":["mowers"],
+  // Found via chapter-hunting (26 AUG 2026): heading 87.13 ("Carriages for
+  // disabled persons") is genuinely complete (manual/scooter/motorized
+  // variants), but "wheelchair" never matched it directly - the top-level
+  // heading text only appears via a "Parts and accessories..." cross-
+  // reference elsewhere, which was winning the leaf-bonus incorrectly.
+  "wheelchair":["not mechanically propelled"],
+  // Batch of 6 more synonym fixes (26 AUG 2026), from a new round covering
+  // automotive/food/clothing/baby/pet/office/garden/health categories not
+  // tested before. Each verified individually through the real search
+  // function. Two terms (aquarium, wheelbarrow) found no clean match
+  // anywhere in the database after checking the most likely headings
+  // (glass articles, plastic articles, furniture for aquarium; the
+  // caravan-trailer and "other vehicles" sub-headings for wheelbarrow) -
+  // left unresolved rather than forcing a bad match.
+  "pajamas":["pyjamas"],
+  "necktie":["cravats"],
+  "lego":["construction sets"],
+  "stapler":["staples"],
+  "whiteboard":["slates and boards"],
+  "swimsuit":["ski suits and swimwear"],
+  "harmonica":["mouth organ"],
+  "cello":["played with a bow"],
+  "ruler":["drawing, marking-out"],
+  "highlighter":["felt tipped"],
+  "wristwatch":["wrist-watches"],
+  // Found immediately after filling the 84.71 gap (26 AUG 2026): the
+  // current CBSA schedule uses generic modern language ("Combined
+  // input/output units") rather than "mouse" or the older "X-Y
+  // co-ordinate input device" terminology, so a client searching "mouse"
+  // would still find nothing even with the underlying data now present.
+  "mouse":["combined input/output"],
   "toys":["toys"], "steel":["iron and steel"], "aluminum":["aluminium"], "battery":["accumulator","cell"],
   "batteries":["accumulators","cells"]
 };
@@ -25780,9 +25837,19 @@ Object.assign(PREF_FREE, {
 // rate applied to each corresponding Canadian good. This addition covers
 // what was internally called "Batch 2" (274 of the ~629 unique tariff
 // items across the full countermeasures list) - Batch 1 was found to
-// overlap 146/147 with this batch and was treated as redundant; Batch 3
-// (steel pipe fittings, ~354 items, zero overlap with this batch) remains
-// a separate, not-yet-built addition.
+// overlap 146/147 with this batch and was treated as redundant. Batch 3
+// (steel pipe fittings, ~354 items, zero overlap with this batch) is a
+// separate addition further down this file.
+//
+// FOLLOW-UP FIX (26 AUG 2026): the "146/147 redundant" figure above left
+// exactly ONE Batch 1 item (7615.20.00, aluminum sanitary ware) genuinely
+// uncovered, since only Batch 2 and Batch 3 were ever built - found via a
+// direct set-difference check after being asked to confirm full 629-item
+// coverage. Added to this order's hsCodes (25% tier, matching its Batch 1
+// rate). This code already overlaps an existing order (US Steel and
+// Aluminum 2025, also 25%), so the practical duty outcome is unchanged
+// either way - this fix is for completeness/accurate record-keeping, not
+// a correctness issue in what clients would have been charged.
 //
 // IMPORTANT: 337 of these 886 expanded 10-digit codes already fall under
 // an existing surtax order (mostly "Steel Derivative Goods Surtax Order",
@@ -26089,6 +26156,7 @@ SURTAX_ORDERS.push(
     effectiveDate: "2026-09-08",
     type: "flat",
     hsCodes: [
+    "7615.20.00.00",
     "9403.91.00.10",
     "9403.91.00.90",
     "9403.40.00.10",
@@ -27643,3 +27711,59 @@ SURTAX_ORDERS.push(
     ]
   }
 );
+
+
+// ===== Chapter 84, heading 84.71 (completing the gap) =====
+// Added 26 AUG 2026 from CBSA Ch.84 source. Fills the remaining part of the
+// gap first found while cross-referencing the Sept 8, 2026 counter-tariff
+// data - heading 84.71 (computers and their peripherals) only had 3 codes
+// (8471.30, 8471.41 x2) built, missing input/output units (mice, standalone
+// keyboards - subheading 8471.60), storage units (external hard drives -
+// 8471.70), and several other sub-headings. All 19 new codes here are
+// 100% Free MFN with the standard 21-treaty list - confirmed via source,
+// no dutiable exceptions or AUT/NZT-style special cases in this heading.
+// Zero overlap with the 3 pre-existing 8471 codes, confirmed before this
+// was added.
+Object.assign(CODE_DESCRIPTIONS, {
+  "8471.49.00.10": "Automatic data processing machines and units thereof; magnetic or optical readers, machines for transcribing data onto data media in coded form and machines for processing such data, not elsewhere specified or included. > Other automatic data processing machines > Other, presented in the form of systems > With cathode-ray tubes (CRT)",
+  "8471.49.00.90": "Automatic data processing machines and units thereof; magnetic or optical readers, machines for transcribing data onto data media in coded form and machines for processing such data, not elsewhere specified or included. > Other automatic data processing machines > Other, presented in the form of systems > Other",
+  "8471.50.00.10": "Automatic data processing machines and units thereof; magnetic or optical readers, machines for transcribing data onto data media in coded form and machines for processing such data, not elsewhere specified or included. > Processing units, other than those of subheading 8471.41 or 8471.49, whether or not containing in the same housing one or two of the following types of unit: storage units, input units, output units > With cathode-ray tubes (CRT)",
+  "8471.50.00.90": "Automatic data processing machines and units thereof; magnetic or optical readers, machines for transcribing data onto data media in coded form and machines for processing such data, not elsewhere specified or included. > Processing units, other than those of subheading 8471.41 or 8471.49, whether or not containing in the same housing one or two of the following types of unit: storage units, input units, output units > Other",
+  "8471.60.00.10": "Automatic data processing machines and units thereof; magnetic or optical readers, machines for transcribing data onto data media in coded form and machines for processing such data, not elsewhere specified or included. > Input or output units, whether or not containing storage units in the same housing > Combined input/output units",
+  "8471.60.00.20": "Automatic data processing machines and units thereof; magnetic or optical readers, machines for transcribing data onto data media in coded form and machines for processing such data, not elsewhere specified or included. > Input or output units, whether or not containing storage units in the same housing > Optical scanners and magnetic ink recognition devices",
+  "8471.60.00.30": "Automatic data processing machines and units thereof; magnetic or optical readers, machines for transcribing data onto data media in coded form and machines for processing such data, not elsewhere specified or included. > Input or output units, whether or not containing storage units in the same housing > Magnetic media entry devices",
+  "8471.60.00.40": "Automatic data processing machines and units thereof; magnetic or optical readers, machines for transcribing data onto data media in coded form and machines for processing such data, not elsewhere specified or included. > Input or output units, whether or not containing storage units in the same housing > Card readers, badge readers and paper tape readers",
+  "8471.60.00.50": "Automatic data processing machines and units thereof; magnetic or optical readers, machines for transcribing data onto data media in coded form and machines for processing such data, not elsewhere specified or included. > Input or output units, whether or not containing storage units in the same housing > Keyboards",
+  "8471.60.00.60": "Automatic data processing machines and units thereof; magnetic or optical readers, machines for transcribing data onto data media in coded form and machines for processing such data, not elsewhere specified or included. > Input or output units, whether or not containing storage units in the same housing > Output devices",
+  "8471.60.00.90": "Automatic data processing machines and units thereof; magnetic or optical readers, machines for transcribing data onto data media in coded form and machines for processing such data, not elsewhere specified or included. > Input or output units, whether or not containing storage units in the same housing > Other",
+  "8471.70.00.12": "Automatic data processing machines and units thereof; magnetic or optical readers, machines for transcribing data onto data media in coded form and machines for processing such data, not elsewhere specified or included. > Storage units > Magnetic disc drives > For flexible (floppy) magnetic disks",
+  "8471.70.00.13": "Automatic data processing machines and units thereof; magnetic or optical readers, machines for transcribing data onto data media in coded form and machines for processing such data, not elsewhere specified or included. > Storage units > Magnetic disc drives > For hard magnetic disks",
+  "8471.70.00.19": "Automatic data processing machines and units thereof; magnetic or optical readers, machines for transcribing data onto data media in coded form and machines for processing such data, not elsewhere specified or included. > Storage units > Magnetic disc drives > Other",
+  "8471.70.00.90": "Automatic data processing machines and units thereof; magnetic or optical readers, machines for transcribing data onto data media in coded form and machines for processing such data, not elsewhere specified or included. > Storage units > Other",
+  "8471.80.10.00": "Automatic data processing machines and units thereof; magnetic or optical readers, machines for transcribing data onto data media in coded form and machines for processing such data, not elsewhere specified or included. > Other units of automatic data processing machines > Control or adapter units",
+  "8471.80.91.00": "Automatic data processing machines and units thereof; magnetic or optical readers, machines for transcribing data onto data media in coded form and machines for processing such data, not elsewhere specified or included. > Other units of automatic data processing machines > Other > Units suitable for physical incorporation into automatic data processing machines or units thereof",
+  "8471.80.99.00": "Automatic data processing machines and units thereof; magnetic or optical readers, machines for transcribing data onto data media in coded form and machines for processing such data, not elsewhere specified or included. > Other units of automatic data processing machines > Other > Other",
+  "8471.90.00.00": "Automatic data processing machines and units thereof; magnetic or optical readers, machines for transcribing data onto data media in coded form and machines for processing such data, not elsewhere specified or included. > Other"
+});
+
+Object.assign(PREF_FREE, {
+  "8471.49.00.10": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8471.49.00.90": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8471.50.00.10": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8471.50.00.90": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8471.60.00.10": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8471.60.00.20": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8471.60.00.30": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8471.60.00.40": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8471.60.00.50": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8471.60.00.60": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8471.60.00.90": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8471.70.00.12": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8471.70.00.13": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8471.70.00.19": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8471.70.00.90": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8471.80.10.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8471.80.91.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8471.80.99.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"],
+  "8471.90.00.00": ["CCCT", "LDCT", "GPT", "UST", "MXT", "CIAT", "CT", "CRT", "IT", "NT", "SLT", "PT", "COLT", "JT", "PAT", "HNT", "KRT", "CEUT", "UAT", "CPTPT", "UKT"]
+});
