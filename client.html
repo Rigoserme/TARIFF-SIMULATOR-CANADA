@@ -205,6 +205,10 @@
     font-weight:600;
   }
   .complete-badge svg{ width:13px; height:13px; }
+  .complete-badge.partial{
+    background:rgba(201,154,62,0.20);
+    color:var(--tax);
+  }
 
   .breakdown-bar{
     display:flex;
@@ -803,6 +807,7 @@ const ICON_BANK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" st
 const ICON_CHEVRON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>';
 const ICON_DOWNLOAD = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4.5-4.5M12 15l4.5-4.5M4 19h16"/></svg>';
 const ICON_CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.5 2.5L16 9.5"/></svg>';
+const ICON_WARNING = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5L21.5 20h-19L12 3.5z"/><path d="M12 10v4"/><circle cx="12" cy="17" r="0.5" fill="currentColor"/></svg>';
 const ICON_DOCUMENT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h7l5 5v13a1 1 0 01-1 1H7a1 1 0 01-1-1V4a1 1 0 011-1z"/><path d="M14 3v5h5"/></svg>';
 
 function formatMoney(n){
@@ -1076,13 +1081,14 @@ function renderBrokeragePanel(clientType){
       client_type: fees.isSetup ? 'Setting up an account' : 'One-time shipment',
       // Simulator calculation
       duty_rate: inputs.dutyRate,
-      duty_amount: inputs.duty.toFixed(2),
+      duty_amount: inputs.dutyCalculable ? inputs.duty.toFixed(2) : 'UNKNOWN - see duty_rate field',
       gst_hst_pst_amount: inputs.taxOnGoods.toFixed(2),
       surtax_amount: inputs.surtaxAmount.toFixed(2),
       surtax_rate: inputs.surtaxRate,
       trade_measures_flag: inputs.tradeMeasuresFlag,
       preferential_treatment: inputs.preferentialTreatment,
       estimated_landed_cost: inputs.estimatedLandedCost.toFixed(2),
+      estimated_total_warning: inputs.dutyCalculable ? 'None' : 'INCOMPLETE - excludes an uncalculated per-unit/compound duty, see duty_rate field',
       // INTERNAL ONLY — Hemisphere's own brokerage fee schedule. These fields
       // only ever reach Hemisphere's Tally dashboard/notification; the client
       // never sees them anywhere on the page.
@@ -1749,7 +1755,20 @@ function runEstimate(){
       <div class="amount">${formatMoney(total)}</div>
       <div class="sub-row">
         <div class="sub">on a ${formatMoney(value)} shipment${currency === 'USD' ? ` (converted from ${formatMoney(enteredValue)} USD to CAD)` : ''}</div>
-        <div class="complete-badge">${ICON_CHECK} Estimate complete</div>
+        <!-- BUG FIX (26 AUG 2026): this badge previously always said "Estimate
+             complete" even when duty couldn't actually be calculated (specific/
+             compound per-unit rates, which need a quantity or weight this tool
+             doesn't collect). The detailed breakdown below already explained
+             this clearly with a warning, but the prominent top badge gave a
+             false impression of completeness to anyone who didn't scroll down.
+             Found via systematic testing of specific/compound rate codes. -->
+        <div class="complete-badge${charges.find(c => c.category === 'duty' && c.amount === null) ? ' partial' : ''}">${(() => {
+          const nullDuty = charges.find(c => c.category === 'duty' && c.amount === null);
+          if (!nullDuty) return `${ICON_CHECK} Estimate complete`;
+          return nullDuty.qualifier === 'Not yet confirmed'
+            ? `${ICON_WARNING} Partial estimate — duty rate unconfirmed`
+            : `${ICON_WARNING} Partial estimate — duty needs quantity`;
+        })()}</div>
       </div>
       ${charges.some(c => c.amount !== null) ? `<div class="breakdown-bar">${barSegments}</div>` : ''}
     </div>
@@ -1810,6 +1829,29 @@ function runEstimate(){
     originalEnteredValue: enteredValue,
     currency,
     duty: dutyCharge && dutyCharge.amount !== null ? dutyCharge.amount : 0,
+    // BUG FIX (26 AUG 2026): found via systematic testing of specific/
+    // compound rate codes. duty was always sent as a plain number (0 when
+    // unknown), and dutyRate showed the ambiguous "N/A" for this same
+    // case - indistinguishable from a genuine, calculated $0 Free rate to
+    // anyone reviewing the quote request. This directly risks the exact
+    // "missing charges" problem Rigo described with manually-built quotes:
+    // a broker could easily read "$0.00, N/A" as "no duty applies" instead
+    // of "duty is unknown and could be substantial". Added an explicit,
+    // unambiguous flag and rewired the Tally payload text to use it.
+    //
+    // FOLLOW-UP (26 AUG 2026): the first version of this fix used a single
+    // boolean check (amount === null) and one hardcoded message, which
+    // correctly covered the reachable case (specific/compound rates,
+    // qualifier 'Needs quantity') but would have shown the SAME wrong
+    // message for a second, currently-dead code path (qualifier 'Not yet
+    // confirmed', for codes with no MFN rate at all - e.g. tapioca,
+    // 1903.00.00.00). Confirmed that second path is genuinely unreachable
+    // today - those codes hit an earlier "we don't have that product"
+    // dead-end before ever reaching this logic - but fixed the wording to
+    // be qualifier-specific anyway, since that upstream check could change
+    // in the future and this would otherwise become a live, silent bug at
+    // that point rather than being caught now.
+    dutyCalculable: !(dutyCharge && dutyCharge.amount === null),
     taxOnGoods: taxCharges.reduce((sum, c) => sum + (c.amount || 0), 0),
     surtaxAmount,
     surtaxRate,
@@ -1819,7 +1861,11 @@ function runEstimate(){
     province: province || 'Not specified',
     importType: importType === 'commercial' ? 'Commercial' : 'Personal / casual',
     frequency: freqLabels[freq] || freq,
-    dutyRate: mfnRate !== null ? mfnRate + '%' : 'N/A',
+    dutyRate: (dutyCharge && dutyCharge.amount === null)
+      ? (dutyCharge.qualifier === 'Not yet confirmed'
+          ? 'CANNOT CALCULATE - no verified rate exists yet for this HS code, see a broker for classification'
+          : 'CANNOT CALCULATE - per-unit/compound rate needs exact quantity or weight, see HS code')
+      : (mfnRate !== null ? mfnRate + '%' : 'N/A'),
     preferentialTreatment: isPreferential ? applicable.treaty : 'MFN (no preferential treaty)',
     tradeMeasuresFlag: tradeFlagSummary,
     estimatedLandedCost: total

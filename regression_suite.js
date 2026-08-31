@@ -1247,6 +1247,60 @@ if (!jsdomAvailable) {
         searchCodes('mouse', 1).length > 0 && searchCodes('mouse', 1)[0].code.startsWith('8471.60'));
     }
 
+    // C64 — Badge honesty fix (26 AUG 2026), found via specific/compound
+    // rate testing: the top-level "Estimate complete" badge previously
+    // showed unconditionally, even when duty genuinely couldn't be
+    // calculated (per-unit/compound rates need a quantity this tool
+    // doesn't collect). The detailed breakdown already explained this
+    // clearly, but the prominent badge gave a false impression of
+    // completeness to anyone skimming past it.
+    {
+      const rSpecific = await runUI({ q: '0105.11.21.00', value: 5000, origin: 'China', province: 'Ontario' });
+      check('C64a', 'Specific-rate code (duty needs quantity) shows "Partial estimate", not "Estimate complete"',
+        rSpecific.text.includes('Partial estimate') && !rSpecific.text.includes('Estimate complete'));
+      const rCompound = await runUI({ q: '0105.11.22.00', value: 5000, origin: 'China', province: 'Ontario' });
+      check('C64b', 'Compound-rate code (duty needs quantity) also shows "Partial estimate"',
+        rCompound.text.includes('Partial estimate'));
+      const rNormal = await runUI({ q: '4402.10.90.00', value: 1000, origin: 'Germany', province: 'Ontario' });
+      check('C64c', 'A normal, fully-computable code still correctly shows "Estimate complete"',
+        rNormal.text.includes('Estimate complete') && !rNormal.text.includes('Partial estimate'));
+    }
+
+    // C65 — Duty clarity fix in the Tally payload (26 AUG 2026), found via
+    // summary-vs-detail hunting: duty was previously sent as a plain "0.00"
+    // when genuinely unknown (specific/compound rate needing quantity),
+    // indistinguishable from a real, calculated Free rate to a broker
+    // reviewing the notification email. This directly risked the exact
+    // "missing charges" problem Rigo described with manual quotes.
+    {
+      const r = await runUI({ q: '0105.11.22.00', value: 5000, origin: 'China', province: 'Ontario' });
+      check('C65a', 'dutyCalculable flag correctly false when duty needs quantity',
+        r.inputs.dutyCalculable === false);
+      check('C65b', 'dutyRate is now unambiguous text, not a misleading "N/A"',
+        r.inputs.dutyRate.includes('CANNOT CALCULATE'));
+      const rNormal = await runUI({ q: '4402.10.90.00', value: 1000, origin: 'Germany', province: 'Ontario' });
+      check('C65c', 'A normal, fully-computable code still correctly shows dutyCalculable: true',
+        rNormal.inputs.dutyCalculable === true);
+    }
+
+    // C66 — Qualifier-specific duty messaging (26 AUG 2026): the C65 fix
+    // used one generic message for all null-duty cases, which would have
+    // been wrong for a second, distinct scenario (qualifier "Not yet
+    // confirmed" - no verified rate exists at all, e.g. tapioca). Confirmed
+    // that second path is genuinely unreachable today (those codes hit an
+    // earlier "we don't have that product" dead-end first), so it can't be
+    // exercised through runEstimate() here - this check only re-confirms
+    // the REACHABLE path (specific/compound rates) still gets the correct,
+    // specific wording after the refactor. The unreachable path's wording
+    // was fixed by code review, not a live test; add one here if that
+    // upstream dead-end is ever changed to let those codes through.
+    {
+      const r = await runUI({ q: '0105.11.22.00', value: 5000, origin: 'China', province: 'Ontario' });
+      check('C66', 'Reachable "needs quantity" case still gets its specific, correct wording after the qualifier-aware refactor',
+        r.inputs.dutyRate.includes('per-unit/compound rate needs exact quantity or weight') &&
+        !r.inputs.dutyRate.includes('no verified rate exists'));
+    }
+
     printSummary();
   })();
 }
