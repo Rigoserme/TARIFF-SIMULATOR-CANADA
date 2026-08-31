@@ -670,6 +670,20 @@
     .result-hero .label-icon{ background:#eee !important; color:#000 !important; }
     .charge-detail{ display:block !important; }
     .disclaimer-bar{ background:#fff !important; border-color:#000; }
+    /* BUG FIX (found via summary-vs-detail hunting, screen-vs-print variant):
+       .complete-badge normally uses light colors (#8FD9AE green, or gold
+       for the "Partial estimate" warning state) designed for contrast
+       against the dark brown .result-hero background. The print rules
+       above force that background to white but never touched the badge's
+       own text color - measured contrast ratios of 1.65:1 (normal) and
+       2.57:1 (partial/warning) against white, both far below the WCAG
+       minimum of 3:1 even for large text. This meant the exact warning
+       added specifically so nobody misses "duty needs quantity" would be
+       nearly unreadable on a printed or downloaded report - the one
+       output most likely to be shared with someone who can't click back
+       to the live page for clarification. */
+    .complete-badge{ background:#fff !important; border:1.5px solid #1a1a1a; color:#1a1a1a !important; }
+    .complete-badge.partial{ border-color:#7a5a1e; color:#7a5a1e !important; }
   }
 </style>
 </head>
@@ -957,11 +971,23 @@ function renderBrokeragePanel(clientType){
     </div>`;
 
   if(fees.overLimit){
+    // BUG FIX (found via currency-chain hunting): a client entering a value
+    // in USD that converts to over $25,000 CAD (e.g. $18,000 USD -> $26,100
+    // CAD at the fixed 1.45 rate) would see this message with no
+    // explanation of why - their own entered number looks well under
+    // $25,000, since the CAD figure that actually triggered this is never
+    // shown here. Added the conversion context specifically for that case;
+    // a client who entered directly in CAD sees the original message
+    // unchanged, since there's nothing to clarify for them.
+    const inputs = window.__brokerageInputs;
+    const conversionNote = (inputs && inputs.currency === 'USD')
+      ? ` Your entered ${formatMoney(inputs.originalEnteredValue)} USD converts to approximately ${formatMoney(inputs.value)} CAD at our estimate rate, which is what puts this over the threshold.`
+      : '';
     panel.innerHTML = `
       <h4>Request a Customs Quote</h4>
       <p class="bp-intro">Tell us a bit more and we'll follow up with the details.</p>
       ${typeRow}
-      <div class="bp-unavailable">Shipments over $25,000 CAD need a manual quote — use "Get a Hemisphere Import Quote" below to reach us directly.</div>
+      <div class="bp-unavailable">Shipments over $25,000 CAD need a manual quote — use "Get a Hemisphere Import Quote" below to reach us directly.${conversionNote}</div>
     `;
     wireBrokerageTypeButtons();
     return;

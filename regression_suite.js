@@ -1351,6 +1351,60 @@ if (!jsdomAvailable) {
         duringTyping === 0 && searchCallCount === 1);
     }
 
+    // C69 — Print contrast fix (found via summary-vs-detail hunting, the
+    // screen-vs-print variant): .complete-badge uses light colors designed
+    // for the dark .result-hero background, but print rules force that
+    // background to white without recoloring the badge - measured contrast
+    // of 1.65:1 (normal) and 2.57:1 (partial/warning) against white, both
+    // failing WCAG's 3:1 minimum even for large text. This meant the exact
+    // "duty needs quantity" warning would be nearly unreadable on a
+    // printed or downloaded report - the output most likely to be shared
+    // with someone who can't click back to the live page. Fixed to 17.4:1
+    // and 6.35:1 respectively.
+    {
+      const html = fs.readFileSync(CLIENT_PATH, 'utf8');
+      const printSection = html.slice(html.indexOf('@media print'), html.indexOf('</style>'));
+      check('C69', 'Print media rules include high-contrast badge overrides for both normal and partial states',
+        printSection.includes('#1a1a1a') && printSection.includes('#7a5a1e') && printSection.includes('.complete-badge'));
+    }
+
+    // C70 — Currency-conversion clarity fix for the $25,000 quote-panel
+    // limit (found via currency-chain hunting): a client entering, say,
+    // $18,000 USD (converts to $26,100 CAD) would see "Shipments over
+    // $25,000 CAD need a manual quote" with no indication that their own
+    // entered number - which looks well under $25,000 - is what triggered
+    // it. Now explains the conversion specifically when currency is USD;
+    // a direct CAD entry over the limit is unaffected, since there's
+    // nothing to clarify for that case.
+    {
+      const dom = new (require('jsdom').JSDOM)(clientHtml, { runScripts: 'dangerously', resources: 'usable' });
+      await new Promise(res => setTimeout(res, 100));
+      const doc = dom.window.document;
+      const win = dom.window;
+      doc.getElementById('q').value = '4402.10.90.00';
+      doc.getElementById('value').value = '18000';
+      doc.getElementById('currency').value = 'USD';
+      doc.getElementById('origin').value = 'Germany';
+      doc.getElementById('province').value = 'Ontario';
+      win.runEstimate();
+      await new Promise(res => setTimeout(res, 50));
+      doc.getElementById('quoteRevealBtn').click();
+      await new Promise(res => setTimeout(res, 50));
+      const panelUSD = doc.querySelector('.brokerage-panel').innerHTML;
+      check('C70a', 'USD entry converting over the $25K limit explains the conversion',
+        panelUSD.includes('converts to approximately') && panelUSD.includes('$26,100.00'));
+
+      doc.getElementById('currency').value = 'CAD';
+      doc.getElementById('value').value = '30000';
+      win.runEstimate();
+      await new Promise(res => setTimeout(res, 50));
+      doc.getElementById('quoteRevealBtn').click();
+      await new Promise(res => setTimeout(res, 50));
+      const panelCAD = doc.querySelector('.brokerage-panel').innerHTML;
+      check('C70b', 'Direct CAD entry over the limit is unaffected (no conversion note added)',
+        !panelCAD.includes('converts to approximately'));
+    }
+
     printSummary();
   })();
 }
