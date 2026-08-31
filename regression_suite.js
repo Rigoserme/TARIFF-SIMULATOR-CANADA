@@ -1301,6 +1301,30 @@ if (!jsdomAvailable) {
         !r.inputs.dutyRate.includes('no verified rate exists'));
     }
 
+    // C67 — "Trade Measures: None flagged" contradiction fix (26 AUG 2026),
+    // found via summary-vs-detail hunting. A code with ONLY a pending
+    // (not-yet-effective) surtax and no active measure previously showed
+    // "None flagged" in the main breakdown, directly contradicted by the
+    // separate yellow "Heads up" notice for that same pending surtax on
+    // the same page. Real example: fishing rods (9507.10.10.00) from the
+    // US. This also affects the Tally payload text your team sees, not
+    // just the client-facing display.
+    {
+      const rPending = await runUI({ q: '9507.10.10.00', value: 5000, origin: 'United States of America', province: 'Ontario' });
+      check('C67a', 'Pending-only case: no longer shows the contradictory "None flagged", shows "Pending" instead',
+        !rPending.text.includes('None flagged') && rPending.text.includes('Pending') && rPending.text.includes('Heads up'));
+      check('C67b', 'Tally payload text also correctly reflects "Pending", not "None flagged"',
+        rPending.inputs.tradeMeasuresFlag.includes('Pending'));
+
+      const rNone = await runUI({ q: '4402.10.90.00', value: 1000, origin: 'Germany', province: 'Ontario' });
+      check('C67c', 'A genuine no-measures case still correctly shows "None flagged"',
+        rNone.text.includes('None flagged') && !rNone.text.includes('Pending'));
+
+      const rActive = await runUI({ q: '7604.10.00.30', value: 10000, origin: 'China', province: 'Ontario' });
+      check('C67d', 'An active-measures case (SIMA+surtax) is unaffected by this fix',
+        !rActive.text.includes('None flagged') && !rActive.text.includes('Trade Measures: Pending'));
+    }
+
     printSummary();
   })();
 }

@@ -1583,7 +1583,16 @@ function runEstimate(){
     });
   }
 
-  if(!surtaxMatches.length && !simaMatches.length && !safeguardMatches.length){
+  // BUG FIX (26 AUG 2026): found via summary-vs-detail hunting. This
+  // condition never checked pendingSurtaxMatches, so a code with ONLY a
+  // pending (not-yet-effective) surtax and no active measure would show
+  // "Trade Measures: None flagged" directly above the separate yellow
+  // "Heads up" notice for that same pending surtax - a direct, visible
+  // contradiction on the same page. Real example: 9507.10.10.00 (fishing
+  // rods) from the US, which has a pending Sept 8 surtax and nothing
+  // active. Now gives this line its own honest "Pending" state instead of
+  // going silent, rather than just suppressing the false "None flagged".
+  if(!surtaxMatches.length && !simaMatches.length && !safeguardMatches.length && !pendingSurtaxMatches.length){
     charges.push({
       label: 'Trade Measures', subtitle: 'SIMA, surtaxes, safeguards, anti-dumping',
       tooltip: 'Trade Measures — SIMA, surtaxes, safeguards and similar charges that can add to your import cost beyond standard customs duty.',
@@ -1591,6 +1600,17 @@ function runEstimate(){
       explain: {
         headline: 'What did we check?',
         body: 'No SIMA, surtax, safeguard, or retaliatory measures were found for this tariff item and selected origin.',
+        kv: []
+      }
+    });
+  } else if(!surtaxMatches.length && !simaMatches.length && !safeguardMatches.length && pendingSurtaxMatches.length){
+    charges.push({
+      label: 'Trade Measures', subtitle: 'A new measure is scheduled but not yet in effect',
+      tooltip: 'Trade Measures — SIMA, surtaxes, safeguards and similar charges that can add to your import cost beyond standard customs duty.',
+      amount: null, qualifier: 'Pending', warning: true, category: 'trade',
+      explain: {
+        headline: 'What did we check?',
+        body: 'No active SIMA, surtax, or safeguard measure applies to this tariff item and origin right now — see the notice below for a measure that has been announced but is not yet in effect.',
         kv: []
       }
     });
