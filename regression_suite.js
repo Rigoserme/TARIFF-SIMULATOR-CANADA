@@ -1325,6 +1325,32 @@ if (!jsdomAvailable) {
         !rActive.text.includes('None flagged') && !rActive.text.includes('Trade Measures: Pending'));
     }
 
+    // C68 — Search debounce performance fix (26 AUG 2026): searchCodes()
+    // was measured at ~90-140ms per call on a fast test machine, and was
+    // firing on every keystroke with no debouncing - roughly 14 full
+    // re-scans of all 10,765 codes for a typical query while typing.
+    // Confirms rapid typing triggers zero search calls until typing
+    // settles, then exactly one call with the final value.
+    {
+      const dom = new (require('jsdom').JSDOM)(clientHtml, { runScripts: 'dangerously', resources: 'usable' });
+      await new Promise(res => setTimeout(res, 100));
+      const doc = dom.window.document;
+      const win = dom.window;
+      const qInput = doc.getElementById('q');
+      let searchCallCount = 0;
+      const original = win.searchCodes;
+      win.searchCodes = function(...args) { searchCallCount++; return original.apply(this, args); };
+      for (const c of 'aluminum'.split('')) {
+        qInput.value = (qInput.value || '') + c;
+        qInput.dispatchEvent(new win.Event('input'));
+        await new Promise(res => setTimeout(res, 20));
+      }
+      const duringTyping = searchCallCount;
+      await new Promise(res => setTimeout(res, 250));
+      check('C68', 'Search is debounced: zero calls during rapid typing, exactly one after it settles',
+        duringTyping === 0 && searchCallCount === 1);
+    }
+
     printSummary();
   })();
 }
