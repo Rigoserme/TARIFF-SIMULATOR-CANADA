@@ -5,15 +5,22 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Duty &amp; Tariff Estimator | Hemisphere</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
 
   :root{
-    /* --brown-* variable names kept as-is (values now hold Hemisphere's navy palette) to avoid a larger find-replace across every element that references them. */
-    --brown-deep:#1A4D61;
-    --brown-mid:#0A3A5C;
-    --brown-soft:#EEF2F5;
-    --teal:#068B97;
-    --teal-deep:#057681;
+    /* REBRANDED (26 AUG 2026) to match Hemisphere's actual current site
+       (gohemisphere.ca, redesigned Aug 2026) - confirmed against real
+       screenshots, not guessed. Their dark base color is a deep navy-teal,
+       not brown; --brown-* names are kept as-is throughout the rest of
+       this file specifically to avoid a much larger, riskier find-replace
+       across every element that references them - only the underlying
+       hex values changed here. --teal/--teal-deep were already close to
+       Hemisphere's actual accent teal and are left untouched. */
+    --brown-deep:#154B5C;
+    --brown-mid:#2C6B7A;
+    --brown-soft:#EAF3F4;
+    --teal:#5FCFC4;
+    --teal-deep:#3AA89C;
     --teal-soft:#E4F7F4;
     --paper:#FAF8F5;
     --ink:#232323;
@@ -47,25 +54,26 @@
   }
   .brand{
     display:flex;
-    align-items:baseline;
+    align-items:center;
     gap:10px;
   }
-  .brand-name{ font-family:'Poppins',sans-serif; font-weight:800; font-size:20px; letter-spacing:0.5px; text-transform:uppercase; }
+  .brand-name{ font-family:'Quicksand',sans-serif; font-weight:800; font-size:20px; letter-spacing:0.5px; text-transform:uppercase; }
+  .brand-globe{ width:26px; height:26px; flex-shrink:0; }
   .brand-tag{ font-size:13px; color:#D9CFC3; }
-  header a{ color:#fff; text-decoration:none; font-size:13.5px; font-weight:600; letter-spacing:0.03em; text-transform:uppercase; border:1px solid var(--teal); background:var(--teal); padding:9px 18px; border-radius:6px; transition:opacity 0.15s; }
+  header a{ color:#fff; text-decoration:none; font-size:13.5px; font-weight:600; letter-spacing:0.03em; text-transform:uppercase; border:1px solid var(--teal); background:var(--teal); color:var(--brown-deep); padding:9px 18px; border-radius:6px; transition:opacity 0.15s; }
   header a:hover{ opacity:0.85; }
 
   main{ max-width:880px; margin:0 auto; padding:56px 24px 80px; }
 
-  .hero-head{ margin-bottom:36px; }
+  .hero-head{ margin-bottom:20px; }
   .hero-head h1{
-    font-family:'Poppins',sans-serif;
+    font-family:'Quicksand',sans-serif;
     font-weight:800;
     text-transform:uppercase;
-    font-size:clamp(28px, 3.6vw, 38px);
+    font-size:clamp(22px, 2.3vw, 26px);
     line-height:1.2;
     letter-spacing:0.2px;
-    margin:0 0 12px;
+    margin:0 0 8px;
     color:var(--brown-deep);
   }
   .hero-head p{ font-size:17px; color:var(--ink-faint); margin:0; max-width:52ch; }
@@ -74,7 +82,7 @@
     background:#fff;
     border:1px solid var(--line);
     border-radius:14px;
-    padding:28px;
+    padding:20px;
   }
 
   .field-row{
@@ -94,11 +102,11 @@
     font-size:13px;
     font-weight:600;
     color:var(--brown-mid);
-    margin-bottom:6px;
+    margin-bottom:4px;
   }
   .field input, .field select{
     width:100%;
-    padding:12px 14px;
+    padding:10px 14px;
     border:1.5px solid var(--line);
     border-radius:8px;
     font-family:'Inter',sans-serif;
@@ -139,9 +147,9 @@
   }
 
   .calc-btn{
-    margin-top:20px;
+    margin-top:14px;
     width:100%;
-    padding:15px;
+    padding:13px;
     background:var(--brown-deep);
     color:#fff;
     border:none;
@@ -193,7 +201,7 @@
   }
   .download-btn:hover{ background:rgba(255,255,255,0.1); }
   .download-btn svg{ width:14px; height:14px; }
-  .result-hero .amount{ font-family:'Poppins',sans-serif; font-weight:700; font-size:clamp(36px,6vw,52px); color:#fff; text-align:left; margin-top:14px; }
+  .result-hero .amount{ font-family:'Quicksand',sans-serif; font-weight:700; font-size:clamp(36px,6vw,52px); color:#fff; text-align:left; margin-top:14px; }
   .result-hero .sub-row{ display:flex; align-items:center; gap:12px; flex-wrap:wrap; text-align:left; margin-top:6px; }
   .result-hero .sub{ font-size:14px; color:#E3D9CB; }
   .complete-badge{
@@ -348,7 +356,7 @@
   }
   .brokerage-panel.show{ display:block; }
   .brokerage-panel h4{
-    font-family:'Poppins',sans-serif;
+    font-family:'Quicksand',sans-serif;
     font-weight:800;
     font-size:15px;
     color:var(--brown-deep);
@@ -388,8 +396,8 @@
     padding-top:14px;
     border-top:2px solid var(--brown-deep);
   }
-  .bp-total-row .bp-total-label{ font-family:'Poppins',sans-serif; font-weight:800; font-size:14px; color:var(--brown-deep); }
-  .bp-total-row .bp-total-val{ font-family:'Poppins',sans-serif; font-weight:800; font-size:22px; color:var(--brown-deep); }
+  .bp-total-row .bp-total-label{ font-family:'Quicksand',sans-serif; font-weight:800; font-size:14px; color:var(--brown-deep); }
+  .bp-total-row .bp-total-val{ font-family:'Quicksand',sans-serif; font-weight:800; font-size:22px; color:var(--brown-deep); }
   .bp-usd{ text-align:right; font-size:12.5px; color:var(--ink-faint); margin-top:2px; }
   .bp-note{ font-size:11.5px; color:var(--ink-faint); margin-top:14px; line-height:1.5; }
 
@@ -517,7 +525,7 @@
     gap:20px;
     flex-wrap:wrap;
   }
-  .cta div h3{ font-family:'Poppins',sans-serif; font-weight:800; text-transform:uppercase; letter-spacing:0.2px; font-size:17px; margin:0 0 4px; color:var(--brown-deep); }
+  .cta div h3{ font-family:'Quicksand',sans-serif; font-weight:800; text-transform:uppercase; letter-spacing:0.2px; font-size:17px; margin:0 0 4px; color:var(--brown-deep); }
   .cta div p{ margin:0; font-size:14px; color:var(--ink-faint); max-width:44ch; }
   .cta a, .cta button{
     background:var(--brown-deep);
@@ -692,6 +700,13 @@
 
 <header>
   <div class="brand">
+    <svg class="brand-globe" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.4">
+      <circle cx="12" cy="12" r="9.3"/>
+      <ellipse cx="12" cy="12" rx="4" ry="9.3"/>
+      <line x1="2.7" y1="12" x2="21.3" y2="12"/>
+      <path d="M4.2 6.8 Q12 9.5 19.8 6.8"/>
+      <path d="M4.2 17.2 Q12 14.5 19.8 17.2"/>
+    </svg>
     <span class="brand-name">HEMISPHERE</span>
     <span class="brand-tag">Duty &amp; Tariff Estimator</span>
   </div>
@@ -728,7 +743,7 @@
         </div>
       </div>
     </div>
-    <div class="field-row" style="grid-template-columns:1fr 1fr; margin-top:16px;">
+    <div class="field-row" style="grid-template-columns:1fr 1fr; margin-top:10px;">
       <div class="field">
         <label for="importType">Import type</label>
         <select id="importType">
@@ -746,7 +761,7 @@
         </select>
       </div>
     </div>
-    <div class="field" id="provinceField" style="display:none; margin-top:16px;">
+    <div class="field" id="provinceField" style="display:none; margin-top:10px;">
       <label for="province">Province of import</label>
       <select id="province">
         <option value="">Select province…</option>
@@ -765,7 +780,7 @@
         <option value="Yukon">Yukon</option>
       </select>
     </div>
-    <div class="field" id="freqCountField" style="display:none; margin-top:16px;">
+    <div class="field" id="freqCountField" style="display:none; margin-top:10px;">
       <label for="freqCount">Shipments per month</label>
       <input type="number" id="freqCount" placeholder="e.g. 6" min="1">
     </div>
