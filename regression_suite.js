@@ -1405,6 +1405,32 @@ if (!jsdomAvailable) {
         !panelCAD.includes('converts to approximately'));
     }
 
+    // A14 — Hemisphere rebrand: colors and headline font verified live
+    // against gohemisphere.ca's own CSS custom properties (--gh-navy,
+    // --gh-navy-2, --gh-teal, --gh-teal-dark, --wp--preset--font-family--poppins).
+    {
+      const html = fs.readFileSync(CLIENT_PATH, 'utf8');
+      check('A14a', 'Dark base color matches Hemisphere\'s real --gh-navy (#1A4D61), not the old brown',
+        html.includes('--brown-deep:#1A4D61'));
+      check('A14b', 'Accent teal matches Hemisphere\'s real --gh-teal (#068B97)',
+        html.includes('--teal:#068B97'));
+      check('A14c', 'Poppins is imported and used for headline elements',
+        html.includes('Poppins') && html.includes("font-family:'Poppins'") && !html.includes('Quicksand'));
+      check('A14d', 'White text on the new dark navy meets WCAG AA contrast (4.5+ required)',
+        (() => {
+          const hexToRgb = h => [0,2,4].map(i => parseInt(h.slice(i,i+2),16));
+          const lum = ([r,g,b]) => {
+            const c = v => { v/=255; return v<=0.03928 ? v/12.92 : ((v+0.055)/1.055)**2.4; };
+            return 0.2126*c(r)+0.7152*c(g)+0.0722*c(b);
+          };
+          const l1 = lum(hexToRgb('FFFFFF')), l2 = lum(hexToRgb('1A4D61'));
+          const ratio = (Math.max(l1,l2)+0.05)/(Math.min(l1,l2)+0.05);
+          return ratio >= 4.5;
+        })());
+      check('A14e', 'Header CTA button no longer pairs dark teal bg with dark navy text (contrast fix)',
+        !html.includes('background:var(--teal); color:var(--brown-deep)'));
+    }
+
     printSummary();
   })();
 }

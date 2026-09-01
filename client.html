@@ -5,14 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Duty &amp; Tariff Estimator | Hemisphere</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
 
   :root{
-    --brown-deep:#3F2A1E;
-    --brown-mid:#5A3D2A;
-    --brown-soft:#F3ECE5;
-    --teal:#5FCFC4;
-    --teal-deep:#3AA89C;
+    /* --brown-* variable names kept as-is (values now hold Hemisphere's navy palette) to avoid a larger find-replace across every element that references them. */
+    --brown-deep:#1A4D61;
+    --brown-mid:#0A3A5C;
+    --brown-soft:#EEF2F5;
+    --teal:#068B97;
+    --teal-deep:#057681;
     --teal-soft:#E4F7F4;
     --paper:#FAF8F5;
     --ink:#232323;
@@ -49,16 +50,16 @@
     align-items:baseline;
     gap:10px;
   }
-  .brand-name{ font-family:'Montserrat',sans-serif; font-weight:800; font-size:20px; letter-spacing:0.5px; text-transform:uppercase; }
+  .brand-name{ font-family:'Poppins',sans-serif; font-weight:800; font-size:20px; letter-spacing:0.5px; text-transform:uppercase; }
   .brand-tag{ font-size:13px; color:#D9CFC3; }
-  header a{ color:#fff; text-decoration:none; font-size:13.5px; font-weight:600; letter-spacing:0.03em; text-transform:uppercase; border:1px solid var(--teal); background:var(--teal); color:var(--brown-deep); padding:9px 18px; border-radius:6px; transition:opacity 0.15s; }
+  header a{ color:#fff; text-decoration:none; font-size:13.5px; font-weight:600; letter-spacing:0.03em; text-transform:uppercase; border:1px solid var(--teal); background:var(--teal); padding:9px 18px; border-radius:6px; transition:opacity 0.15s; }
   header a:hover{ opacity:0.85; }
 
   main{ max-width:880px; margin:0 auto; padding:56px 24px 80px; }
 
   .hero-head{ margin-bottom:36px; }
   .hero-head h1{
-    font-family:'Montserrat',sans-serif;
+    font-family:'Poppins',sans-serif;
     font-weight:800;
     text-transform:uppercase;
     font-size:clamp(28px, 3.6vw, 38px);
@@ -192,7 +193,7 @@
   }
   .download-btn:hover{ background:rgba(255,255,255,0.1); }
   .download-btn svg{ width:14px; height:14px; }
-  .result-hero .amount{ font-family:'Montserrat',sans-serif; font-weight:700; font-size:clamp(36px,6vw,52px); color:#fff; text-align:left; margin-top:14px; }
+  .result-hero .amount{ font-family:'Poppins',sans-serif; font-weight:700; font-size:clamp(36px,6vw,52px); color:#fff; text-align:left; margin-top:14px; }
   .result-hero .sub-row{ display:flex; align-items:center; gap:12px; flex-wrap:wrap; text-align:left; margin-top:6px; }
   .result-hero .sub{ font-size:14px; color:#E3D9CB; }
   .complete-badge{
@@ -347,7 +348,7 @@
   }
   .brokerage-panel.show{ display:block; }
   .brokerage-panel h4{
-    font-family:'Montserrat',sans-serif;
+    font-family:'Poppins',sans-serif;
     font-weight:800;
     font-size:15px;
     color:var(--brown-deep);
@@ -387,8 +388,8 @@
     padding-top:14px;
     border-top:2px solid var(--brown-deep);
   }
-  .bp-total-row .bp-total-label{ font-family:'Montserrat',sans-serif; font-weight:800; font-size:14px; color:var(--brown-deep); }
-  .bp-total-row .bp-total-val{ font-family:'Montserrat',sans-serif; font-weight:800; font-size:22px; color:var(--brown-deep); }
+  .bp-total-row .bp-total-label{ font-family:'Poppins',sans-serif; font-weight:800; font-size:14px; color:var(--brown-deep); }
+  .bp-total-row .bp-total-val{ font-family:'Poppins',sans-serif; font-weight:800; font-size:22px; color:var(--brown-deep); }
   .bp-usd{ text-align:right; font-size:12.5px; color:var(--ink-faint); margin-top:2px; }
   .bp-note{ font-size:11.5px; color:var(--ink-faint); margin-top:14px; line-height:1.5; }
 
@@ -516,7 +517,7 @@
     gap:20px;
     flex-wrap:wrap;
   }
-  .cta div h3{ font-family:'Montserrat',sans-serif; font-weight:800; text-transform:uppercase; letter-spacing:0.2px; font-size:17px; margin:0 0 4px; color:var(--brown-deep); }
+  .cta div h3{ font-family:'Poppins',sans-serif; font-weight:800; text-transform:uppercase; letter-spacing:0.2px; font-size:17px; margin:0 0 4px; color:var(--brown-deep); }
   .cta div p{ margin:0; font-size:14px; color:var(--ink-faint); max-width:44ch; }
   .cta a, .cta button{
     background:var(--brown-deep);
