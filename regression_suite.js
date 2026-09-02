@@ -1414,8 +1414,8 @@ if (!jsdomAvailable) {
         html.includes('--brown-deep:#1A4D61'));
       check('A14b', 'Accent teal matches Hemisphere\'s real --gh-teal (#068B97)',
         html.includes('--teal:#068B97'));
-      check('A14c', 'Poppins is imported and used for headline elements',
-        html.includes('Poppins') && html.includes("font-family:'Poppins'") && !html.includes('Quicksand'));
+      check('A14c', "Quicksand is imported and used for headline elements (kept deliberately over Poppins - Rigo saw both and preferred Quicksand's look, even though Poppins is Hemisphere's exact verified font)",
+        html.includes('Quicksand') && html.includes("font-family:'Quicksand'") && !html.includes('Poppins'));
       check('A14d', 'White text on the new dark navy meets WCAG AA contrast (4.5+ required)',
         (() => {
           const hexToRgb = h => [0,2,4].map(i => parseInt(h.slice(i,i+2),16));
@@ -1429,6 +1429,26 @@ if (!jsdomAvailable) {
         })());
       check('A14e', 'Header CTA button no longer pairs dark teal bg with dark navy text (contrast fix)',
         !html.includes('background:var(--teal); color:var(--brown-deep)'));
+    }
+
+    // A15 — "plastic" search fix via targeted pinned result (26 AUG 2026):
+    // no code under the actual "articles of plastics" catch-all (heading
+    // 39.26) had the word in its own leaf text, so incidental mentions
+    // elsewhere always outranked it. A global scoring change (heading-
+    // level bonus) was tried and reverted after it broke "wheelchair" by
+    // creating a new tie a "parts" listing won - not safe as a general
+    // fix. This checks the safer, narrower pinned-result mechanism
+    // instead, and confirms it doesn't affect unrelated searches.
+    {
+      const rPlastic = searchCodes('plastic', 5);
+      check('A15a', '"plastic" now correctly surfaces a real Chapter 39 result first',
+        rPlastic.length > 0 && rPlastic[0].code === '3926.90.99.90');
+      const rWheelchair = searchCodes('wheelchair', 1);
+      check('A15b', '"wheelchair" is unaffected by the pinned-results mechanism',
+        rWheelchair.length > 0 && rWheelchair[0].code.startsWith('8713'));
+      const rSofa = searchCodes('sofa', 1);
+      check('A15c', 'An unrelated search (sofa) is unaffected',
+        rSofa.length > 0 && rSofa[0].code.startsWith('9401'));
     }
 
     printSummary();

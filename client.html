@@ -16,10 +16,11 @@
        across every element that references them - only the underlying
        hex values changed here. --teal/--teal-deep were already close to
        Hemisphere's actual accent teal and are left untouched. */
-    --brown-deep:#154B5C;
+    --brown-deep:#1A4D61;
     --brown-mid:#2C6B7A;
     --brown-soft:#EAF3F4;
-    --teal:#5FCFC4;
+    --teal:#068B97;
+    --teal-on-dark:#5FCFC4;
     --teal-deep:#3AA89C;
     --teal-soft:#E4F7F4;
     --paper:#FAF8F5;
@@ -60,7 +61,7 @@
   .brand-name{ font-family:'Quicksand',sans-serif; font-weight:800; font-size:20px; letter-spacing:0.5px; text-transform:uppercase; }
   .brand-globe{ width:26px; height:26px; flex-shrink:0; }
   .brand-tag{ font-size:13px; color:#D9CFC3; }
-  header a{ color:#fff; text-decoration:none; font-size:13.5px; font-weight:600; letter-spacing:0.03em; text-transform:uppercase; border:1px solid var(--teal); background:var(--teal); color:var(--brown-deep); padding:9px 18px; border-radius:6px; transition:opacity 0.15s; }
+  header a{ color:#fff; text-decoration:none; font-size:13.5px; font-weight:600; letter-spacing:0.03em; text-transform:uppercase; border:1px solid var(--teal); background:var(--teal); color:#fff; padding:9px 18px; border-radius:6px; transition:opacity 0.15s; }
   header a:hover{ opacity:0.85; }
 
   main{ max-width:880px; margin:0 auto; padding:56px 24px 80px; }
@@ -636,7 +637,7 @@
     display:inline-block;
     padding:4px 10px;
     background:rgba(95,207,196,0.22);
-    color:var(--teal);
+    color:var(--teal-on-dark);
     font-size:11px;
     font-weight:700;
     letter-spacing:0.03em;
@@ -645,7 +646,7 @@
   .tu-view-all{
     font-size:12.5px;
     font-weight:600;
-    color:var(--teal);
+    color:var(--teal-on-dark);
     text-decoration:underline;
     white-space:nowrap;
   }
@@ -660,7 +661,7 @@
     color:rgba(255,255,255,0.92);
     margin:0 0 4px;
   }
-  .tu-desc a{ color:var(--teal); text-decoration:underline; }
+  .tu-desc a{ color:var(--teal-on-dark); text-decoration:underline; }
   .tu-effective{
     font-size:11.5px;
     color:rgba(255,255,255,0.55);

@@ -17129,11 +17129,44 @@ function searchCodesByText(query, maxResults){
 // Combined entry point used by the search box: code-prefix match when the
 // query looks like an HS code (digits/dots only), description+synonym
 // text search otherwise.
+//
+// PINNED_SEARCH_TERMS (26 AUG 2026): a small, explicit override for
+// generic material searches where the natural leaf-scoring algorithm
+// structurally can't win. Found via "plastic": no code under heading
+// 39.26 (the actual "other articles of plastics" catch-all, 32 codes) has
+// the word in its own leaf text - it only lives in the shared heading
+// above all of them - so every incidental leaf mention elsewhere (a wire
+// coating, a furniture part) permanently outranks it. Tried fixing this
+// generally by adding a heading-level bonus to the scoring algorithm
+// itself, but that's a global change with real ripple effects: raising it
+// enough to help "plastic" also broke a previously-fixed, unrelated
+// search ("wheelchair") by creating a new tie that a "parts" listing won
+// on the length tiebreaker, tried twice with two different synonyms. A
+// global scoring change isn't safe to make for a single-term problem.
+// This is a narrower, zero-risk alternative: an explicit list of codes to
+// place first for a small number of known problem terms, with the
+// regular ranked results still shown afterward (deduplicated) for
+// context. Add to this list only when a real gap is confirmed the same
+// rigorous way as everything else - it's a targeted patch, not a general
+// search improvement mechanism.
+const PINNED_SEARCH_TERMS = {
+  "plastic": ["3926.90.99.90"]
+};
 function searchCodes(query, maxResults){
   const trimmed = (query || "").trim();
   if(!trimmed) return [];
   if(/^[0-9.]+$/.test(trimmed)){
     return searchCodesByPrefix(trimmed, maxResults);
+  }
+  const limit = maxResults || 20;
+  const pinned = PINNED_SEARCH_TERMS[trimmed.toLowerCase()];
+  if(pinned){
+    const pinnedResults = pinned
+      .filter(code => CODE_DESCRIPTIONS[code])
+      .map(code => ({ code, description: CODE_DESCRIPTIONS[code] }));
+    const rest = searchCodesByText(trimmed, limit)
+      .filter(r => !pinned.includes(r.code));
+    return [...pinnedResults, ...rest].slice(0, limit);
   }
   return searchCodesByText(trimmed, maxResults);
 }
