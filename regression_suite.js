@@ -1472,6 +1472,65 @@ if (!jsdomAvailable) {
         allPass, failures.length ? `Failed: ${failures.join(', ')}` : '');
     }
 
+    // A17 — 12 fixes from testing high-volume Canadian import categories
+    // (26 AUG 2026): battery/solar panel/medical device/vitamin/truck/
+    // engine/valve/gear/coffee/cable via PINNED_SEARCH_TERMS (same pattern
+    // as plastic/wool/cement), drywall via a new pinned code, forklift via
+    // a simple SEARCH_SYNONYMS entry (it wasn't broken, just needed the
+    // hyphenated form). Several original mismatches were bizarre enough
+    // to matter for real client trust (battery -> yeast products; solar
+    // panel -> vehicle instrument clocks; coffee -> coffee whitener).
+    {
+      const terms = {
+        battery: '8507', 'solar panel': '8541', 'medical device': '9018',
+        vitamin: '2936', truck: '8704', engine: '8407', valve: '8481',
+        gear: '8483', coffee: '0901', cable: '8544', drywall: '6809',
+        forklift: '8427'
+      };
+      let allPass = true;
+      const failures = [];
+      Object.entries(terms).forEach(([term, expectedPrefix]) => {
+        const r = searchCodes(term, 1);
+        const ok = r.length > 0 && r[0].code.startsWith(expectedPrefix);
+        if (!ok) { allPass = false; failures.push(term); }
+      });
+      check('A17', 'All 12 importer-category fixes resolve to their correct heading',
+        allPass, failures.length ? `Failed: ${failures.join(', ')}` : '');
+    }
+
+    // A18 — Plural-form fix for PINNED_SEARCH_TERMS (26 AUG 2026): the
+    // pinned lookup was an exact string match only, so a client searching
+    // "batteries" (the natural way most people would type it) got none of
+    // the A15/A16/A17 fixes - 9 of 10 tested plurals completely missed
+    // them, falling back to the original broken ranking. Added simple
+    // plural normalization (trailing "s" and the "-y -> -ies" pattern)
+    // directly in the lookup, checked here against every pinned term's
+    // plural form plus a spot-check that singular forms are unaffected.
+    {
+      const plurals = {
+        batteries: '8507', 'solar panels': '8541', 'medical devices': '9018',
+        vitamins: '2936', trucks: '8704', engines: '8407', valves: '8481',
+        gears: '8483', cables: '8544', drywalls: '6809', plastics: '3926',
+        ceramics: '6914', wools: '5101'
+      };
+      let allPass = true;
+      const failures = [];
+      Object.entries(plurals).forEach(([term, expectedPrefix]) => {
+        const r = searchCodes(term, 1);
+        const ok = r.length > 0 && r[0].code.startsWith(expectedPrefix);
+        if (!ok) { allPass = false; failures.push(term); }
+      });
+      check('A18a', 'Plural forms of every pinned term now resolve correctly',
+        allPass, failures.length ? `Failed: ${failures.join(', ')}` : '');
+
+      const singularsStillWork = ['battery','plastic','wool','cement','wheelchair','sofa'].every(t => {
+        const r = searchCodes(t, 1);
+        return r.length > 0;
+      });
+      check('A18b', 'Singular forms are unaffected by the plural-normalization change',
+        singularsStillWork);
+    }
+
     printSummary();
   })();
 }

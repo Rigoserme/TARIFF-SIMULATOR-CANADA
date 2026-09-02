@@ -16975,6 +16975,7 @@ const SEARCH_SYNONYMS = {
   "wardrobe":["bedroom"],
   "bookshelf":["shelving"],
   "lawnmower":["mowers"],
+  "forklift":["fork-lift"],
   // Found via chapter-hunting (26 AUG 2026): heading 87.13 ("Carriages for
   // disabled persons") is genuinely complete (manual/scooter/motorized
   // variants), but "wheelchair" never matched it directly - the top-level
@@ -17169,7 +17170,26 @@ const PINNED_SEARCH_TERMS = {
   //   articles" catch-all's own leaf is just "Other".
   "wool": ["5101.19.00.00"],
   "cement": ["2523.10.00.00"],
-  "ceramic": ["6914.90.00.00"]
+  "ceramic": ["6914.90.00.00"],
+  // Found via testing high-volume Canadian import categories (26 AUG
+  // 2026) - the same "generic term loses to an unrelated but shorter/
+  // more-specific leaf match" pattern, now confirmed across a much wider,
+  // more consequential set of everyday commercial import terms. Some of
+  // these mismatches were bizarre enough to be genuinely confusing for a
+  // real client (battery -> yeast products; solar panel -> vehicle
+  // instrument clocks; medical device -> watch movements; coffee ->
+  // coffee whitener/creamer).
+  "battery": ["8507.10.00.10"],
+  "solar panel": ["8541.10.00.30"],
+  "medical device": ["9018.90.90.10"],
+  "vitamin": ["2936.21.00.10"],
+  "truck": ["8704.21.10.00"],
+  "engine": ["8407.34.21.00"],
+  "valve": ["8481.10.00.40"],
+  "gear": ["8483.40.00.21"],
+  "coffee": ["0901.11.00.20"],
+  "cable": ["8544.11.00.10"],
+  "drywall": ["6809.11.00.11"]
 };
 function searchCodes(query, maxResults){
   const trimmed = (query || "").trim();
@@ -17178,7 +17198,23 @@ function searchCodes(query, maxResults){
     return searchCodesByPrefix(trimmed, maxResults);
   }
   const limit = maxResults || 20;
-  const pinned = PINNED_SEARCH_TERMS[trimmed.toLowerCase()];
+  // BUG FIX (26 AUG 2026): found via testing plural forms of the terms
+  // just added to PINNED_SEARCH_TERMS. That lookup was an exact string
+  // match only, so a client searching "batteries" (the natural way most
+  // people would actually type it) got none of the fix - 9 of 10 tested
+  // plurals completely missed it, falling straight back to the original,
+  // broken ranking. Rather than add both forms for every pinned term
+  // forever, normalize simple plurals here once: strip a trailing "s",
+  // and separately handle the "-y -> -ies" pattern (battery/batteries),
+  // which a plain "strip s" wouldn't catch.
+  const lower = trimmed.toLowerCase();
+  let pinned = PINNED_SEARCH_TERMS[lower];
+  if(!pinned && lower.endsWith("ies") && lower.length > 3){
+    pinned = PINNED_SEARCH_TERMS[lower.slice(0, -3) + "y"];
+  }
+  if(!pinned && lower.endsWith("s") && lower.length > 1){
+    pinned = PINNED_SEARCH_TERMS[lower.slice(0, -1)];
+  }
   if(pinned){
     const pinnedResults = pinned
       .filter(code => CODE_DESCRIPTIONS[code])
