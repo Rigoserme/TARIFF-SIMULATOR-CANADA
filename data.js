@@ -17150,7 +17150,26 @@ function searchCodesByText(query, maxResults){
 // rigorous way as everything else - it's a targeted patch, not a general
 // search improvement mechanism.
 const PINNED_SEARCH_TERMS = {
-  "plastic": ["3926.90.99.90"]
+  "plastic": ["3926.90.99.90"],
+  // Found via systematic testing of generic material terms after the
+  // "plastic" fix (26 AUG 2026). Two different but related mechanisms:
+  // - "wool": same root cause as plastic - the real wool heading's leaf
+  //   text is just "Other" (no "wool" in it), so it never got the leaf
+  //   bonus, while an unrelated product ("Wood wool", i.e. wood shavings)
+  //   won because "wool" appears directly in ITS leaf.
+  // - "cement": a different mechanism - the real cement code (Portland
+  //   cement, heading 25.23) DOES have "Cement clinkers" as its own leaf,
+  //   so it correctly gets the leaf bonus. But an unrelated code ("cement
+  //   copper", a metallurgy term meaning precipitated copper) ALSO has
+  //   "cement" in its own (much shorter) leaf, creating a tie at the same
+  //   score - and the tiebreaker (shorter description wins) picked the
+  //   wrong one purely because it had less surrounding text, not because
+  //   it was more relevant.
+  // - "ceramic": same root cause as plastic - the real "other ceramic
+  //   articles" catch-all's own leaf is just "Other".
+  "wool": ["5101.19.00.00"],
+  "cement": ["2523.10.00.00"],
+  "ceramic": ["6914.90.00.00"]
 };
 function searchCodes(query, maxResults){
   const trimmed = (query || "").trim();

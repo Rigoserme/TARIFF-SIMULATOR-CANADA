@@ -1451,6 +1451,27 @@ if (!jsdomAvailable) {
         rSofa.length > 0 && rSofa[0].code.startsWith('9401'));
     }
 
+    // A16 — "wool", "cement", "ceramic" search fixes (26 AUG 2026), found
+    // via systematic testing of generic material terms after the
+    // "plastic" fix. Two related but distinct mechanisms confirmed: wool
+    // and ceramic had the same "real catch-all's leaf is just Other" bug
+    // as plastic; cement was a different tie-breaking issue where an
+    // unrelated, shorter-text match ("cement copper", a metallurgy term)
+    // tied with the genuine Portland cement code and won on the
+    // shorter-description tiebreaker alone.
+    {
+      const terms = { wool: '5101', cement: '2523', ceramic: '6914' };
+      let allPass = true;
+      const failures = [];
+      Object.entries(terms).forEach(([term, expectedPrefix]) => {
+        const r = searchCodes(term, 1);
+        const ok = r.length > 0 && r[0].code.startsWith(expectedPrefix);
+        if (!ok) { allPass = false; failures.push(term); }
+      });
+      check('A16', 'wool/cement/ceramic all correctly resolve to their real material headings',
+        allPass, failures.length ? `Failed: ${failures.join(', ')}` : '');
+    }
+
     printSummary();
   })();
 }
