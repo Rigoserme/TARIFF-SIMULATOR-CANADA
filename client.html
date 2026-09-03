@@ -177,8 +177,21 @@
   .calc-btn:focus-visible{ outline:3px solid var(--teal); outline-offset:2px; }
   .calc-trust{ margin:10px 0 0; font-size:13px; color:var(--ink-faint); text-align:center; }
 
-  #results{ margin-top:32px; display:none; }
+  #results{ margin-top:0; display:none; }
   #results.show{ display:block; }
+
+  .empty-state{
+    background:#fff;
+    border:1.5px dashed var(--line);
+    border-radius:14px;
+    padding:60px 32px;
+    text-align:center;
+    color:var(--ink-faint);
+  }
+  .empty-state-icon{ color:var(--line); margin-bottom:16px; }
+  .empty-state-icon svg{ width:44px; height:44px; margin:0 auto; display:block; }
+  .empty-state-title{ font-family:'Quicksand',sans-serif; font-weight:700; font-size:16px; color:var(--brown-mid); margin-bottom:6px; }
+  .empty-state-body{ font-size:13.5px; max-width:36ch; margin:0 auto; line-height:1.5; }
 
   .result-hero{
     background:var(--brown-deep);
@@ -361,6 +374,7 @@
   .pending-surtax-bar svg{ width:18px; height:18px; color:var(--tax); flex-shrink:0; margin-top:1px; }
   .pending-surtax-bar strong{ color:var(--brown-deep); }
 
+  .brokerage-panel-wrap{ max-width:900px; margin:0 auto; }
   .brokerage-panel{
     display:none;
     margin-top:16px;
@@ -378,7 +392,11 @@
     margin:0 0 4px;
   }
   .brokerage-panel .bp-intro{ font-size:13px; color:var(--ink-faint); margin:0 0 16px; }
+  .bp-summary{ background:var(--paper); border:1px solid var(--line); border-radius:8px; padding:10px 14px; font-size:13.5px; color:var(--ink); margin:0 0 14px; line-height:1.5; }
+  .bp-summary-label{ font-weight:700; color:var(--brown-mid); }
+  .bp-summary-sep{ color:var(--ink-faint); margin:0 2px; }
   .bp-type-row{ display:flex; gap:10px; margin-bottom:18px; }
+  .bp-type-option{ flex:1; position:relative; display:flex; align-items:center; gap:6px; }
   .bp-type-btn{
     flex:1;
     padding:10px 12px;
@@ -393,6 +411,36 @@
     text-align:center;
   }
   .bp-type-btn.active{ border-color:var(--brown-mid); background:var(--paper); color:var(--brown-deep); }
+  .bp-type-hint{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:16px;
+    height:16px;
+    border-radius:50%;
+    border:1.3px solid var(--ink-faint);
+    color:var(--ink-faint);
+    font-size:10.5px;
+    font-weight:700;
+    cursor:pointer;
+    flex-shrink:0;
+  }
+  .bp-type-tooltip{
+    display:none;
+    position:absolute;
+    top:calc(100% + 6px);
+    left:0;
+    right:0;
+    z-index:5;
+    background:var(--brown-deep);
+    color:#fff;
+    font-size:12.5px;
+    font-weight:400;
+    line-height:1.5;
+    padding:10px 12px;
+    border-radius:8px;
+  }
+  .bp-type-option.tooltip-open .bp-type-tooltip{ display:block; }
   .bp-line{
     display:flex;
     justify-content:space-between;
@@ -811,8 +859,20 @@
 
     <div class="result-col">
       <div class="section-label">Cost Estimate</div>
-      <div id="results"></div>
+      <div id="results" class="show">
+        <div class="empty-state" id="emptyState">
+          <div class="empty-state-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h7l5 5v13a1 1 0 01-1 1H7a1 1 0 01-1-1V4a1 1 0 011-1z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h6M9 9h2"/></svg>
+          </div>
+          <div class="empty-state-title">Your cost estimate will appear here</div>
+          <div class="empty-state-body">Enter your shipment details and calculate to see estimated duties, taxes, surtaxes and applicable trade measures.</div>
+        </div>
+      </div>
     </div>
+  </div>
+
+  <div class="brokerage-panel-wrap">
+    <div class="brokerage-panel" id="brokeragePanel"></div>
   </div>
 </main>
 
@@ -966,6 +1026,14 @@ function wireBrokerageTypeButtons(){
   document.querySelectorAll('.bp-type-btn').forEach(btn => {
     btn.addEventListener('click', () => renderBrokeragePanel(btn.dataset.type));
   });
+  // Same click-to-toggle pattern as the charge-line "?" hints elsewhere on
+  // the page (not hover, so it works on mobile too).
+  document.querySelectorAll('.bp-type-hint').forEach(hint => {
+    hint.addEventListener('click', e => {
+      e.stopPropagation();
+      hint.closest('.bp-type-option').classList.toggle('tooltip-open');
+    });
+  });
 }
 
 // CARM (CBSA Assessment and Revenue Management) Client Portal registration
@@ -1007,9 +1075,27 @@ function renderBrokeragePanel(clientType){
 
   const typeRow = `
     <div class="bp-type-row">
-      <button type="button" class="bp-type-btn${clientType === 'onetime' ? ' active' : ''}" data-type="onetime">One-time shipment</button>
-      <button type="button" class="bp-type-btn${clientType === 'setup' ? ' active' : ''}" data-type="setup">Setting up an account</button>
+      <div class="bp-type-option">
+        <button type="button" class="bp-type-btn${clientType === 'setup' ? ' active' : ''}" data-type="setup">Setting up an account</button>
+        <span class="bp-type-hint" data-hint="setup">?</span>
+        <div class="bp-type-tooltip">New to Hemisphere? Choose this if you don't have an account with us yet — we'll set one up as part of this quote.</div>
+      </div>
+      <div class="bp-type-option">
+        <button type="button" class="bp-type-btn${clientType === 'onetime' ? ' active' : ''}" data-type="onetime">Existing Hemisphere client</button>
+        <span class="bp-type-hint" data-hint="onetime">?</span>
+        <div class="bp-type-tooltip">Already have an account with us? Choose this option — no new setup fee applies.</div>
+      </div>
     </div>`;
+
+  const inputsForSummary = window.__brokerageInputs;
+  const summaryHtml = inputsForSummary ? `
+    <div class="bp-summary">
+      <span class="bp-summary-label">Quote for:</span>
+      ${inputsForSummary.hsCode} · ${(inputsForSummary.productDescription || '').split(' > ').pop()}
+      <span class="bp-summary-sep">·</span> ${inputsForSummary.origin}
+      <span class="bp-summary-sep">·</span> ${formatMoney(inputsForSummary.originalEnteredValue)} ${inputsForSummary.currency}
+      <span class="bp-summary-sep">·</span> ${inputsForSummary.importType}
+    </div>` : '';
 
   if(fees.overLimit){
     // BUG FIX (found via currency-chain hunting): a client entering a value
@@ -1026,6 +1112,7 @@ function renderBrokeragePanel(clientType){
       : '';
     panel.innerHTML = `
       <h4>Request a Customs Quote</h4>
+      ${summaryHtml}
       <p class="bp-intro">Tell us a bit more and we'll follow up with the details.</p>
       ${typeRow}
       <div class="bp-unavailable">Shipments over $25,000 CAD need a manual quote — use "Get a Hemisphere Import Quote" below to reach us directly.${conversionNote}</div>
@@ -1036,6 +1123,7 @@ function renderBrokeragePanel(clientType){
 
   panel.innerHTML = `
     <h4>Request a Customs Quote</h4>
+    ${summaryHtml}
     <p class="bp-intro">Tell us a bit more and we'll follow up with a confirmed quote, including our brokerage fees.</p>
     ${typeRow}
     <div class="carm-box">
@@ -1145,7 +1233,7 @@ function renderBrokeragePanel(clientType){
       shipment_value_currency: inputs.currency,
       frequency: inputs.frequency,
       carm_status: carmLabels[window.__carmStatus] || 'Not answered',
-      client_type: fees.isSetup ? 'Setting up an account' : 'One-time shipment',
+      client_type: fees.isSetup ? 'Setting up an account' : 'Existing Hemisphere client',
       // Simulator calculation
       duty_rate: inputs.dutyRate,
       duty_amount: inputs.dutyCalculable ? inputs.duty.toFixed(2) : 'UNKNOWN - see duty_rate field',
@@ -1847,6 +1935,20 @@ function runEstimate(){
   }).join('');
 
   resultsEl.className = 'show';
+  // FIX (2 SEPT 2026): the brokerage panel used to live inside this same
+  // innerHTML and got destroyed/recreated fresh on every calculation. Now
+  // that it's a static element outside .split (so it can be centered
+  // below both columns), it persists across calls - meaning its 'show'
+  // state and dataset.rendered flag from a PREVIOUS calculation would
+  // stick around and show stale data after a client changes their inputs
+  // and recalculates. Reset both here, on every new estimate, so it
+  // always re-renders fresh the next time it's opened.
+  const existingPanel = document.getElementById('brokeragePanel');
+  if(existingPanel){
+    existingPanel.classList.remove('show');
+    delete existingPanel.dataset.rendered;
+  }
+
   resultsEl.innerHTML = `
     <div class="result-hero">
       <div class="hs-line">${matchedCode} · ${(CODE_DESCRIPTIONS[matchedCode] || '').split(' > ').pop()} <span class="hs-origin-inline">— Origin: ${origin || 'Not specified'}</span></div>
@@ -1895,7 +1997,6 @@ function runEstimate(){
       </div>
       <button type="button" id="quoteRevealBtn">Get a Hemisphere Import Quote</button>
     </div>
-    <div class="brokerage-panel" id="brokeragePanel"></div>
   `;
 
   const downloadBtn = document.getElementById('downloadReportBtn');
