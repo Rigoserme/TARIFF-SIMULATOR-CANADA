@@ -1054,6 +1054,10 @@ function renderBrokeragePanel(clientType){
         </select>
         <input type="text" id="bpReferralOther" placeholder="Please specify" style="display:none; margin-top:8px;">
       </div>
+      <div class="field">
+        <label for="bpNotes">Anything else we should know? (optional)</label>
+        <textarea id="bpNotes" placeholder="Any additional details about your shipment or question" rows="3" style="width:100%; font-family:inherit; font-size:15px; padding:10px 14px; border:1.5px solid var(--line); border-radius:8px; resize:vertical;"></textarea>
+      </div>
       <div class="bp-upload-notice" id="bpUploadNotice">${ICON_DOCUMENT} Have your commercial invoice or other customs paperwork ready? You'll be able to attach it on the next screen when you submit — no need to email it separately.</div>
       <div id="bpValidationMsg" class="bp-unavailable" style="display:none;">Please enter your name and email so we can reply with your quote.</div>
       <button type="button" class="bp-submit-btn" id="bpSubmitBtn">Request Official Quote</button>
@@ -1110,6 +1114,7 @@ function renderBrokeragePanel(clientType){
         }
         return selected || 'Not specified';
       })(),
+      additional_notes: document.getElementById('bpNotes').value.trim() || 'None provided',
       // Shipment
       hs_code: inputs.hsCode,
       product_description: inputs.productDescription,

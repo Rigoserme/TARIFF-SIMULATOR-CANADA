@@ -1242,7 +1242,18 @@ function calculateLanded(){
   resultEl.classList.add('show');
 }
 
-document.getElementById('searchBox').addEventListener('input', applyFilters);
+// PERFORMANCE FIX (2 SEPT 2026): applyFilters() scans TARIFF_DATA plus
+// SIMA/surtax/safeguard matches on every single keystroke with no
+// debounce - the same category of bug fixed in client.html months ago,
+// but that fix never touched this file since the Ledger has its own,
+// separate search wiring. Confirmed with Rigo before touching this file
+// at all, per its "never modify without explicit instruction" rule.
+// Debounce only - no other change to this file.
+let searchDebounceTimer = null;
+document.getElementById('searchBox').addEventListener('input', () => {
+  clearTimeout(searchDebounceTimer);
+  searchDebounceTimer = setTimeout(applyFilters, 150);
+});
 document.getElementById('originFilter').addEventListener('change', applyFilters);
 
 // initial page load — clean empty state, nothing shown until a search is entered
