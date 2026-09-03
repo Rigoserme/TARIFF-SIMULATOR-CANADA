@@ -4175,7 +4175,8 @@ const PREF_FREE = {
   "8471.80.10.00": PF_SET_27,
   "8471.80.91.00": PF_SET_27,
   "8471.80.99.00": PF_SET_27,
-  "8471.90.00.00": PF_SET_27
+  "8471.90.00.00": PF_SET_27,
+  "9817.00.00.00": PF_SET_27
 };
 
 const MFN_SET_1 = {"type":"specific","rate":null,"note":"0.86¢/each"};
@@ -9128,7 +9129,8 @@ const MFN_RATES = {
   "8476.81.10.00": MFN_SET_79,
   "8479.89.20.21": MFN_SET_33,
   "8479.89.20.22": MFN_SET_33,
-  "8479.89.20.90": MFN_SET_33
+  "8479.89.20.90": MFN_SET_33,
+  "9817.00.00.00": {"type":"free"}
 };
 
 const PS_SET_1 = {"AUT":{"type":"specific","note":"1.74¢/kg"},"NZT":{"type":"specific","note":"1.74¢/kg"}};
@@ -27836,6 +27838,25 @@ Object.assign(CODE_DESCRIPTIONS, {
   "8471.80.91.00": "Automatic data processing machines and units thereof; magnetic or optical readers, machines for transcribing data onto data media in coded form and machines for processing such data, not elsewhere specified or included. > Other units of automatic data processing machines > Other > Units suitable for physical incorporation into automatic data processing machines or units thereof",
   "8471.80.99.00": "Automatic data processing machines and units thereof; magnetic or optical readers, machines for transcribing data onto data media in coded form and machines for processing such data, not elsewhere specified or included. > Other units of automatic data processing machines > Other > Other",
   "8471.90.00.00": "Automatic data processing machines and units thereof; magnetic or optical readers, machines for transcribing data onto data media in coded form and machines for processing such data, not elsewhere specified or included. > Other"
+});
+
+// Chapter 98 (Special Classification Provisions - Non-Commercial), first
+// entry added 3 SEPT 2026, confirmed via a real client shipment that used
+// this exact tariff item. This chapter is genuinely different from every
+// other chapter in this file - almost entirely personal-use/traveller/
+// settler/diplomatic/military provisions rather than typical commercial
+// goods, so it's being added item-by-item as real shipments come up
+// rather than built out wholesale like a normal commercial chapter -
+// most of the ~100 other provisions in it (traveller exemptions,
+// settlers' effects, returned goods, donations, a few prohibited-goods
+// classification codes) wouldn't apply to this tool's typical commercial
+// client base. 9817.00.00.00 rate confirmed Free (MFN and all 21
+// preferential treaties) directly against CBSA's own published schedule,
+// cross-checked across multiple years (2018/2022/2024/2026) showing this
+// has been a stable, unchanged provision the whole time - not a recent
+// or temporary rate.
+Object.assign(CODE_DESCRIPTIONS, {
+  "9817.00.00.00": "Medals, trophies and other articles (not including usual merchantable products nor medals, trophies or prizes which are regularly presented by organizations or business companies to their members, employees or representatives), which have been bestowed or awarded by persons or organizations abroad as marks of honour or distinction, or which have been won abroad in competitions, or having been won abroad in competitions are donated by persons or organizations abroad for bestowal or award in Canada."
 });
 
 

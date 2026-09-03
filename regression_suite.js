@@ -1551,6 +1551,20 @@ if (!jsdomAvailable) {
         findSurtaxMatches('9507.10.10.00').length === 0);
     }
 
+    // A20 — Chapter 98, first entry (3 SEPT 2026): 9817.00.00.00 (medals,
+    // trophies bestowed as marks of honour), added from a real client
+    // shipment. Confirmed Free under MFN and all 21 preferential treaties
+    // directly against CBSA's own schedule, cross-checked across multiple
+    // years (2018/2022/2024/2026) as a stable, unchanged provision.
+    {
+      const rate = getMfnRate('9817.00.00.00');
+      check('A20a', '9817.00.00.00 (Ch98 medals/trophies) resolves to Free MFN',
+        rate && rate.type === 'free');
+      const applicableNonTreaty = getApplicableRate('9817.00.00.00', 'China');
+      check('A20b', '9817.00.00.00 is Free even for a non-treaty origin (China)',
+        applicableNonTreaty.rate.type === 'free');
+    }
+
     printSummary();
   })();
 }
