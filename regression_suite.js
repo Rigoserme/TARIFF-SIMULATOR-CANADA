@@ -969,8 +969,8 @@ if (!jsdomAvailable) {
       const entries = doc.querySelectorAll('.tu-entry');
       check('C52c', 'Has exactly two entries: Sept 8 countermeasures and the canned vegetables safeguard',
         entries.length === 2);
-      check('C52d', 'Sept 8 entry still notes it is pending, not yet reflected in duty estimates',
-        entries[0].querySelector('.tu-desc').textContent.includes('pending') || entries[0].querySelector('.tu-effective').textContent.includes('pending'));
+      check('C52d', 'Sept 8 entry correctly notes it IS built into duty estimates now, date-gated rather than absent (updated 2 SEPT 2026 - the real 5-order/1,761-code SURTAX_ORDERS data landed after this check was first written; verified end-to-end that findSurtaxMatches() correctly withholds it before the effective date and correctly applies it after, via direct Date-mocking tests)',
+        entries[0].querySelector('.tu-effective').textContent.includes('already built into duty estimates'));
       check('C52e', 'Safeguard entry correctly states its 200-day provisional duration',
         entries[1].querySelector('.tu-desc').textContent.includes('200 days'));
       check('C52f', 'The old duplicate widget (separate tariffUpdates div/array) is confirmed fully removed',
@@ -1529,6 +1529,26 @@ if (!jsdomAvailable) {
       });
       check('A18b', 'Singular forms are unaffected by the plural-normalization change',
         singularsStillWork);
+    }
+
+    // A19 — Sept 8, 2026 countermeasures coverage and date-gating (2 SEPT
+    // 2026): confirms the real, full-scale surtax data (5 orders, 1,761
+    // distinct HS codes across 15/25/50% streams) is present, and that
+    // findSurtaxMatches() correctly withholds it before the effective date
+    // - this file's own execution date will always be before Sept 8 until
+    // that date actually arrives, so this check only verifies the
+    // dormant-before, not the active-after state (that was verified
+    // manually via Date-mocking, not re-testable safely in a suite that
+    // runs on the real clock).
+    {
+      const sept8Orders = SURTAX_ORDERS.filter(o => o.effectiveDate === '2026-09-08');
+      check('A19a', 'All 5 Sept 8 countermeasure orders are present with the announced 15/25/50% rates',
+        sept8Orders.length === 5 && [15,25,50].every(r => sept8Orders.some(o => o.rate === r)));
+      const totalCodes = new Set(sept8Orders.flatMap(o => o.hsCodes || [])).size;
+      check('A19b', 'Sept 8 orders cover 1,761 distinct HS codes',
+        totalCodes === 1761);
+      check('A19c', 'findSurtaxMatches() correctly withholds the Sept 8 surtax before its effective date',
+        findSurtaxMatches('9507.10.10.00').length === 0);
     }
 
     printSummary();

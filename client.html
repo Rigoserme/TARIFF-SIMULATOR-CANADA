@@ -48,7 +48,7 @@
   header{
     background:var(--brown-deep);
     color:#fff;
-    padding:18px 32px;
+    padding:14px 32px;
     display:flex;
     align-items:center;
     justify-content:space-between;
@@ -64,9 +64,9 @@
   header a{ color:#fff; text-decoration:none; font-size:13.5px; font-weight:600; letter-spacing:0.03em; text-transform:uppercase; border:1px solid var(--teal); background:var(--teal); color:#fff; padding:9px 18px; border-radius:6px; transition:opacity 0.15s; }
   header a:hover{ opacity:0.85; }
 
-  main{ max-width:880px; margin:0 auto; padding:56px 24px 80px; }
+  main{ max-width:1220px; margin:0 auto; padding:24px 24px 60px; }
 
-  .hero-head{ margin-bottom:20px; }
+  .hero-head{ margin-bottom:14px; }
   .hero-head h1{
     font-family:'Quicksand',sans-serif;
     font-weight:800;
@@ -74,44 +74,56 @@
     font-size:clamp(28px, 3.0vw, 36px);
     line-height:1.2;
     letter-spacing:0.2px;
-    margin:0 0 8px;
+    margin:0 0 6px;
     color:var(--brown-deep);
   }
   .hero-head p{ font-size:17px; color:var(--ink-faint); margin:0; max-width:52ch; }
+
+  /* Side-by-side workspace layout (2 SEPT 2026) - form left, live results
+     right, matching the approved sample1f mockup. .split wraps .card and
+     #results as flex children; each gets a .section-label ("SHIPMENT
+     DETAILS" / "COST ESTIMATE") above it for immediate visual structure. */
+  .split{ display:flex; gap:22px; align-items:flex-start; }
+  .split > .form-col{ flex:1; min-width:0; max-width:400px; }
+  .split > .result-col{ flex:1.3; min-width:0; }
+  .section-label{ font-size:11px; font-weight:700; letter-spacing:0.06em; color:var(--ink-faint); margin-bottom:10px; text-transform:uppercase; }
+  @media (max-width:860px){
+    .split{ flex-direction:column; }
+    .split > .form-col{ max-width:none; width:100%; }
+  }
 
   .card{
     background:#fff;
     border:1px solid var(--line);
     border-radius:14px;
-    padding:20px;
+    padding:18px;
   }
 
   .field-row{
     display:grid;
-    grid-template-columns:2fr 1fr 1fr;
-    gap:16px;
+    grid-template-columns:1fr;
+    gap:10px;
   }
-  .field-row-3{ grid-template-columns:1fr 1fr 1fr; }
+  .field-row-3{ grid-template-columns:1fr; }
   @media (max-width:640px){
-    .field-row, .field-row-3{ grid-template-columns:1fr; }
     .tariff-updates-section{ padding:18px 20px; }
   }
 
-  .field{ position:relative; }
+  .field{ position:relative; margin-bottom:0; }
   .field label{
     display:block;
-    font-size:13px;
+    font-size:12.5px;
     font-weight:600;
     color:var(--brown-mid);
-    margin-bottom:4px;
+    margin-bottom:3px;
   }
   .field input, .field select{
     width:100%;
-    padding:10px 14px;
+    padding:8px 12px;
     border:1.5px solid var(--line);
     border-radius:8px;
     font-family:'Inter',sans-serif;
-    font-size:15px;
+    font-size:14px;
     background:#fff;
     color:var(--ink);
   }
@@ -176,6 +188,8 @@
     text-align:center;
     position:relative;
   }
+  .hs-line{ font-size:13px; color:rgba(255,255,255,0.75); text-align:left; margin-bottom:14px; font-family:'IBM Plex Mono',monospace; }
+  .hs-origin-inline{ font-family:'Inter',sans-serif; color:rgba(255,255,255,0.55); }
   .result-hero .top-row{ display:flex; align-items:flex-start; justify-content:space-between; gap:16px; text-align:left; }
   .result-hero .label-row{ display:flex; align-items:center; gap:10px; }
   .result-hero .label-icon{
@@ -597,13 +611,15 @@
 
   footer{
     max-width:880px;
-    margin:0 auto;
+    margin:14px auto 0;
     padding:0 24px 60px;
-    font-size:12.5px;
-    color:var(--ink-faint);
-    line-height:1.6;
+    font-size:10.5px;
+    color:#A69E8F;
+    line-height:1.5;
+    text-align:center;
   }
   footer p{ margin:0; }
+  footer a{ color:#A69E8F; }
 
   .tariff-updates-section{
     max-width:832px;
@@ -720,76 +736,84 @@
     <p>Estimate duties, taxes, surtaxes and trade measures in seconds.</p>
   </div>
 
-  <div class="card">
-    <div class="field-row">
-      <div class="field">
-        <label for="q">HS code or product description</label>
-        <input type="text" id="q" placeholder="e.g. aluminum windows, or 7610.10.00.20" autocomplete="off">
-        <div class="suggest-list" id="qSuggest"></div>
-      </div>
-      <div class="field">
-        <label for="origin">Country of origin</label>
-        <select id="origin">
-          <option value="">Select origin…</option>
-        </select>
-      </div>
-      <div class="field">
-        <label for="value">Shipment value</label>
-        <div class="value-currency-group">
-          <input type="number" id="value" placeholder="e.g. 10000" min="0">
-          <select id="currency">
-            <option value="CAD">CAD</option>
-            <option value="USD">USD</option>
+  <div class="split">
+    <div class="form-col">
+      <div class="section-label">Shipment Details</div>
+      <div class="card">
+        <div class="field-row">
+          <div class="field">
+            <label for="q">HS code or product description</label>
+            <input type="text" id="q" placeholder="e.g. aluminum windows, or 7610.10.00.20" autocomplete="off">
+            <div class="suggest-list" id="qSuggest"></div>
+          </div>
+          <div class="field">
+            <label for="origin">Country of origin</label>
+            <select id="origin">
+              <option value="">Select origin…</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="value">Shipment value</label>
+            <div class="value-currency-group">
+              <input type="number" id="value" placeholder="e.g. 10000" min="0">
+              <select id="currency">
+                <option value="CAD">CAD</option>
+                <option value="USD">USD</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="field-row" style="margin-top:10px;">
+          <div class="field">
+            <label for="importType">Import type</label>
+            <select id="importType">
+              <option value="commercial">Commercial</option>
+              <option value="personal">Personal / casual</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="frequency">Import frequency</label>
+            <select id="frequency">
+              <option value="once">One-time</option>
+              <option value="weekly">Weekly</option>
+              <option value="monthly">Monthly</option>
+              <option value="custom">Custom</option>
+            </select>
+          </div>
+        </div>
+        <div class="field" id="provinceField" style="display:none; margin-top:10px;">
+          <label for="province">Province of import</label>
+          <select id="province">
+            <option value="">Select province…</option>
+            <option value="Alberta">Alberta</option>
+            <option value="British Columbia">British Columbia</option>
+            <option value="Manitoba">Manitoba</option>
+            <option value="New Brunswick">New Brunswick</option>
+            <option value="Newfoundland and Labrador">Newfoundland and Labrador</option>
+            <option value="Northwest Territories">Northwest Territories</option>
+            <option value="Nova Scotia">Nova Scotia</option>
+            <option value="Nunavut">Nunavut</option>
+            <option value="Ontario">Ontario</option>
+            <option value="Prince Edward Island">Prince Edward Island</option>
+            <option value="Quebec">Quebec</option>
+            <option value="Saskatchewan">Saskatchewan</option>
+            <option value="Yukon">Yukon</option>
           </select>
         </div>
+        <div class="field" id="freqCountField" style="display:none; margin-top:10px;">
+          <label for="freqCount">Shipments per month</label>
+          <input type="number" id="freqCount" placeholder="e.g. 6" min="1">
+        </div>
+        <button class="calc-btn" onclick="runEstimate()">Calculate Import Costs</button>
+        <p class="calc-trust">Powered by continuously maintained Canadian tariff data.</p>
       </div>
     </div>
-    <div class="field-row" style="grid-template-columns:1fr 1fr; margin-top:10px;">
-      <div class="field">
-        <label for="importType">Import type</label>
-        <select id="importType">
-          <option value="commercial">Commercial</option>
-          <option value="personal">Personal / casual</option>
-        </select>
-      </div>
-      <div class="field">
-        <label for="frequency">Import frequency</label>
-        <select id="frequency">
-          <option value="once">One-time</option>
-          <option value="weekly">Weekly</option>
-          <option value="monthly">Monthly</option>
-          <option value="custom">Custom</option>
-        </select>
-      </div>
-    </div>
-    <div class="field" id="provinceField" style="display:none; margin-top:10px;">
-      <label for="province">Province of import</label>
-      <select id="province">
-        <option value="">Select province…</option>
-        <option value="Alberta">Alberta</option>
-        <option value="British Columbia">British Columbia</option>
-        <option value="Manitoba">Manitoba</option>
-        <option value="New Brunswick">New Brunswick</option>
-        <option value="Newfoundland and Labrador">Newfoundland and Labrador</option>
-        <option value="Northwest Territories">Northwest Territories</option>
-        <option value="Nova Scotia">Nova Scotia</option>
-        <option value="Nunavut">Nunavut</option>
-        <option value="Ontario">Ontario</option>
-        <option value="Prince Edward Island">Prince Edward Island</option>
-        <option value="Quebec">Quebec</option>
-        <option value="Saskatchewan">Saskatchewan</option>
-        <option value="Yukon">Yukon</option>
-      </select>
-    </div>
-    <div class="field" id="freqCountField" style="display:none; margin-top:10px;">
-      <label for="freqCount">Shipments per month</label>
-      <input type="number" id="freqCount" placeholder="e.g. 6" min="1">
-    </div>
-    <button class="calc-btn" onclick="runEstimate()">Calculate Import Costs</button>
-    <p class="calc-trust">Powered by continuously maintained Canadian tariff data.</p>
-  </div>
 
-  <div id="results"></div>
+    <div class="result-col">
+      <div class="section-label">Cost Estimate</div>
+      <div id="results"></div>
+    </div>
+  </div>
 </main>
 
 <!-- Tariff Updates widget (added 25 AUG 2026), reordered 25 AUG 2026 to sit
@@ -813,7 +837,7 @@
   <div class="tu-list">
     <div class="tu-entry">
       <p class="tu-desc">Aug 25: Canada announced new countermeasures on U.S. imports at 15%, 25%, or 50%, per <a href="https://www.canada.ca/en/department-finance/programs/international-trade-finance-policy/canadas-response-us-tariffs/complete-list-us-products-subject-to-counter-tariffs.html" target="_blank" rel="noopener">this Department of Finance notice</a>.</p>
-      <p class="tu-effective">Effective: Sep 8, 2026 (pending — not yet in duty estimates)</p>
+      <p class="tu-effective">Effective: Sep 8, 2026 (already built into duty estimates — will apply automatically once in effect)</p>
     </div>
     <div class="tu-entry">
       <p class="tu-desc">Jul 28: Added the canned vegetables safeguard surtax per <a href="https://gazette.gc.ca/rp-pr/p2/2026/2026-07-01/html/sor-dors135-eng.html" target="_blank" rel="noopener">SOR/2026-135</a>. Provisional — in force for 200 days.</p>
@@ -823,7 +847,7 @@
 </div>
 
 <footer>
-  <p>This is an estimate for general informational purposes only, based on publicly available CBSA tariff, surtax, and trade-remedy data. It is not a binding tariff classification, valuation, or duty determination, and does not replace advice from a licensed customs broker. Actual duty owed depends on your specific product's classification, origin qualification, and value for duty as determined by the Canada Border Services Agency. For a precise, defensible number — <a href="https://www.gohemisphere.ca/contact" style="color:var(--brown-mid);">talk to a Hemisphere broker</a>.</p>
+  <p>This is an estimate for general informational purposes only, based on publicly available CBSA tariff, surtax, and trade-remedy data. It is not a binding tariff classification, valuation, or duty determination, and does not replace advice from a licensed customs broker. Actual duty owed depends on your specific product's classification, origin qualification, and value for duty as determined by the Canada Border Services Agency. For a precise, defensible number — <a href="https://www.gohemisphere.ca/contact">talk to a Hemisphere broker</a>.</p>
 </footer>
 
 <script src="data.js"></script>
@@ -1825,6 +1849,7 @@ function runEstimate(){
   resultsEl.className = 'show';
   resultsEl.innerHTML = `
     <div class="result-hero">
+      <div class="hs-line">${matchedCode} · ${(CODE_DESCRIPTIONS[matchedCode] || '').split(' > ').pop()} <span class="hs-origin-inline">— Origin: ${origin || 'Not specified'}</span></div>
       <div class="top-row">
         <div class="label-row">
           <div class="label-icon">${ICON_DOCUMENT}</div>
@@ -1865,8 +1890,8 @@ function runEstimate(){
     </div>
     <div class="cta">
       <div>
-        <h3>Want a number you can rely on?</h3>
-        <p>This estimate doesn't account for brokerage fees, PST exemptions on specific goods, or your exact product specifications.</p>
+        <h3>Need a confirmed import quote?</h3>
+        <p>Get a detailed quote based on your shipment, product, and import requirements.</p>
       </div>
       <button type="button" id="quoteRevealBtn">Get a Hemisphere Import Quote</button>
     </div>
