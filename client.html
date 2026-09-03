@@ -514,7 +514,7 @@
   .carm-result.yes{ background:var(--success-soft); color:#2F6B4F; }
   .carm-result.no{ background:#FBE9D8; color:#8A5A1E; }
   .carm-result a{ color:inherit; font-weight:700; text-decoration:underline; }
-  .bp-quote-form{ margin-top:20px; padding-top:20px; border-top:1px solid var(--line); }
+  .bp-quote-form{ margin-top:12px; padding-top:12px; border-top:1px solid var(--line); }
   .bp-quote-form .field{ margin-bottom:12px; }
   .bp-submit-btn{
     width:100%;
@@ -1076,7 +1076,7 @@ function renderBrokeragePanel(clientType){
   const typeRow = `
     <div class="bp-type-row">
       <div class="bp-type-option">
-        <button type="button" class="bp-type-btn${clientType === 'setup' ? ' active' : ''}" data-type="setup">Setting up an account</button>
+        <button type="button" class="bp-type-btn${clientType === 'setup' ? ' active' : ''}" data-type="setup">One time shipment</button>
         <span class="bp-type-hint" data-hint="setup">?</span>
         <div class="bp-type-tooltip">New to Hemisphere? Choose this if you don't have an account with us yet — we'll set one up as part of this quote.</div>
       </div>
@@ -1140,8 +1140,8 @@ function renderBrokeragePanel(clientType){
       <div class="carm-result" id="carmResult"></div>
     </div>
     <div class="bp-quote-form">
-      <h4>Get this as an official quote</h4>
-      <p class="bp-intro">We'll review this and reply with a confirmed quote.</p>
+      <h4>Request your confirmed quote</h4>
+      <p class="bp-intro">We'll review your shipment details and follow up with your confirmed quote.</p>
       <div class="field"><label for="bpName">Name</label><input type="text" id="bpName" placeholder="Your name"></div>
       <div class="field"><label for="bpCompany">Company (optional)</label><input type="text" id="bpCompany" placeholder="Your company"></div>
       <div class="field"><label for="bpEmail">Email</label><input type="email" id="bpEmail" placeholder="you@example.com"></div>
@@ -1233,7 +1233,7 @@ function renderBrokeragePanel(clientType){
       shipment_value_currency: inputs.currency,
       frequency: inputs.frequency,
       carm_status: carmLabels[window.__carmStatus] || 'Not answered',
-      client_type: fees.isSetup ? 'Setting up an account' : 'Existing Hemisphere client',
+      client_type: fees.isSetup ? 'One time shipment' : 'Existing Hemisphere client',
       // Simulator calculation
       duty_rate: inputs.dutyRate,
       duty_amount: inputs.dutyCalculable ? inputs.duty.toFixed(2) : 'UNKNOWN - see duty_rate field',
