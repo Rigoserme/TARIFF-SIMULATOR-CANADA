@@ -57,6 +57,7 @@ const exportNames = [
   'MFN_FREE_CHAPTERS', 'MFN_FREE_DEFAULT_CHAPTERS',
   'SIMA_CASES', 'SURTAX_ORDERS', 'SAFEGUARD_MEASURES',
   'COUNTRY_TREATIES', 'COUNTRY_NAME_ALIASES', 'PROVINCE_TAX_RATES',
+  'SEARCH_SYNONYMS',
   'getMfnRate', 'getApplicableRate', 'findSimaMatches', 'findSurtaxMatches',
   'findSafeguardMatches', 'surtaxAppliesToCountry', 'getFeesTaxForProvince',
   'wholeWordMatch', 'searchCodes', 'searchCodesByText'
@@ -75,6 +76,7 @@ const {
   MFN_FREE_CHAPTERS, MFN_FREE_DEFAULT_CHAPTERS,
   SIMA_CASES, SURTAX_ORDERS, SAFEGUARD_MEASURES,
   COUNTRY_TREATIES, COUNTRY_NAME_ALIASES, PROVINCE_TAX_RATES,
+  SEARCH_SYNONYMS,
   getMfnRate, getApplicableRate, findSimaMatches, findSurtaxMatches,
   findSafeguardMatches, surtaxAppliesToCountry, getFeesTaxForProvince,
   wholeWordMatch, searchCodes, searchCodesByText
@@ -1579,6 +1581,75 @@ if (!jsdomAvailable) {
       const applicableNonTreaty = getApplicableRate('9817.00.00.00', 'China');
       check('A20b', '9817.00.00.00 is Free even for a non-treaty origin (China)',
         applicableNonTreaty.rate.type === 'free');
+    }
+
+    // A21 — SIMA data-consistency check (3 SEPT 2026): systematically
+    // verified all 1,126 HS codes across all 61 SIMA cases resolve
+    // correctly via findSimaMatches() (0 failures), and cross-checked
+    // every one of those codes actually exists in CODE_DESCRIPTIONS.
+    // Found one genuine gap: 7308.90.00.60, listed as subject to two
+    // active SIMA measures (Steel Grating; Fabricated Industrial Steel
+    // Components), was completely absent - a client searching this exact
+    // code would have gotten zero results despite active anti-dumping
+    // duties applying. Confirmed the correct description directly
+    // against CBSA's own Chapter 73 schedule.
+    {
+      check('A21a', '7308.90.00.60 (SIMA-listed, previously missing) now resolves correctly',
+        !!CODE_DESCRIPTIONS['7308.90.00.60'] && CODE_DESCRIPTIONS['7308.90.00.60'].includes('Columns, pillars, posts, beams, girders'));
+
+      let simaGaps = 0;
+      SIMA_CASES.forEach(c => {
+        c.hsCodes.forEach(code => { if (!CODE_DESCRIPTIONS[code]) simaGaps++; });
+      });
+      check('A21b', 'All SIMA-case HS codes now exist in CODE_DESCRIPTIONS (0 gaps)',
+        simaGaps === 0);
+    }
+
+    // A22 — Heavy-chapter search fixes (3 SEPT 2026), same pinned-term
+    // pattern as all prior rounds. A few notably bad original mismatches:
+    // dishwasher -> dish soap; ethanol -> an unrelated amino-alcohol;
+    // stainless steel -> ferrous scrap; screws -> a 3D-printer part
+    // called "barrel screws"; PVC pipe -> ceramic pipes.
+    {
+      const terms = {
+        dishwasher: '8422', screws: '7318', 'pvc pipe': '3917', ethanol: '2207',
+        'stainless steel': '7219', printer: '8443', 'power strip': '8536',
+        muffler: '8708', speaker: '8518', wire: '7217', gearbox: '8708',
+        formaldehyde: '2912'
+      };
+      let allPass = true; const failures = [];
+      Object.entries(terms).forEach(([term, prefix]) => {
+        const r = searchCodes(term, 1);
+        if (!(r.length > 0 && r[0].code.startsWith(prefix))) { allPass = false; failures.push(term); }
+      });
+      check('A22a', 'All 12 heavy-chapter fixes resolve to their correct heading',
+        allPass, failures.length ? `Failed: ${failures.join(', ')}` : '');
+
+      check('A22b', '"gearboxes" plural (the "-x -> -xes" pattern) now correctly resolves - was missed by the earlier "-s"/"-ies" only plural fix',
+        searchCodes('gearboxes', 1)[0].code.startsWith('8708'));
+      check('A22c', 'Previously-working plurals ("cables") are unaffected by the new "-es" plural handling',
+        searchCodes('cables', 1)[0].code === '8544.11.00.10');
+    }
+
+    // A23 — Full synonym audit (3 SEPT 2026): tested all 147 existing
+    // SEARCH_SYNONYMS entries end-to-end, not just spot-checked. Found 5
+    // genuine regressions where the synonym VALUE itself no longer
+    // matched anything: cologne/perfume -> "fragrance" (word never
+    // existed in the data at all); mouthwash -> "oral hygiene" (the
+    // words exist separately but never as this exact contiguous phrase -
+    // multi-word synonym values need the literal phrase, unlike a
+    // multi-word direct query which checks each word independently);
+    // pvc/vinyl -> "polyvinyl chloride" (same exact-phrase issue); laptop
+    // -> "computer" (synonym chains don't recurse - "computer" itself
+    // only works via ITS OWN synonym "automatic data processing
+    // machine", which "laptop" never got to inherit).
+    {
+      let synZero = 0;
+      Object.keys(SEARCH_SYNONYMS).forEach(term => {
+        if (searchCodes(term, 1).length === 0) synZero++;
+      });
+      check('A23', 'All 147 SEARCH_SYNONYMS entries resolve to at least one result (0 zero-result regressions)',
+        synZero === 0, `${synZero} still zero`);
     }
 
     printSummary();

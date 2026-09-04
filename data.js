@@ -16913,14 +16913,14 @@ const SEARCH_SYNONYMS = {
   // Chemicals, pharma, cosmetics, plastics (Ch.28-39)
   "vitamins":["vitamin"], "aspirin":["acetylsalicylic acid"], "paint":["coatings","varnish"],
   "ink":["printing ink"], "glue":["adhesive","adhesives"], "soap":["detergent"], "shampoo":["hair preparation"],
-  "perfume":["fragrance"], "cologne":["fragrance"], "cosmetics":["beauty preparations","makeup","make-up"],
-  "sunscreen":["sun tan preparation"], "toothpaste":["dentifrice"], "mouthwash":["oral hygiene"],
+  "perfume":["toilet waters"], "cologne":["toilet waters"], "cosmetics":["beauty preparations","makeup","make-up"],
+  "sunscreen":["sun tan preparation"], "toothpaste":["dentifrice"], "mouthwash":["dental hygiene"],
   "fertilizer":["fertiliser"], "pesticide":["insecticide"], "bug spray":["insecticide"],
   "vaccine":["immunological product"], "antibiotics":["penicillin"], "fireworks":["pyrotechnic"],
   "candles":["candle"], "plastic bags":["sacks","polyethylene"], "plastic bottles":["carboys","containers"],
-  "plastic wrap":["film"], "pvc":["polyvinyl chloride"], "vinyl":["polyvinyl chloride"],
+  "plastic wrap":["film"], "pvc":["polymers of vinyl chloride"], "vinyl":["polymers of vinyl chloride"],
   "styrofoam":["expansible","polystyrene"], "plexiglass":["poly(methyl methacrylate)","acrylic"],
-  "tupperware":["plastic containers"], "epoxy":["epoxide resins"],
+  "tupperware":["conveyance or packing of goods"], "epoxy":["epoxide resins"],
 
   // Household, apparel, footwear, electronics, misc. (Ch.42-96, largely
   // added once those chapters existed - this section used to be a
@@ -16929,7 +16929,7 @@ const SEARCH_SYNONYMS = {
   "sneakers":["footwear"], "shoes":["footwear"], "boots":["footwear"], "sandals":["footwear"],
   "clothing":["apparel","garments"], "t-shirt":["apparel"], "jeans":["apparel","denim"],
   "jacket":["apparel"], "phone":["telephone","cellular"], "cellphone":["telephone","cellular","mobile"],
-  "laptop":["computer"], "computer":["automatic data processing machine"], "tv":["television receiver"],
+  "laptop":["automatic data processing machine"], "computer":["automatic data processing machine"], "tv":["television receiver"],
   "television":["television receiver"], "tires":["pneumatic tires","tyres"], "furniture":["seats"],
   // Found via a real user report (24 AUG 2026): "sofa" returned nothing,
   // since HS nomenclature describes multi-seat upholstered furniture by
@@ -17191,7 +17191,25 @@ const PINNED_SEARCH_TERMS = {
   "gear": ["8483.40.00.21"],
   "coffee": ["0901.11.00.20"],
   "cable": ["8544.11.00.10"],
-  "drywall": ["6809.11.00.11"]
+  "drywall": ["6809.11.00.11"],
+  // Found via testing high-volume heavy-chapter terms (3 SEPT 2026) - same
+  // pattern as all prior pinned entries: a generic term loses to an
+  // unrelated but shorter/more-specific leaf match. Some notably bad
+  // ones: dishwasher -> dish soap; ethanol -> an unrelated amino-alcohol
+  // compound; stainless steel -> ferrous scrap/waste; screws -> a 3D
+  // printer part called "barrel screws"; PVC pipe -> ceramic pipes.
+  "dishwasher": ["8422.11.10.00"],
+  "screws": ["7318.11.00.00"],
+  "pvc pipe": ["3917.21.00.20"],
+  "ethanol": ["2207.10.00.10"],
+  "stainless steel": ["7219.11.00.00"],
+  "printer": ["8443.11.00.00"],
+  "power strip": ["8536.69.00.90"],
+  "muffler": ["8708.92.21.00"],
+  "speaker": ["8518.29.00.00"],
+  "wire": ["7217.10.00.41"],
+  "gearbox": ["8708.40.21.00"],
+  "formaldehyde": ["2912.11.00.00"]
 };
 function searchCodes(query, maxResults){
   const trimmed = (query || "").trim();
@@ -17209,10 +17227,19 @@ function searchCodes(query, maxResults){
   // forever, normalize simple plurals here once: strip a trailing "s",
   // and separately handle the "-y -> -ies" pattern (battery/batteries),
   // which a plain "strip s" wouldn't catch.
+  // EXTENDED (3 SEPT 2026): found via testing "gearboxes" - the "-x/-sh/
+  // -ch -> -es" pattern (box/boxes, brush/brushes, watch/watches) wasn't
+  // handled either - stripping just "s" from "gearboxes" gives "gearboxe",
+  // not "gearbox", so it fell through to the broken ranking same as any
+  // other missed plural. Checked before the generic "-s" strip, same
+  // ordering logic as "-ies" already being checked first.
   const lower = trimmed.toLowerCase();
   let pinned = PINNED_SEARCH_TERMS[lower];
   if(!pinned && lower.endsWith("ies") && lower.length > 3){
     pinned = PINNED_SEARCH_TERMS[lower.slice(0, -3) + "y"];
+  }
+  if(!pinned && lower.endsWith("es") && lower.length > 2){
+    pinned = PINNED_SEARCH_TERMS[lower.slice(0, -2)];
   }
   if(!pinned && lower.endsWith("s") && lower.length > 1){
     pinned = PINNED_SEARCH_TERMS[lower.slice(0, -1)];
@@ -21245,6 +21272,7 @@ Object.assign(CODE_DESCRIPTIONS, {
   "7308.90.00.30": "Structures (excluding prefabricated buildings of heading 94.06) and parts of structures (for example, bridges and bridge-sections, lock gates, towers, lattice masts, roofs, roofing frame-works, doors and windows and their frames and thresholds for doors, shutters, balustrades, pillars and columns), of iron or steel; plates, rods, angles, shapes, sections, tubes and the like, prepared for use in structures, of iron or steel > Other > Siding, including soffit or fascia",
   "7308.90.00.40": "Structures (excluding prefabricated buildings of heading 94.06) and parts of structures (for example, bridges and bridge-sections, lock gates, towers, lattice masts, roofs, roofing frame-works, doors and windows and their frames and thresholds for doors, shutters, balustrades, pillars and columns), of iron or steel; plates, rods, angles, shapes, sections, tubes and the like, prepared for use in structures, of iron or steel > Other > Assembled fences, including barriers or crossing gates",
   "7308.90.00.50": "Structures (excluding prefabricated buildings of heading 94.06) and parts of structures (for example, bridges and bridge-sections, lock gates, towers, lattice masts, roofs, roofing frame-works, doors and windows and their frames and thresholds for doors, shutters, balustrades, pillars and columns), of iron or steel; plates, rods, angles, shapes, sections, tubes and the like, prepared for use in structures, of iron or steel > Other > Flooring; Roof drainage equipment",
+  "7308.90.00.60": "Structures (excluding prefabricated buildings of heading 94.06) and parts of structures (for example, bridges and bridge-sections, lock gates, towers, lattice masts, roofs, roofing frame-works, doors and windows and their frames and thresholds for doors, shutters, balustrades, pillars and columns), of iron or steel; plates, rods, angles, shapes, sections, tubes and the like, prepared for use in structures, of iron or steel > Other > Columns, pillars, posts, beams, girders and similar structural units",
   "7308.90.00.61": "Structures (excluding prefabricated buildings of heading 94.06) and parts of structures (for example, bridges and bridge-sections, lock gates, towers, lattice masts, roofs, roofing frame-works, doors and windows and their frames and thresholds for doors, shutters, balustrades, pillars and columns), of iron or steel; plates, rods, angles, shapes, sections, tubes and the like, prepared for use in structures, of iron or steel > Other > Storage racking systems, platforms, towers including parts, but excluding wire mesh decking, with vertical load bearing members that are at least 50 mm wide, assembled to any extent, or unassembled > Pallet racking, of hot-rolled structural steel",
   "7308.90.00.62": "Structures (excluding prefabricated buildings of heading 94.06) and parts of structures (for example, bridges and bridge-sections, lock gates, towers, lattice masts, roofs, roofing frame-works, doors and windows and their frames and thresholds for doors, shutters, balustrades, pillars and columns), of iron or steel; plates, rods, angles, shapes, sections, tubes and the like, prepared for use in structures, of iron or steel > Other > Storage racking systems, platforms, towers including parts, but excluding wire mesh decking, with vertical load bearing members that are at least 50 mm wide, assembled to any extent, or unassembled > Pallet racking, of cold-formed steel, roll or brake formed",
   "7308.90.00.63": "Structures (excluding prefabricated buildings of heading 94.06) and parts of structures (for example, bridges and bridge-sections, lock gates, towers, lattice masts, roofs, roofing frame-works, doors and windows and their frames and thresholds for doors, shutters, balustrades, pillars and columns), of iron or steel; plates, rods, angles, shapes, sections, tubes and the like, prepared for use in structures, of iron or steel > Other > Storage racking systems, platforms, towers including parts, but excluding wire mesh decking, with vertical load bearing members that are at least 50 mm wide, assembled to any extent, or unassembled > Cantilever racking, of hot-rolled structural steel",
