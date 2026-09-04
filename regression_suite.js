@@ -1652,6 +1652,27 @@ if (!jsdomAvailable) {
         synZero === 0, `${synZero} still zero`);
     }
 
+    // A24 — SIMA multi-match label fix (3 SEPT 2026): found while
+    // double-checking all surtax data after the 7308.90.00.60 SIMA gap.
+    // A real code (7610.10.00.10, aluminum door/frame) genuinely matches
+    // two distinct, legitimate SIMA cases at once (Aluminum extrusions;
+    // Unitized wall modules) - but the label was hardcoded identically
+    // for every match, so the summary flag showed the exact same text
+    // twice with nothing distinguishing them, reading as a display bug/
+    // duplicate rather than two real, different measures. Now includes
+    // each case's own product name in the label when more than one
+    // applies, while a single match keeps the original, simpler label.
+    {
+      const rMulti = await runUI({ q: '7610.10.00.10', value: 1000, origin: 'United States' });
+      check('A24a', 'Two distinct SIMA matches are now distinguishable by product name in the flag',
+        rMulti.inputs.tradeMeasuresFlag.includes('SIMA — Aluminum extrusions') &&
+        rMulti.inputs.tradeMeasuresFlag.includes('SIMA — Unitized wall modules'));
+
+      const rSingle = await runUI({ q: '7604.10.00.30', value: 1000, origin: 'China' });
+      check('A24b', 'A single SIMA match still uses the original, simpler label (unaffected)',
+        rSingle.inputs.tradeMeasuresFlag.includes('SIMA (Anti-dumping/Countervailing)'));
+    }
+
     printSummary();
   })();
 }

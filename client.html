@@ -1724,8 +1724,19 @@ function runEstimate(){
       if(adDesc) parts.push(`anti-dumping duty of ${adDesc}`);
       if(cvdDesc) parts.push(`countervailing duty of ${cvdDesc}`);
       if(!parts.length) return;
+      // FIX (3 SEPT 2026): found via a real code that matches two distinct
+      // SIMA cases at once (Aluminum extrusions AND Unitized wall
+      // modules, both genuinely applying) - the label was hardcoded
+      // identically for every match, so the summary flag and the
+      // collapsed charge line both showed the exact same text twice with
+      // nothing to distinguish them. A broker would have to expand BOTH
+      // entries individually just to discover they weren't a duplicate.
+      // Now includes each case's own product name directly in the label.
+      const simaLabel = simaMatches.length > 1
+        ? `SIMA — ${c.product}`
+        : 'SIMA (Anti-dumping/Countervailing)';
       charges.push({
-        label: 'SIMA (Anti-dumping/Countervailing)', subtitle: 'Anti-dumping / countervailing screening',
+        label: simaLabel, subtitle: 'Anti-dumping / countervailing screening',
         tooltip: 'SIMA (Special Import Measures Act) — extra duties Canada can charge on certain products from certain countries found to be unfairly priced or subsidized.',
         amount: null, qualifier: 'Screening indication', warning: true, category: 'trade',
         explain: {
