@@ -1078,7 +1078,7 @@ function renderBrokeragePanel(clientType){
       <div class="bp-type-option">
         <button type="button" class="bp-type-btn${clientType === 'setup' ? ' active' : ''}" data-type="setup">One time shipment</button>
         <span class="bp-type-hint" data-hint="setup">?</span>
-        <div class="bp-type-tooltip">New to Hemisphere? Choose this if you don't have an account with us yet.</div>
+        <div class="bp-type-tooltip">New to Hemisphere? Choose this if you don't have an account with us yet — we'll set one up as part of this quote.</div>
       </div>
       <div class="bp-type-option">
         <button type="button" class="bp-type-btn${clientType === 'onetime' ? ' active' : ''}" data-type="onetime">Existing Hemisphere client</button>
@@ -1099,13 +1099,13 @@ function renderBrokeragePanel(clientType){
 
   if(fees.overLimit){
     // BUG FIX (found via currency-chain hunting): a client entering a value
-    // in USD that converts to over $25,000 CAD (e.g. $18,000 USD -> $26,100
-    // CAD at the fixed 1.45 rate) would see this message with no
+    // in USD that converts to over $100,000 CAD (e.g. $70,000 USD ->
+    // $101,500 CAD at the fixed 1.45 rate) would see this message with no
     // explanation of why - their own entered number looks well under
-    // $25,000, since the CAD figure that actually triggered this is never
-    // shown here. Added the conversion context specifically for that case;
-    // a client who entered directly in CAD sees the original message
-    // unchanged, since there's nothing to clarify for them.
+    // $100,000, since the CAD figure that actually triggered this is
+    // never shown here. Added the conversion context specifically for
+    // that case; a client who entered directly in CAD sees the original
+    // message unchanged, since there's nothing to clarify for them.
     const inputs = window.__brokerageInputs;
     const conversionNote = (inputs && inputs.currency === 'USD')
       ? ` Your entered ${formatMoney(inputs.originalEnteredValue)} USD converts to approximately ${formatMoney(inputs.value)} CAD at our estimate rate, which is what puts this over the threshold.`
@@ -1115,7 +1115,7 @@ function renderBrokeragePanel(clientType){
       ${summaryHtml}
       <p class="bp-intro">Tell us a bit more and we'll follow up with the details.</p>
       ${typeRow}
-      <div class="bp-unavailable">Shipments over $25,000 CAD need a manual quote — use "Get a Hemisphere Import Quote" below to reach us directly.${conversionNote}</div>
+      <div class="bp-unavailable">Shipments over $100,000 CAD need a manual quote — use "Get a Hemisphere Import Quote" below to reach us directly.${conversionNote}</div>
     `;
     wireBrokerageTypeButtons();
     return;

@@ -18469,8 +18469,9 @@ Object.assign(CODE_DESCRIPTIONS, {
 // itself. Tiered by "Value for Duty $CAD" per the schedule's own column
 // header — uses the shipment's CAD value directly (the same `value` input
 // the main duty/tax calculator already uses), not the duty-paid total.
-// Entries above $25,000 aren't covered by the schedule; lookupEntryFee()
-// returns null in that case rather than guessing, matching the project's
+// Entries above $100,000 aren't covered (real source document AND the
+// approved extrapolation both stop there); lookupEntryFee() returns null
+// in that case rather than guessing further, matching the project's
 // established "don't fabricate a number when the source doesn't provide
 // one" convention.
 const ENTRY_FEE_SCHEDULE = [
@@ -18497,7 +18498,27 @@ const ENTRY_FEE_SCHEDULE = [
   {upTo:13000, fee:500},
   {upTo:14000, fee:550},
   {upTo:20000, fee:685},
-  {upTo:25000, fee:950}
+  {upTo:25000, fee:950},
+  // Extension beyond $25,000 (3 SEPT 2026): no real source document exists
+  // past this point - confirmed directly against the actual brokerage
+  // schedule document (BROK_SCHED_ONE_TIMERS), which stops at $25,000.
+  // Rigo explicitly asked for a logic/pattern-based extrapolation rather
+  // than a guess pulled from nowhere, reviewed and approved this specific
+  // table. Method: the real data shows a decreasing marginal rate as
+  // value increases (roughly 5.3% on the $20k-$25k band); continued that
+  // taper smoothly downward - 4% through $40k, 3% through $60k, 2.5%
+  // through $100k - rather than inventing an unrelated curve. This is an
+  // extrapolation, explicitly not a verified rate, and should be revisited
+  // if Hemisphere sets a real, documented rate for this range.
+  {upTo:30000, fee:1150},
+  {upTo:35000, fee:1350},
+  {upTo:40000, fee:1550},
+  {upTo:50000, fee:1850},
+  {upTo:60000, fee:2150},
+  {upTo:70000, fee:2400},
+  {upTo:80000, fee:2650},
+  {upTo:90000, fee:2900},
+  {upTo:100000, fee:3150}
 ];
 
 function lookupEntryFee(valueForDutyCAD){

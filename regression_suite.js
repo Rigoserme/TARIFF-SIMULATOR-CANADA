@@ -422,9 +422,22 @@ if (!jsdomAvailable) {
       check('C11c', '$25,000 exactly is still within the schedule ($950)',
         r25k.computeBrokerageFees('onetime').entryFee === 950);
 
-      const rOver = await runUI({ q: '4402.10.90.00', value: 25000.01, origin: 'Germany' });
-      check('C11d', '$25,000.01 correctly triggers overLimit, not a guessed fee',
-        r25k.computeBrokerageFees('onetime') && rOver.computeBrokerageFees('onetime').overLimit === true);
+      // UPDATED (3 SEPT 2026): the schedule now extends to $100,000 (an
+      // explicit, approved extrapolation beyond the real source document,
+      // which stops at $25,000 - see the comment above ENTRY_FEE_SCHEDULE
+      // in data.js for the full reasoning). $25,000.01 now correctly
+      // falls into the new $30,000 tier instead of triggering overLimit.
+      const r25k01 = await runUI({ q: '4402.10.90.00', value: 25000.01, origin: 'Germany' });
+      check('C11d', '$25,000.01 now correctly falls into the extended $30,000 tier ($1,150), not overLimit',
+        r25k01.computeBrokerageFees('onetime').entryFee === 1150 && !r25k01.computeBrokerageFees('onetime').overLimit);
+
+      const r100k = await runUI({ q: '4402.10.90.00', value: 100000, origin: 'Germany' });
+      check('C11e', '$100,000 exactly is still within the extended schedule ($3,150)',
+        r100k.computeBrokerageFees('onetime').entryFee === 3150);
+
+      const rOver = await runUI({ q: '4402.10.90.00', value: 100000.01, origin: 'Germany' });
+      check('C11f', '$100,000.01 correctly triggers overLimit, not a guessed fee',
+        rOver.computeBrokerageFees('onetime').overLimit === true);
     }
 
     // C12 — Client-type toggle (UPDATED 25 AUG 2026): Account Setup Fee
@@ -1368,21 +1381,24 @@ if (!jsdomAvailable) {
         printSection.includes('#1a1a1a') && printSection.includes('#7a5a1e') && printSection.includes('.complete-badge'));
     }
 
-    // C70 — Currency-conversion clarity fix for the $25,000 quote-panel
-    // limit (found via currency-chain hunting): a client entering, say,
-    // $18,000 USD (converts to $26,100 CAD) would see "Shipments over
-    // $25,000 CAD need a manual quote" with no indication that their own
-    // entered number - which looks well under $25,000 - is what triggered
-    // it. Now explains the conversion specifically when currency is USD;
-    // a direct CAD entry over the limit is unaffected, since there's
-    // nothing to clarify for that case.
+    // C70 — Currency-conversion clarity fix for the quote-panel limit
+    // (found via currency-chain hunting): a client entering a USD value
+    // that converts to just over the limit would see "Shipments over
+    // [limit] CAD need a manual quote" with no indication that their own
+    // entered number - which looks well under the limit - is what
+    // triggered it. Now explains the conversion specifically when
+    // currency is USD; a direct CAD entry over the limit is unaffected,
+    // since there's nothing to clarify for that case. UPDATED (3 SEPT
+    // 2026): threshold moved from $25,000 to $100,000 when the entry fee
+    // schedule was extended - test values updated to actually exceed the
+    // new limit (old $18,000 USD / $26,100 CAD example no longer does).
     {
       const dom = new (require('jsdom').JSDOM)(clientHtml, { runScripts: 'dangerously', resources: 'usable' });
       await new Promise(res => setTimeout(res, 100));
       const doc = dom.window.document;
       const win = dom.window;
       doc.getElementById('q').value = '4402.10.90.00';
-      doc.getElementById('value').value = '18000';
+      doc.getElementById('value').value = '70000';
       doc.getElementById('currency').value = 'USD';
       doc.getElementById('origin').value = 'Germany';
       doc.getElementById('province').value = 'Ontario';
@@ -1391,11 +1407,11 @@ if (!jsdomAvailable) {
       doc.getElementById('quoteRevealBtn').click();
       await new Promise(res => setTimeout(res, 50));
       const panelUSD = doc.querySelector('.brokerage-panel').innerHTML;
-      check('C70a', 'USD entry converting over the $25K limit explains the conversion',
-        panelUSD.includes('converts to approximately') && panelUSD.includes('$26,100.00'));
+      check('C70a', 'USD entry converting over the $100K limit explains the conversion',
+        panelUSD.includes('converts to approximately') && panelUSD.includes('$101,500.00'));
 
       doc.getElementById('currency').value = 'CAD';
-      doc.getElementById('value').value = '30000';
+      doc.getElementById('value').value = '105000';
       win.runEstimate();
       await new Promise(res => setTimeout(res, 50));
       doc.getElementById('quoteRevealBtn').click();
