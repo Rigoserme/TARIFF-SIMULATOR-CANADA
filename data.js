@@ -17223,7 +17223,49 @@ const PINNED_SEARCH_TERMS = {
   "speaker": ["8518.29.00.00"],
   "wire": ["7217.10.00.41"],
   "gearbox": ["8708.40.21.00"],
-  "formaldehyde": ["2912.11.00.00"]
+  "formaldehyde": ["2912.11.00.00"],
+  // Found via testing untested categories - agriculture, HVAC, telecom,
+  // optics, cookware, security, health (4 SEPT 2026). Same recurring
+  // pattern as every prior round. Some notably bad ones: satellite dish
+  // -> dishwashers; oven mitt -> popping corn; frying pan -> ceramic
+  // sinks; alarm system -> batteries; cutting board -> a writing slate.
+  "plow": ["8430.10.00.00"],
+  "irrigation": ["8424.82.00.20"],
+  "baler": ["8433.11.00.14"],
+  "router": ["8517.62.00.30"],
+  "fiber optic cable": ["8544.11.00.10"],
+  "satellite dish": ["8528.42.00.00"],
+  "microscope": ["9011.10.00.00"],
+  "frying pan": ["7323.10.00.00"],
+  "cutting board": ["4419.11.00.00"],
+  "oven mitt": ["6116.10.00.10"],
+  "cookware set": ["7323.93.90.90"],
+  "alarm system": ["8531.10.10.10"],
+  "hearing aid": ["9021.40.00.00"],
+  "security camera": ["8525.50.00.10"],
+  // Found via testing musical instruments, toys, jewelry, leather goods,
+  // glass, lighting, packaging, cleaning, lab equipment, fasteners
+  // (4 SEPT 2026). Same recurring pattern. Notably bad: wallet ->
+  // envelopes; mirror -> bells/statuettes; test tube -> industrial tube
+  // mills; petri dish/staple gun/pipette had no clean match and were
+  // deliberately left as genuine gaps rather than forced.
+  "violin": ["9202.10.00.00"],
+  "puzzle": ["9503.00.10.10"],
+  "building blocks": ["9503.00.90.40"],
+  "ring": ["7113.11.10.10"],
+  "necklace": ["7113.11.10.10"],
+  "earrings": ["7113.11.10.10"],
+  "wallet": ["4202.11.00.00"],
+  "handbag": ["4202.11.00.00"],
+  "briefcase": ["4202.11.00.00"],
+  "mirror": ["7009.10.00.10"],
+  "desk lamp": ["9405.21.00.00"],
+  "ceiling fixture": ["9405.11.00.11"],
+  "cardboard box": ["4819.10.00.10"],
+  "packing tape": ["3919.10.10.00"],
+  "disinfectant spray": ["3808.52.00.00"],
+  "test tube": ["7017.10.00.00"],
+  "hinge": ["8302.10.00.10"]
 };
 function searchCodes(query, maxResults){
   const trimmed = (query || "").trim();

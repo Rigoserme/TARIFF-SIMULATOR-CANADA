@@ -1734,6 +1734,51 @@ if (!jsdomAvailable) {
         elapsed < 1000, `Took ${elapsed}ms`);
     }
 
+    // A27 — Untested-category search fixes (4 SEPT 2026): agriculture,
+    // HVAC, telecom, optics, cookware, security, health. Same pinned-term
+    // pattern as every prior round. Worst mismatches: satellite dish ->
+    // dishwashers; oven mitt -> popping corn; frying pan -> ceramic
+    // sinks; alarm system -> batteries.
+    {
+      const terms = {
+        plow: '8430', irrigation: '8424', baler: '8433', router: '8517',
+        'fiber optic cable': '8544', 'satellite dish': '8528', microscope: '9011',
+        'frying pan': '7323', 'cutting board': '4419', 'oven mitt': '6116',
+        'cookware set': '7323', 'alarm system': '8531', 'hearing aid': '9021',
+        'security camera': '8525'
+      };
+      let allPass = true; const failures = [];
+      Object.entries(terms).forEach(([term, prefix]) => {
+        const r = searchCodes(term, 1);
+        if (!(r.length > 0 && r[0].code.startsWith(prefix))) { allPass = false; failures.push(term); }
+      });
+      check('A27', 'All 14 untested-category fixes resolve to their correct heading',
+        allPass, failures.length ? `Failed: ${failures.join(', ')}` : '');
+    }
+
+    // A28 — More untested-category search fixes (4 SEPT 2026): musical
+    // instruments, toys, jewelry, leather goods, glass, lighting,
+    // packaging, cleaning, lab equipment, fasteners. Same pinned-term
+    // pattern as every prior round. Worst mismatches: wallet -> envelopes;
+    // mirror -> bells/statuettes; test tube -> industrial tube mills;
+    // packing tape -> videotape recording apparatus.
+    {
+      const terms = {
+        violin: '9202', puzzle: '9503', 'building blocks': '9503', ring: '7113', necklace: '7113',
+        earrings: '7113', wallet: '4202', handbag: '4202', briefcase: '4202',
+        mirror: '7009', 'desk lamp': '9405', 'ceiling fixture': '9405',
+        'cardboard box': '4819', 'packing tape': '3919',
+        'disinfectant spray': '3808', 'test tube': '7017', hinge: '8302'
+      };
+      let allPass = true; const failures = [];
+      Object.entries(terms).forEach(([term, prefix]) => {
+        const r = searchCodes(term, 1);
+        if (!(r.length > 0 && r[0].code.startsWith(prefix))) { allPass = false; failures.push(term); }
+      });
+      check('A28', 'All 17 fixes from this round resolve to their correct heading',
+        allPass, failures.length ? `Failed: ${failures.join(', ')}` : '');
+    }
+
     printSummary();
   })();
 }
