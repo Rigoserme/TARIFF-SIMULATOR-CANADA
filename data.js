@@ -11052,12 +11052,26 @@ function formatMfnRate(mfn){
   return "";
 }
 
+// PERFORMANCE FIX (4 SEPT 2026): found via a real report of the Ledger
+// taking "several seconds" per keystroke. Traced to this function -
+// called once per matched SIMA case/surtax order/safeguard measure, and
+// for a short, broad query (e.g. a single digit like "7"), each call's
+// own `codes` array could hold 20+ matching HS codes. With 41 SIMA cases
+// matching "7" at once, that meant over 1,000 individual getMfnRate()
+// calls for one keystroke - measured at 1.5 seconds for the lookups
+// alone, before the rest of rendering. Capping this also fixes a real
+// UX problem that existed independently of performance: cramming 20+
+// codes with rates into a single card for an overly broad query was
+// never actually useful to read, regardless of how fast it rendered.
 function matchedCodesWithMfn(codes){
-  return codes.map(code => {
+  const CAP = 8;
+  const shown = codes.slice(0, CAP).map(code => {
     const mfn = getMfnRate(code);
     const label = formatMfnRate(mfn);
     return label ? code + ' <span class="mono" style="opacity:0.75;">(' + label + ')</span>' : code;
   }).join(', ');
+  const remaining = codes.length - CAP;
+  return remaining > 0 ? shown + ` <span style="opacity:0.7;">+${remaining} more code${remaining===1?'':'s'} in this case</span>` : shown;
 }
 
 

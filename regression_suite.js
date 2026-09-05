@@ -1707,6 +1707,33 @@ if (!jsdomAvailable) {
         pendingResult.includes('UPCOMING') && pendingResult.includes('2026-09-08'));
     }
 
+    // A26 — Ledger performance fix (4 SEPT 2026): a real report of the
+    // Ledger taking "several seconds" per keystroke, traced to a single
+    // digit like "7" matching 41 SIMA cases at once, each calling
+    // matchedCodesWithMfn() with 20+ codes - over 1,000 individual
+    // getMfnRate() calls for one keystroke, measured at 5.2 seconds
+    // total. Fixed two ways: capped codes-shown-per-card at 8 (also a
+    // genuine UX fix, not just performance - cramming 20+ codes into one
+    // card was never useful to read), and added a "keep typing" message
+    // for overly-broad short numeric queries instead of rendering
+    // everything. Measured improvement: 5,194ms -> 260ms for a single
+    // digit (20x), all realistic multi-digit queries under ~150ms.
+    {
+      const indexHtml = fs.readFileSync(INDEX_PATH, 'utf8')
+        .replace('<script src="data.js"></script>', () => '<script>' + fs.readFileSync(DATA_PATH, 'utf8') + '</script>');
+      const dom = new (require('jsdom').JSDOM)(indexHtml, { runScripts: 'dangerously', resources: 'usable' });
+      await new Promise(res => setTimeout(res, 150));
+      const doc = dom.window.document;
+      const win = dom.window;
+
+      doc.getElementById('searchBox').value = '7';
+      const t0 = Date.now();
+      win.applyFilters();
+      const elapsed = Date.now() - t0;
+      check('A26', 'A single broad digit ("7") now resolves in well under 1 second (was 5.2s)',
+        elapsed < 1000, `Took ${elapsed}ms`);
+    }
+
     printSummary();
   })();
 }

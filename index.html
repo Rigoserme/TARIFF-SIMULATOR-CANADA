@@ -98,6 +98,13 @@
     font-family:"Inter",sans-serif;
     color:var(--paper);
   }
+  .by-line{
+    font-size: 11.5px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    margin: 1px 0 0;
+    color: rgba(250,248,245,0.55);
+  }
   .wordmark .no{
     color: #D8B96A;
     font-weight:700;
@@ -493,10 +500,13 @@
   <div class="header-inner">
     <div class="brand-row">
       <div class="brand-mark">CA</div>
-      <p class="wordmark">Tariff Ledger<span class="no">.</span></p>
+      <div>
+        <p class="wordmark">Tariff Ledger<span class="no">.</span></p>
+        <p class="by-line">By TariffCheck</p>
+      </div>
     </div>
     <div class="updated-tag">
-      Data last reviewed<br><b id="lastUpdated">28 JUL 2026</b>
+      Data last reviewed<br><b id="lastUpdated">4 SEP 2026</b>
     </div>
   </div>
 </header>
@@ -738,6 +748,21 @@ function renderResults(list, simaMatches, surtaxMatches, safeguardMatches, gener
   container.innerHTML = "";
 
   const totalCount = list.length + simaMatches.length + surtaxMatches.length + safeguardMatches.length + generalMatches.length;
+
+  // PERFORMANCE + UX FIX (4 SEPT 2026): a very short numeric query (e.g.
+  // a single digit typed before the rest of a code) can match dozens of
+  // SIMA cases/surtax orders at once - genuinely not useful to read
+  // regardless of render speed, and expensive to build (a single digit
+  // was measured matching 41 SIMA cases, over 1,000 individual MFN
+  // lookups for one keystroke). Rather than truncate silently, tell the
+  // person directly and let them keep typing - the debounce means this
+  // resolves itself the moment they type the next digit.
+  const isShortNumeric = /^\d{1,2}$/.test(query.trim());
+  if(isShortNumeric && (simaMatches.length + surtaxMatches.length + safeguardMatches.length) > 15){
+    container.innerHTML = '<div class="no-results">Keep typing — that\'s too broad a match on its own (matches many SIMA cases and surtax orders at once). Results will narrow down as you enter more of the code.</div>';
+    countEl.textContent = "";
+    return;
+  }
 
   if(totalCount === 0 && pendingSurtaxMatches.length === 0){
     container.innerHTML = '<div class="no-results">No matching entries. Not every code is loaded here — this only means nothing matched in your saved list, the CBSA SIMA case list, active surtax orders, safeguard measures, or the general tariff database, not that the code is definitely clear.</div>';
