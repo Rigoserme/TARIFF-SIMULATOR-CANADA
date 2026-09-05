@@ -28,6 +28,7 @@ const path = require('path');
 
 const DATA_PATH = path.join(__dirname, 'data.js');
 const CLIENT_PATH = path.join(__dirname, 'client.html');
+const INDEX_PATH = path.join(__dirname, 'index.html');
 
 let pass = 0;
 let fail = 0;
@@ -1671,6 +1672,39 @@ if (!jsdomAvailable) {
       const rSingle = await runUI({ q: '7604.10.00.30', value: 1000, origin: 'China' });
       check('A24b', 'A single SIMA match still uses the original, simpler label (unaffected)',
         rSingle.inputs.tradeMeasuresFlag.includes('SIMA (Anti-dumping/Countervailing)'));
+    }
+
+    // A25 — Ledger integration (4 SEPT 2026): the Ledger gained a general
+    // search using the same searchCodes() engine as TariffCheck
+    // (additive - the existing TARIFF_DATA rater case-notes and their
+    // citations/flags stay separate and untouched), plus a pending-
+    // surtax notice it never had before, and a brand-alignment pass on
+    // colors/fonts (keeping the functional SIMA/surtax/safeguard color
+    // legend unchanged, since that's a working feature, not decoration).
+    {
+      const indexHtml = fs.readFileSync(INDEX_PATH, 'utf8')
+        .replace('<script src="data.js"></script>', () => '<script>' + fs.readFileSync(DATA_PATH, 'utf8') + '</script>');
+      const dom = new (require('jsdom').JSDOM)(indexHtml, { runScripts: 'dangerously', resources: 'usable' });
+      await new Promise(res => setTimeout(res, 150));
+      const doc = dom.window.document;
+      const win = dom.window;
+
+      doc.getElementById('searchBox').value = 'battery';
+      win.applyFilters();
+      check('A25a', 'Ledger general search now benefits from TariffCheck\'s pinned-term fixes (battery -> real code, not the old TARIFF_DATA-only 7-entry list)',
+        doc.getElementById('results').innerHTML.includes('8507'));
+
+      doc.getElementById('searchBox').value = '7606.12.00.20';
+      win.applyFilters();
+      const trackedResult = doc.getElementById('results').innerHTML;
+      check('A25b', 'Existing tracked TARIFF_DATA entries still show their curated context, unaffected by the new general search',
+        trackedResult.includes('aircraft, spacecraft, ground flying trainers') && !trackedResult.includes('General database'));
+
+      doc.getElementById('searchBox').value = '9507.10.10.00';
+      win.applyFilters();
+      const pendingResult = doc.getElementById('results').innerHTML;
+      check('A25c', 'Ledger now shows a pending-surtax notice for the Sept 8 countermeasures (previously had none at all)',
+        pendingResult.includes('UPCOMING') && pendingResult.includes('2026-09-08'));
     }
 
     printSummary();

@@ -576,6 +576,34 @@
   .info-card.neutral{ background:var(--teal-soft); border-color:#D3DFE9; color:var(--brown-mid); }
   .info-card b{ display:block; margin-bottom:3px; font-size:13.5px; text-transform:uppercase; letter-spacing:0.03em; }
 
+  .ledger-connector{
+    max-width:832px;
+    margin:0 auto 20px;
+    background:var(--teal-soft);
+    border:1px solid #D3DFE9;
+    border-radius:12px;
+    padding:20px 24px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:20px;
+    flex-wrap:wrap;
+  }
+  .ledger-connector-title{ font-family:'Quicksand',sans-serif; font-weight:800; text-transform:uppercase; letter-spacing:0.2px; font-size:15px; margin:0 0 4px; color:var(--brown-deep); }
+  .ledger-connector-desc{ margin:0; font-size:13.5px; color:var(--ink-faint); max-width:52ch; line-height:1.5; }
+  .ledger-connector-btn{
+    background:var(--brown-deep);
+    color:#fff;
+    text-decoration:none;
+    font-weight:700;
+    font-size:14px;
+    padding:12px 20px;
+    border-radius:8px;
+    white-space:nowrap;
+    transition:background 0.15s;
+  }
+  .ledger-connector-btn:hover{ background:var(--brown-mid); }
+
   .cta{
     margin-top:28px;
     background:var(--teal-soft);
@@ -886,11 +914,28 @@
      actual duty engine, since the detailed line-item table wasn't public
      yet as of this writing - update that note once data.js is actually
      updated with the real measures. -->
+
+<!-- Tariff Ledger connector (added 4 SEPT 2026) - positioned above the
+     Tariff Updates widget per explicit instruction. Links to the internal
+     Ledger tool (index.html), which Rigo plans to position as a paid
+     "Plus" tier on gohemisphere.ca rather than open access - resolves the
+     earlier access-control concern about a public button reaching an
+     unauthenticated internal tool. This is just the connecting button;
+     the actual auth/payment gating is a separate, broader website
+     decision outside this file's scope. -->
+<div class="ledger-connector">
+  <div class="ledger-connector-text">
+    <div class="ledger-connector-title">Tariff Ledger</div>
+    <div class="ledger-connector-desc">Our internal case-tracking tool for licensed raters — cross-checks SIMA anti-dumping/countervailing cases, active surtax orders, and safeguard measures against any HS code, then estimates the landed cost.</div>
+  </div>
+  <a href="index.html" class="ledger-connector-btn">Open Tariff Ledger</a>
+</div>
+
 <div class="tariff-updates-section">
   <div class="tu-header">
     <div class="tu-title-row">
       <span class="tu-title">TARIFF UPDATES</span>
-      <span class="tu-badge">LAST UPDATE: AUG 25, 2026</span>
+      <span class="tu-badge">LAST UPDATE: SEP 4, 2026</span>
     </div>
     <a href="https://www.canada.ca/en/department-finance/programs/international-trade-finance-policy/canadas-response-us-tariffs/complete-list-us-products-subject-to-counter-tariffs.html" class="tu-view-all" target="_blank" rel="noopener">View All Updates</a>
   </div>

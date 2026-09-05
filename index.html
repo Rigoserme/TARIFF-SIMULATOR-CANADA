@@ -5,21 +5,24 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tariff Ledger CA</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap');
 
   :root{
-    --ink:#14213D;
-    --ink-rich:#0D1729;
-    --ink-soft:#4B5768;
-    --ink-faint:#8792A3;
-    --paper:#F8F6F1;
-    --paper-alt:#EFEBE0;
+    --ink:#1A4D61;
+    --ink-rich:#123544;
+    --ink-soft:#2C6B7A;
+    --ink-faint:#6B6558;
+    --paper:#FAF8F5;
+    --paper-alt:#EAF3F4;
     --card:#FFFFFF;
-    --line:#E4E0D3;
+    --line:#E6DFD5;
 
     /* The signature: three duty types, three colors. Used consistently
        everywhere a charge type appears — badges, card edges, calculator
-       line items — so anyone can recognize the instrument by color alone. */
+       line items — so anyone can recognize the instrument by color alone.
+       KEPT UNCHANGED during the 3 SEPT 2026 Hemisphere-brand alignment -
+       this is a functional feature for raters, not decorative branding,
+       same reasoning as client.html's own separate charge-category colors. */
     --sima:#9A2B2B;
     --sima-soft:#F6E9E7;
     --surtax:#A9782E;
@@ -45,8 +48,8 @@
   }
 
   .display-font{
-    font-family: "Fraunces", "Iowan Old Style", Georgia, serif;
-    font-optical-sizing: auto;
+    font-family: "Quicksand", "Iowan Old Style", Georgia, serif;
+    font-weight: 700;
   }
 
   .body-font{
@@ -549,6 +552,46 @@
 
 <script src="data.js"></script>
 <script>
+// Pending/upcoming surtax card (3 SEPT 2026) - visually distinct from an
+// active surtax (amber/upcoming styling rather than the standard surtax
+// gold stamp) so a rater can't mistake "this is coming" for "this
+// applies today".
+function renderPendingSurtaxCard(order, matchedQuery){
+  const card = document.createElement('div');
+  card.className = 'card surtax';
+  card.style.borderLeftColor = '#C99A3E';
+  const matchingCodes = order.hsCodes.filter(code => {
+    const nc = normCode(code);
+    const q = normCode(matchedQuery);
+    return nc.startsWith(q) || q.startsWith(nc);
+  });
+  card.innerHTML = `
+    <div class="card-top">
+      <div>
+        <div class="code mono">Surtax order: ${order.regNo}</div>
+        <p class="desc">${order.name}</p>
+        <p class="desc" style="margin-top:6px;">Matched code(s): ${matchedCodesWithMfn(matchingCodes)}</p>
+      </div>
+      <div class="stamps"><span class="stamp surtax" style="background:#FAF1DF; color:#8A6624;">UPCOMING — EFFECTIVE ${order.effectiveDate}</span></div>
+    </div>
+    <div class="detail-grid">
+      <div>
+        <div class="field-label">Rate (once in effect)</div>
+        <div class="field-value">${order.rateNote}</div>
+      </div>
+      <div>
+        <div class="field-label">Applies to</div>
+        <div class="field-value">${order.origin}</div>
+      </div>
+      <div style="grid-column: 1 / -1;">
+        <div class="field-label">Status</div>
+        <div class="field-value">Not yet in effect — this order does not apply to shipments releasing today. Confirm the current date against the effective date above before treating this as active.</div>
+      </div>
+    </div>
+  `;
+  return card;
+}
+
 function renderSurtaxCard(order, matchedQuery){
   const card = document.createElement('div');
   card.className = 'card surtax';
@@ -642,7 +685,7 @@ function renderSafeguardCard(measure, matchedQuery){
 
 let lastUpdatedEl = document.getElementById('lastUpdated');
 // Change this string whenever you do a maintenance pass on TARIFF_DATA above.
-lastUpdatedEl.textContent = "31 JUL 2026";
+lastUpdatedEl.textContent = "4 SEP 2026";
 
 
 
@@ -689,24 +732,31 @@ function renderSimaCard(caseObj, matchedQuery){
   return card;
 }
 
-function renderResults(list, simaMatches, surtaxMatches, safeguardMatches, query){
+function renderResults(list, simaMatches, surtaxMatches, safeguardMatches, generalMatches, pendingSurtaxMatches, query){
   const container = document.getElementById('results');
   const countEl = document.getElementById('resultCount');
   container.innerHTML = "";
 
-  const totalCount = list.length + simaMatches.length + surtaxMatches.length + safeguardMatches.length;
+  const totalCount = list.length + simaMatches.length + surtaxMatches.length + safeguardMatches.length + generalMatches.length;
 
-  if(totalCount === 0){
-    container.innerHTML = '<div class="no-results">No matching entries. Not every code is loaded here — this only means nothing matched in your saved list, the CBSA SIMA case list, active surtax orders, or safeguard measures, not that the code is definitely clear.</div>';
+  if(totalCount === 0 && pendingSurtaxMatches.length === 0){
+    container.innerHTML = '<div class="no-results">No matching entries. Not every code is loaded here — this only means nothing matched in your saved list, the CBSA SIMA case list, active surtax orders, safeguard measures, or the general tariff database, not that the code is definitely clear.</div>';
     countEl.textContent = "";
     return;
   }
 
   const parts = [];
   if(surtaxMatches.length) parts.push(`${surtaxMatches.length} surtax order match${surtaxMatches.length===1?'':'es'}`);
+  if(pendingSurtaxMatches.length) parts.push(`${pendingSurtaxMatches.length} upcoming surtax`);
   if(safeguardMatches.length) parts.push(`${safeguardMatches.length} safeguard match${safeguardMatches.length===1?'':'es'}`);
   if(simaMatches.length) parts.push(`${simaMatches.length} SIMA case match${simaMatches.length===1?'':'es'}`);
+  if(generalMatches.length) parts.push(`${generalMatches.length} general database match${generalMatches.length===1?'':'es'}`);
   countEl.textContent = totalCount + (totalCount === 1 ? " match" : " matches") + (parts.length ? ` (${parts.join(', ')})` : "");
+
+  // Upcoming/pending surtax first — most time-sensitive, a rater actively
+  // working a file today needs to know this is coming even though it
+  // isn't live yet.
+  pendingSurtaxMatches.forEach(o => container.appendChild(renderPendingSurtaxCard(o, query)));
 
   // Safeguard first — provisional and fast-moving, most time-sensitive of all three categories
   safeguardMatches.forEach(m => container.appendChild(renderSafeguardCard(m, query)));
@@ -757,6 +807,33 @@ function renderResults(list, simaMatches, surtaxMatches, safeguardMatches, query
 
   // Then any matching official SIMA cases (auto cross-referenced)
   simaMatches.forEach(c => container.appendChild(renderSimaCard(c, query)));
+
+  // General database matches last — not personally verified/tracked like
+  // the section above, just the same broad CODE_DESCRIPTIONS lookup
+  // TariffCheck uses, shown plainly rather than styled like a
+  // verified/flagged case.
+  generalMatches.forEach(r => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    const mfn = getMfnRate(r.code);
+    const rateText = mfn ? (mfn.type === 'free' ? 'Free' : mfn.type === 'percent' ? `${mfn.rate}%` : (mfn.note || 'See CBSA schedule — per-unit/compound rate')) : 'Not on file';
+    card.innerHTML = `
+      <div class="card-top">
+        <div>
+          <div class="code mono">${r.code}</div>
+          <p class="desc">${r.description}</p>
+        </div>
+        <div class="stamps"><span class="stamp clear">General database — not personally verified</span></div>
+      </div>
+      <div class="detail-grid">
+        <div>
+          <div class="field-label">MFN rate</div>
+          <div class="field-value">${rateText}</div>
+        </div>
+      </div>
+    `;
+    container.appendChild(card);
+  });
 }
 
 function applyFilters(){
@@ -770,9 +847,30 @@ function applyFilters(){
     return matchesQuery; // TARIFF_DATA keeps its own simple CN/US/Other tagging, unaffected by this filter
   });
 
+  // General search results (3 SEPT 2026): TARIFF_DATA above is Rigo's own
+  // curated, file-specific case notes (verified rates, citations, surtax/
+  // SIMA context) - genuinely valuable and NOT something to replace. This
+  // is additive: uses the same searchCodes() engine as TariffCheck (with
+  // every pinned-term/synonym/plural fix built up over this whole
+  // project) to also search the full ~10,800-code CODE_DESCRIPTIONS
+  // dataset, for codes that aren't in Rigo's own tracked list yet.
+  // Excludes anything already shown in the tracked-entries section above,
+  // so a code doesn't appear twice.
+  const trackedCodes = new Set(filtered.map(item => item.code));
+  const generalMatches = q
+    ? searchCodes(q, 10).filter(r => !trackedCodes.has(r.code))
+    : [];
+
   const looksLikeCode = /\d/.test(q);
   let simaMatches = looksLikeCode ? findSimaMatches(q) : [];
   let surtaxMatches = looksLikeCode ? findSurtaxMatches(q) : [];
+  // Pending surtax notice (3 SEPT 2026): the Ledger never had this - only
+  // client.html did. findSurtaxMatches() correctly withholds a
+  // date-gated order (like the Sept 8 countermeasures) until its
+  // effective date, which is right for the live duty calculation, but
+  // meant this internal tool gave raters no heads-up at all that a
+  // surtax was coming for a code they're actively reviewing today.
+  let pendingSurtaxMatches = looksLikeCode ? findPendingSurtaxMatches(q) : [];
   // Safeguard matches by keyword too (e.g. "chickpeas"), not just code, so
   // this runs regardless of whether the query looks like an HS code.
   let safeguardMatches = q ? findSafeguardMatches(q) : [];
@@ -780,6 +878,7 @@ function applyFilters(){
   if(country){
     simaMatches = simaMatches.filter(c => c.measures.some(m => m.country === country));
     surtaxMatches = surtaxMatches.filter(o => surtaxAppliesToCountry(o, country));
+    pendingSurtaxMatches = pendingSurtaxMatches.filter(o => surtaxAppliesToCountry(o, country));
     // Safeguard measures apply globally EXCEPT specific exempt origins — the
     // opposite structure from SIMA/surtax, which apply only to named origins.
     safeguardMatches = safeguardMatches.filter(m => !m.excludedOrigins.includes(country));
@@ -802,6 +901,10 @@ function applyFilters(){
     TARIFF_DATA.forEach(item => {
       const nc = normCode(item.code);
       if(nc.startsWith(nq) || nq.startsWith(nc)) codeSet.add(item.code);
+    });
+    generalMatches.forEach(r => {
+      const nc = normCode(r.code);
+      if(nc.startsWith(nq) || nq.startsWith(nc)) codeSet.add(r.code);
     });
     simaMatches.forEach(c => c.hsCodes.forEach(code => {
       const nc = normCode(code);
@@ -837,7 +940,7 @@ function applyFilters(){
   }
   updateCalcSection();
 
-  renderResults(filtered, simaMatches, surtaxMatches, safeguardMatches, q);
+  renderResults(filtered, simaMatches, surtaxMatches, safeguardMatches, generalMatches, pendingSurtaxMatches, q);
 }
 
 // Populate the origin dropdown from the actual countries present in
