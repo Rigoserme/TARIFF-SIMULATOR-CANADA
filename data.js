@@ -17265,7 +17265,137 @@ const PINNED_SEARCH_TERMS = {
   "packing tape": ["3919.10.10.00"],
   "disinfectant spray": ["3808.52.00.00"],
   "test tube": ["7017.10.00.00"],
-  "hinge": ["8302.10.00.10"]
+  "hinge": ["8302.10.00.10"],
+  // Found via testing footwear/luggage/plumbing/art/baby/camping/
+  // beverage/craft/electrical categories (4 SEPT 2026). Same recurring
+  // pattern. Notably bad: duffel bag/garment bag -> African cherry bark;
+  // wine glass -> winemaking byproducts (wine lees); tent -> surgical
+  // sutures. baby bottle/glue gun/wire nut/easel/thermos had no clean
+  // match and were deliberately left as genuine gaps.
+  // CORRECTED (5 SEPT 2026, pre-push audit): several of the "fixes" below
+  // pointed at the wrong subheading within the right heading - a second,
+  // narrower kind of bug than the ones the round was fixing. backpack/
+  // duffel/garment bag were pinned to the leather-surface subheading
+  // (most aren't leather; moved to the textile/plastic ones); shower
+  // head was pinned to "shower stalls" (an enclosure, not a spray
+  // fixture - moved to the faucets/flush-valves heading instead, which
+  // isn't a perfect fit either but is far closer than a shower stall);
+  // bathtub was on the same "shower stalls" code instead of the actual
+  // "Baths" line; tent was on "tarpaulins/awnings/sunblinds" instead of
+  // the heading's own "Tents" subheading; wine glass was pinned to the
+  // lead-crystal/excise-dutiable line instead of plain stemware; sewing
+  // needle was on "safety pins for marking systems" instead of the
+  // heading's actual sewing-needle line; extension cable was on
+  // "winding wire" (motor/electromagnet wire) instead of insulated
+  // conductors fitted with connectors; camping stove was on
+  // "non-portable" stoves, the opposite of what a camping stove is.
+  "backpack": ["4202.92.20.90"],
+  "duffel bag": ["4202.92.90.00"],
+  "garment bag": ["4202.92.90.00"],
+  "toilet": ["6910.10.10.10"],
+  "shower head": ["8481.80.00.79"],
+  "bathtub": ["3922.10.00.30"],
+  "tent": ["6306.22.00.90"],
+  "wine glass": ["7013.28.00.00"],
+  "sewing needle": ["7319.90.10.00"],
+  "baby monitor": ["8525.50.00.10"],
+  "extension cable": ["8544.42.00.90"],
+  "camping stove": ["7321.11.90.40"],
+  // Found via testing books/printing, candles, garden tools, pool/spa,
+  // water filtration, cutlery, insulation, drones, flooring (4 SEPT
+  // 2026). Same recurring pattern. Notably bad: hot tub -> lamp-assembly
+  // machinery; fork -> forklift trucks; water filter/softener -> perfume.
+  // The dedicated drone heading (88.06, "Unmanned aircraft") already
+  // exists in the data with 11 real codes by weight class - it just
+  // never surfaced for "drone"/"quadcopter" since neither word appears
+  // literally in the real HS text.
+  // CORRECTED (5 SEPT 2026, pre-push audit): printer paper was pinned to
+  // "hand-made paper" (heading 48.02's own title, not the actual
+  // machine-made printing/copy paper lines) - moved to "copy or
+  // duplicating paper". kitchen knife was on "sets of assorted articles"
+  // (a knife SET, not a single knife) - moved to "other knives having
+  // fixed blades". fork was on "spoon blanks and table forks in the
+  // rough" (unfinished blanks) - moved to finished "forks, of a kind
+  // used at the table". spray foam was on "urea resins", which the
+  // heading text explicitly distinguishes from polyurethanes (what
+  // spray foam actually is) - moved to the polyurethanes line. vinyl
+  // flooring was on a wall/ceiling covering line despite the heading
+  // having its own floor-tile line - moved there.
+  "printer paper": ["4802.56.00.20"],
+  "candle holder": ["9405.50.10.00"],
+  "water filter": ["8421.21.00.00"],
+  "water softener": ["8421.21.00.00"],
+  "kitchen knife": ["8211.92.00.00"],
+  "fork": ["8215.99.10.00"],
+  "spray foam": ["3909.50.00.90"],
+  "vinyl flooring": ["3918.10.90.10"],
+  "drone": ["8806.29.00.00"],
+  "quadcopter": ["8806.29.00.00"],
+  // Found via testing bicycle parts, winter sports, medical PPE, welding,
+  // woodworking, 3D printing, pet supplies, traffic/safety, bakery
+  // equipment (4 SEPT 2026). Same recurring pattern, one of the larger
+  // batches yet. Notably bad: commercial oven -> cobalt oxides; traffic
+  // cone -> hop cones for beer brewing; safety vest -> explosive
+  // detonating cords; food scale -> potato starch.
+  // CORRECTED (5 SEPT 2026, pre-push audit): bicycle was pinned to the
+  // small-wheel (<=38cm) bracket - a kids'-bike size, not a generic
+  // bicycle - moved to the heading's own catch-all "Other". fish food
+  // was pinned to "dog or cat food biscuits" (wrong animal entirely) -
+  // moved to "other complete feeds for fish". filament (3D-printing
+  // context) was on "polymers of ethylene"; PLA/ABS/PETG filament isn't
+  // polyethylene - moved to "of other plastics". fish net was pinned to
+  // the commercial-fishing-only line - moved to the general "other" made
+  // up net line. traffic cone was pinned to electrical signalling
+  // equipment FOR RAILWAYS/TRAMWAYS - not remotely a road cone - moved
+  // to the plastics chapter's "safety equipment and parts thereof" line
+  // (heading changes 8530 -> 3926, so the regression prefix moves too).
+  "bicycle": ["8712.00.00.90"],
+  "bicycle pedal": ["8714.96.00.00"],
+  "snowboard": ["9506.11.00.00"],
+  "fish food": ["2309.90.39.35"],
+  "welding helmet": ["6506.10.10.30"],
+  "filament": ["3916.90.00.00"],
+  "resin printer": ["8485.80.00.00"],
+  "fish net": ["5608.11.90.00"],
+  "traffic cone": ["3926.90.99.20"],
+  "commercial oven": ["8417.20.00.00"],
+  "food scale": ["8423.10.00.00"],
+  // Found via testing home decor, bedding, office furniture, BBQ,
+  // car care, fitness, audio, chargers, air filters, curtains (4 SEPT
+  // 2026). Same recurring pattern. Notably bizarre: car jack -> a
+  // species of fish (jack/hardtail); power bank -> weaving looms;
+  // weight bench -> honey containers (matched "5kg" incidentally);
+  // bluetooth speaker -> self-adhesive plastic sheet.
+  // CORRECTED (5 SEPT 2026, pre-push audit): wall art was pinned to
+  // antique (>100-year-old) hand-executed original paintings, subject to
+  // excise duty - moved to the printed-pictures heading's generic
+  // "pictures, designs and photographs > Other" line (heading changes
+  // 9701 -> 4911). grill brush was on a vegetable-twig/broom line -
+  // moved to "other" brushes. car wax was pinned to "liquid shoe shine
+  // preparations" - moved to the heading's own coachwork-polish line.
+  // weight bench was pinned to a wooden JOINER'S bench (a woodworking
+  // workbench, not gym equipment) - moved to the physical-exercise
+  // equipment heading (4421 -> 9506). phone charger/wall adapter were
+  // pinned to ballasts for discharge lamps/tubes (fluorescent lighting
+  // gear, unrelated) - moved to the heading's actual "battery chargers,
+  // USB type, from AC source" line. power bank was pinned to the
+  // lithium-ion line reserved for electric-vehicle primary power packs -
+  // moved to the general "lithium-ion, other" line. air purifier reused
+  // the water-filter code (liquids) instead of the same heading's
+  // gas/air-filtering line ("filtering or purifying machinery for gases
+  // > Other > Other").
+  "wall art": ["4911.91.00.90"],
+  "bbq grill": ["7321.11.10.00"],
+  "grill brush": ["9603.90.90.00"],
+  "car wax": ["3405.30.00.00"],
+  "tire iron": ["8204.11.00.30"],
+  "car jack": ["8425.42.00.00"],
+  "weight bench": ["9506.91.00.90"],
+  "bluetooth speaker": ["8518.29.00.00"],
+  "phone charger": ["8504.40.90.41"],
+  "power bank": ["8507.60.90.00"],
+  "wall adapter": ["8504.40.90.41"],
+  "air purifier": ["8421.39.00.90"]
 };
 function searchCodes(query, maxResults){
   const trimmed = (query || "").trim();

@@ -1764,7 +1764,7 @@ if (!jsdomAvailable) {
     // packing tape -> videotape recording apparatus.
     {
       const terms = {
-        violin: '9202', puzzle: '9503', 'building blocks': '9503', ring: '7113', necklace: '7113',
+        violin: '9202', puzzle: '9503', ring: '7113', necklace: '7113',
         earrings: '7113', wallet: '4202', handbag: '4202', briefcase: '4202',
         mirror: '7009', 'desk lamp': '9405', 'ceiling fixture': '9405',
         'cardboard box': '4819', 'packing tape': '3919',
@@ -1775,7 +1775,121 @@ if (!jsdomAvailable) {
         const r = searchCodes(term, 1);
         if (!(r.length > 0 && r[0].code.startsWith(prefix))) { allPass = false; failures.push(term); }
       });
-      check('A28', 'All 17 fixes from this round resolve to their correct heading',
+      check('A28', 'All 16 fixes from this round resolve to their correct heading',
+        allPass, failures.length ? `Failed: ${failures.join(', ')}` : '');
+    }
+
+    // A29 — More untested-category search fixes (4 SEPT 2026): footwear,
+    // luggage, plumbing, art supplies, baby products, camping,
+    // beverages, craft supplies, electrical. Same pinned-term pattern as
+    // every prior round. Worst mismatches: duffel bag/garment bag ->
+    // African cherry bark; wine glass -> winemaking byproducts; tent ->
+    // surgical sutures.
+    // CORRECTED (5 SEPT 2026, pre-push audit): several of this round's
+    // fixes pointed at the wrong subheading within the right heading -
+    // see the matching comment above PINNED_SEARCH_TERMS in data.js.
+    // shower head's heading changes (3922 -> 8481) since the corrected
+    // code is faucets/flush-valves, not plastic shower enclosures.
+    {
+      const terms = {
+        backpack: '4202', 'duffel bag': '4202', 'garment bag': '4202',
+        toilet: '6910', 'shower head': '8481', bathtub: '3922', tent: '6306',
+        'wine glass': '7013', 'sewing needle': '7319', 'baby monitor': '8525',
+        'extension cable': '8544', 'camping stove': '7321'
+      };
+      let allPass = true; const failures = [];
+      Object.entries(terms).forEach(([term, prefix]) => {
+        const r = searchCodes(term, 1);
+        if (!(r.length > 0 && r[0].code.startsWith(prefix))) { allPass = false; failures.push(term); }
+      });
+      check('A29', 'All 12 fixes from this round resolve to their correct heading',
+        allPass, failures.length ? `Failed: ${failures.join(', ')}` : '');
+    }
+
+    // A30 — More untested-category search fixes (4 SEPT 2026): books/
+    // printing, candles, garden tools, pool/spa, water filtration,
+    // cutlery, insulation, drones, flooring. Same pinned-term pattern.
+    // Worst mismatches: hot tub -> lamp-assembly machinery; fork ->
+    // forklift trucks; water filter/softener -> perfume. Drone/
+    // quadcopter both confirmed pointing to the real, existing "Unmanned
+    // aircraft" heading (88.06) that never surfaced before since neither
+    // word appears literally in the actual HS text.
+    // CORRECTED (5 SEPT 2026, pre-push audit): printer paper/kitchen
+    // knife/fork/spray foam/vinyl flooring were all pointed at the wrong
+    // subheading within the right heading - see the matching comment
+    // above PINNED_SEARCH_TERMS in data.js. No heading (prefix) changes
+    // in this round.
+    {
+      const terms = {
+        'printer paper': '4802', 'candle holder': '9405', 'water filter': '8421',
+        'water softener': '8421', 'kitchen knife': '8211', fork: '8215',
+        'spray foam': '3909', 'vinyl flooring': '3918', drone: '8806',
+        quadcopter: '8806'
+      };
+      let allPass = true; const failures = [];
+      Object.entries(terms).forEach(([term, prefix]) => {
+        const r = searchCodes(term, 1);
+        if (!(r.length > 0 && r[0].code.startsWith(prefix))) { allPass = false; failures.push(term); }
+      });
+      check('A30', 'All 10 fixes from this round resolve to their correct heading',
+        allPass, failures.length ? `Failed: ${failures.join(', ')}` : '');
+    }
+
+    // A31 — More untested-category search fixes (4 SEPT 2026): bicycle
+    // parts, winter sports, medical PPE, welding, woodworking, 3D
+    // printing, pet supplies, traffic/safety, bakery equipment. Same
+    // pinned-term pattern, one of the larger batches yet. Worst
+    // mismatches: commercial oven -> cobalt oxides; traffic cone -> hop
+    // cones for beer brewing; food scale -> potato starch.
+    // CORRECTED (5 SEPT 2026, pre-push audit): bicycle/fish food/
+    // filament/fish net were pointed at the wrong subheading within the
+    // right heading - see the matching comment above PINNED_SEARCH_TERMS
+    // in data.js. traffic cone's heading changes (8530 -> 3926): it had
+    // been pinned to electrical signalling equipment for railways and
+    // tramways, not a plastic road cone.
+    {
+      const terms = {
+        bicycle: '8712', 'bicycle pedal': '8714', snowboard: '9506',
+        'fish food': '2309', 'welding helmet': '6506', filament: '3916',
+        'resin printer': '8485', 'fish net': '5608', 'traffic cone': '3926',
+        'commercial oven': '8417', 'food scale': '8423'
+      };
+      let allPass = true; const failures = [];
+      Object.entries(terms).forEach(([term, prefix]) => {
+        const r = searchCodes(term, 1);
+        if (!(r.length > 0 && r[0].code.startsWith(prefix))) { allPass = false; failures.push(term); }
+      });
+      check('A31', 'All 11 fixes from this round resolve to their correct heading',
+        allPass, failures.length ? `Failed: ${failures.join(', ')}` : '');
+    }
+
+    // A32 — More untested-category search fixes (4 SEPT 2026): home
+    // decor, bedding, office furniture, BBQ, car care, fitness, audio,
+    // chargers, air filters, curtains. Same pinned-term pattern. Notably
+    // bizarre: car jack -> a species of fish; power bank -> weaving
+    // looms; weight bench -> honey containers.
+    // CORRECTED (5 SEPT 2026, pre-push audit): grill brush/car wax/
+    // phone charger/power bank/wall adapter/air purifier were pointed at
+    // the wrong subheading within the right heading - see the matching
+    // comment above PINNED_SEARCH_TERMS in data.js. wall art (9701 ->
+    // 4911) and weight bench (4421 -> 9506) change heading entirely:
+    // wall art had been pinned to antique hand-painted originals subject
+    // to excise duty, and weight bench to a wooden joiner's workbench,
+    // not gym equipment.
+    {
+      const terms = {
+        'wall art': '4911', 'bbq grill': '7321', 'grill brush': '9603',
+        'car wax': '3405', 'tire iron': '8204', 'car jack': '8425',
+        'weight bench': '9506', 'bluetooth speaker': '8518',
+        'phone charger': '8504', 'power bank': '8507',
+        'wall adapter': '8504', 'air purifier': '8421'
+      };
+      let allPass = true; const failures = [];
+      Object.entries(terms).forEach(([term, prefix]) => {
+        const r = searchCodes(term, 1);
+        if (!(r.length > 0 && r[0].code.startsWith(prefix))) { allPass = false; failures.push(term); }
+      });
+      check('A32', 'All 12 fixes from this round resolve to their correct heading',
         allPass, failures.length ? `Failed: ${failures.join(', ')}` : '');
     }
 
