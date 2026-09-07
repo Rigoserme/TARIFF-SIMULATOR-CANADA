@@ -17566,7 +17566,44 @@ const PINNED_SEARCH_TERMS = {
   "baby formula": ["1901.10.20.20"],
   "contact lenses": ["9001.30.00.00"],
   "contact lens": ["9001.30.00.00"],
-  "safety harness": ["6307.90.10.00"]
+  "safety harness": ["6307.90.10.00"],
+  // Found via testing industrial/warehouse, restaurant/hospitality,
+  // waste management, professional AV, telecom infrastructure (4 SEPT
+  // 2026) - one of the most dramatically bad batches yet. Several
+  // deliberately left as genuine gaps (recycling bin, dumpster, waste
+  // container, mixing board, restaurant booth, cell tower antenna).
+  // Notably bizarre: cell tower antenna -> yeast/single-cell
+  // microorganisms; commercial dishwasher -> cobalt oxides; network
+  // switch -> wooden railway sleepers; stage light -> honey color grade.
+  // CORRECTED (7 SEPT 2026, pre-push audit): 5 of these 7 initially
+  // landed on the wrong subheading within the right heading - the same
+  // recurring pattern documented throughout this file. pallet jack was
+  // pinned to "rider-type, counterbalanced fork-lift trucks" (a
+  // self-propelled electric forklift) - a pallet jack is a hand/walkie
+  // truck, not a rider-type powered forklift - moved to heading 84.27's
+  // catch-all "Other trucks" line. pos system was pinned to "electronic
+  // calculators... pocket-size", i.e. pocket calculators - moved to the
+  // same heading's own "Cash registers > Point-of-sale terminals" line,
+  // an exact textual match. commercial dishwasher was pinned to "Of the
+  // household type > Counter-top... portable" - the opposite of
+  // commercial - moved to heading 84.22's sibling "Dish washing machines
+  // > Other" line (non-household). stage light was pinned to "Chandeliers
+  // ... Household" - moved to the same heading's own "Motion picture or
+  // theatrical spotlights" line, again an exact textual match. fiber
+  // optic connector was pinned to "Fuses" - moved to heading 85.36's own
+  // dedicated "Connectors for optical fibres, optical fibre bundles or
+  // cables" line, also an exact textual match. network switch was pinned
+  // to "Modems, including facsimile modems" - moved to the same
+  // subheading's catch-all "Other" line (no dedicated switch line
+  // exists in this data). industrial shelving's original pin was already
+  // correct and unchanged.
+  "pallet jack": ["8427.90.00.00"],
+  "industrial shelving": ["9403.20.00.60"],
+  "pos system": ["8470.50.00.10"],
+  "commercial dishwasher": ["8422.19.00.00"],
+  "stage light": ["9405.49.20.00"],
+  "fiber optic connector": ["8536.70.00.00"],
+  "network switch": ["8517.62.00.90"]
 };
 function searchCodes(query, maxResults){
   const trimmed = (query || "").trim();

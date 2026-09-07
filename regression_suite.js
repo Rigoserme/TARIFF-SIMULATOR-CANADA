@@ -2096,6 +2096,34 @@ if (!jsdomAvailable) {
         allPass, failures.length ? `Failed: ${failures.join(', ')}` : '');
     }
 
+    // A41 — Industrial/warehouse/restaurant/waste/AV/telecom search fixes
+    // (4 SEPT 2026) - one of the most dramatically bad batches yet.
+    // Several deliberately left as genuine gaps (recycling bin, dumpster,
+    // waste container, mixing board, restaurant booth, cell tower
+    // antenna). Notably bizarre: cell tower antenna -> yeast/single-cell
+    // microorganisms; commercial dishwasher -> cobalt oxides; network
+    // switch -> wooden railway sleepers.
+    // CORRECTED (7 SEPT 2026, pre-push audit): 5 of these 7 initially
+    // landed on the wrong subheading within the right heading - see the
+    // matching comment above PINNED_SEARCH_TERMS in data.js. No heading
+    // (prefix) changes in this round - all 7 stayed within their
+    // originally-found heading, just moved to the correct subheading.
+    {
+      const terms = {
+        'pallet jack': '8427', 'industrial shelving': '9403',
+        'pos system': '8470', 'commercial dishwasher': '8422',
+        'stage light': '9405', 'fiber optic connector': '8536',
+        'network switch': '8517'
+      };
+      let allPass = true; const failures = [];
+      Object.entries(terms).forEach(([term, prefix]) => {
+        const r = searchCodes(term, 1);
+        if (!(r.length > 0 && r[0].code.startsWith(prefix))) { allPass = false; failures.push(term); }
+      });
+      check('A41', 'All 7 fixes from this round resolve to their correct heading',
+        allPass, failures.length ? `Failed: ${failures.join(', ')}` : '');
+    }
+
     printSummary();
   })();
 }
