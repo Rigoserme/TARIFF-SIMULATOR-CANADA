@@ -17603,7 +17603,27 @@ const PINNED_SEARCH_TERMS = {
   "commercial dishwasher": ["8422.19.00.00"],
   "stage light": ["9405.49.20.00"],
   "fiber optic connector": ["8536.70.00.00"],
-  "network switch": ["8517.62.00.90"]
+  "network switch": ["8517.62.00.90"],
+  // Found via testing shipping/logistics, dental/veterinary, musical
+  // accessories, sports facilities, sensors/robotics (4 SEPT 2026).
+  // Several deliberately left as genuine gaps - shipping container,
+  // packing peanuts, veterinary syringe (a subtle case: the closest
+  // match lists syringes/needles as examples of medical WASTE, not the
+  // product itself), pet carrier, drum sticks, sheet music stand, soccer
+  // goal. Notably bizarre: robotic arm -> swords, cutlasses, bayonets.
+  // CORRECTED (7 SEPT 2026, pre-push audit): 2 of these 3 also landed on
+  // the wrong subheading within the right heading. guitar case was
+  // pinned to the leather-outer-surface case line - the same "most
+  // aren't leather" issue already caught on backpack/duffel bag/garment
+  // bag - moved to the plastics/textile-surface case line. scoreboard
+  // was pinned to the smoke-detector/gas-alarm line under "Electric
+  // sound or visual signalling apparatus" - moved to the same heading's
+  // own "Indicator panels incorporating LCD/LED" line, the correct
+  // family for an electronic scoreboard. robotic arm's original pin
+  // ("Industrial robots") was already an exact match and unchanged.
+  "guitar case": ["4202.12.90.00"],
+  "robotic arm": ["8428.70.00.00"],
+  "scoreboard": ["8531.20.00.90"]
 };
 function searchCodes(query, maxResults){
   const trimmed = (query || "").trim();

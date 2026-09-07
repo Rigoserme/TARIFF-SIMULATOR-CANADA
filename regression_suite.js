@@ -2124,6 +2124,28 @@ if (!jsdomAvailable) {
         allPass, failures.length ? `Failed: ${failures.join(', ')}` : '');
     }
 
+    // A42 — Shipping/dental/musical/sports/sensors search fixes (4 SEPT
+    // 2026). Several deliberately left as genuine gaps this round -
+    // shipping container, packing peanuts, veterinary syringe (a subtle
+    // case: the closest match lists syringes as an example of medical
+    // WASTE, not the product), pet carrier, drum sticks, sheet music
+    // stand, soccer goal. Notably bizarre: robotic arm -> swords,
+    // cutlasses, bayonets.
+    // CORRECTED (7 SEPT 2026, pre-push audit): 2 of these 3 also landed
+    // on the wrong subheading within the right heading - see the
+    // matching comment above PINNED_SEARCH_TERMS in data.js. No heading
+    // (prefix) changes in this round.
+    {
+      const terms = { 'guitar case': '4202', 'robotic arm': '8428', scoreboard: '8531' };
+      let allPass = true; const failures = [];
+      Object.entries(terms).forEach(([term, prefix]) => {
+        const r = searchCodes(term, 1);
+        if (!(r.length > 0 && r[0].code.startsWith(prefix))) { allPass = false; failures.push(term); }
+      });
+      check('A42', 'All 3 fixes from this round resolve to their correct heading',
+        allPass, failures.length ? `Failed: ${failures.join(', ')}` : '');
+    }
+
     printSummary();
   })();
 }
