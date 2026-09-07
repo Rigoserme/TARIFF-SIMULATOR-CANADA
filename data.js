@@ -17509,7 +17509,34 @@ const PINNED_SEARCH_TERMS = {
   "webcam": ["8525.89.00.20"],
   "hdmi cable": ["8544.42.00.90"],
   "air fryer": ["8516.60.90.10"],
-  "electric toothbrush": ["8509.80.90.90"]
+  "electric toothbrush": ["8509.80.90.90"],
+  // Found via testing electric scooters, fishing equipment, beach/pool
+  // accessories, camping furniture, board games, model kits (4 SEPT
+  // 2026). Smaller batch, higher baseline accuracy in this territory.
+  // hoverboard and electric skateboard had no clean match and were
+  // deliberately left as genuine gaps.
+  "kick scooter": ["9503.00.10.10"],
+  "tackle box": ["3923.10.00.10"],
+  "folding table": ["9403.10.00.92"],
+  "board game": ["9504.20.00.00"],
+  // Found via testing school supplies, office electronics, safety
+  // equipment, vision care, hygiene, baby care, pet grooming (4 SEPT
+  // 2026). Notably high gap rate this round (12 of 27 terms had no clean
+  // match, vs. the usual 3-6) - safety/medical/hygiene products seem to
+  // be a genuinely sparser area of the underlying data, not just a
+  // search-matching problem. child car seat, baby formula, contact
+  // lenses, feminine hygiene products, safety harness, ear plugs/muffs,
+  // glue stick, paper shredder, laminator, baby gate, and pet brush were
+  // all deliberately left as genuine gaps rather than forced - several
+  // are safety/health-relevant products worth flagging for Rigo
+  // specifically rather than guessing at a plausible-looking code.
+  // Notably bad ones that WERE fixed: fax machine -> dairy/milking
+  // machinery; eyeglass case -> a watch case.
+  "label printer": ["8443.11.00.00"],
+  "fax machine": ["8443.11.00.00"],
+  "eyeglass case": ["4202.11.00.00"],
+  "shaving cream": ["3307.10.00.00"],
+  "baby wipes": ["3005.10.00.10"]
 };
 function searchCodes(query, maxResults){
   const trimmed = (query || "").trim();

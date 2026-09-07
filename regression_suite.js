@@ -2033,6 +2033,45 @@ if (!jsdomAvailable) {
         allPass, failures.length ? `Failed: ${failures.join(', ')}` : '');
     }
 
+    // A38 — Electric scooters/fishing/beach/camping/games search fixes
+    // (4 SEPT 2026). Smaller confirmed batch - hoverboard and electric
+    // skateboard had no clean match and were deliberately left as
+    // genuine gaps.
+    {
+      const terms = {
+        'kick scooter': '9503', 'tackle box': '3923', 'folding table': '9403',
+        'board game': '9504'
+      };
+      let allPass = true; const failures = [];
+      Object.entries(terms).forEach(([term, prefix]) => {
+        const r = searchCodes(term, 1);
+        if (!(r.length > 0 && r[0].code.startsWith(prefix))) { allPass = false; failures.push(term); }
+      });
+      check('A38', 'All 4 fixes from this round resolve to their correct heading',
+        allPass, failures.length ? `Failed: ${failures.join(', ')}` : '');
+    }
+
+    // A39 — School/office/safety/vision/hygiene/baby/pet search fixes
+    // (4 SEPT 2026). Notably high gap rate this round - 12 of 27 terms
+    // had no clean match (vs the usual 3-6), several safety/health
+    // relevant (child car seat, baby formula, contact lenses, safety
+    // harness, ear plugs/muffs) - all deliberately left as genuine gaps
+    // rather than forced. Notably bad ones that WERE fixed: fax machine
+    // -> dairy/milking machinery; eyeglass case -> a watch case.
+    {
+      const terms = {
+        'label printer': '8443', 'fax machine': '8443',
+        'eyeglass case': '4202', 'shaving cream': '3307', 'baby wipes': '3005'
+      };
+      let allPass = true; const failures = [];
+      Object.entries(terms).forEach(([term, prefix]) => {
+        const r = searchCodes(term, 1);
+        if (!(r.length > 0 && r[0].code.startsWith(prefix))) { allPass = false; failures.push(term); }
+      });
+      check('A39', 'All 5 fixes from this round resolve to their correct heading',
+        allPass, failures.length ? `Failed: ${failures.join(', ')}` : '');
+    }
+
     printSummary();
   })();
 }
