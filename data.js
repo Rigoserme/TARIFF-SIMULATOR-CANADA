@@ -16943,7 +16943,7 @@ const SEARCH_SYNONYMS = {
   "sneakers":["footwear"], "shoes":["footwear"], "boots":["footwear"], "sandals":["footwear"],
   "clothing":["apparel","garments"], "t-shirt":["apparel"], "jeans":["apparel","denim"],
   "jacket":["apparel"], "phone":["telephone","cellular"], "cellphone":["telephone","cellular","mobile"],
-  "laptop":["automatic data processing machine"], "computer":["automatic data processing machine"], "tv":["television receiver"],
+  "tv":["television receiver"],
   "television":["television receiver"], "tires":["pneumatic tires","tyres"], "furniture":["seats"],
   // Found via a real user report (24 AUG 2026): "sofa" returned nothing,
   // since HS nomenclature describes multi-seat upholstered furniture by
@@ -16974,7 +16974,6 @@ const SEARCH_SYNONYMS = {
   // a furniture POLISH product, "trunks" alone hit wicker baskets).
   "recliner":["upholstered"], "ottoman":["upholstered"],
   "earbuds":["headphones"],
-  "webcam":["television"],
   "blender":["food grinders"],
   "kettle":["immersion"],
   "fridge":["refrigerators"],
@@ -17395,7 +17394,122 @@ const PINNED_SEARCH_TERMS = {
   "phone charger": ["8504.40.90.41"],
   "power bank": ["8507.60.90.00"],
   "wall adapter": ["8504.40.90.41"],
-  "air purifier": ["8421.39.00.90"]
+  "air purifier": ["8421.39.00.90"],
+  // Found via testing kitchen appliances, emergency/safety, EV charging,
+  // solar, sewing notions, holiday supplies (4 SEPT 2026). Same
+  // recurring pattern. Notably bizarre: carbon monoxide detector -> lead
+  // oxide minerals; solar battery -> inactive yeasts; waffle iron ->
+  // unroasted iron pyrites (a mineral).
+  // CORRECTED (5 SEPT 2026, pre-push audit): charging cable was pinned
+  // to "winding wire" (motor/electromagnet wire) - the exact same
+  // wrong-subheading bug already caught once this session on extension
+  // cable - moved to the heading's "fitted with connectors > Other"
+  // line. zipper was pinned to the narrow air-tight/watertight variant -
+  // moved to the general "other" slide-fastener line.
+  "rice cooker": ["8516.60.10.10"],
+  "juicer": ["8509.40.90.30"],
+  "smoke detector": ["8531.10.10.10"],
+  "carbon monoxide detector": ["8531.10.10.10"],
+  "charging cable": ["8544.42.00.90"],
+  "charging station": ["8504.40.90.41"],
+  "zipper": ["9607.11.90.00"],
+  "sewing thread": ["5401.10.00.00"],
+  "fabric scissors": ["8213.00.10.00"],
+  // Found via testing automotive fluids, metalworking, roofing, window/
+  // door hardware, locks, agricultural chemicals, construction sealants,
+  // playground equipment (4 SEPT 2026). Smaller confirmed batch this
+  // round - several terms (roof flashing, window latch, door handle, key
+  // blank, silicone sealant, concrete sealer, caulk, coolant) had no
+  // clean, confident match and were deliberately left as genuine gaps
+  // rather than forced. Notably bizarre: window latch -> tailors'
+  // dummies/automata; swing set -> personal toiletry travel kits.
+  // CORRECTED (5 SEPT 2026, pre-push audit): door lock and deadbolt were
+  // both pinned to "Padlocks" - a padlock is a distinct, separate
+  // product from an installed door lock. Heading 83.01 has its own
+  // "Other locks" subheading with dedicated locksets and dead-bolt-lock
+  // lines - moved door lock to "Locksets > Other" and deadbolt to its
+  // own "Dead bolt locks > Other" line.
+  "door lock": ["8301.40.90.29"],
+  "deadbolt": ["8301.40.90.19"],
+  "plant fertilizer": ["3102.10.00.00"],
+  "swing set": ["9506.99.00.50"],
+  // Found via testing smart home, wearable tech, gaming, confectionery,
+  // costume/party categories (4 SEPT 2026) - a deliberate pivot away
+  // from construction/hardware chemicals after that round's lower hit
+  // rate, back into consumer electronics/goods territory. Much higher
+  // hit rate confirmed the pivot was right. Notably bad: graphics card
+  // -> printed paper cards/pictures; tablet computer/game controller ->
+  // electrical power converters; gum -> raw natural tree resin.
+  // CORRECTED (5 SEPT 2026, pre-push audit): smart thermostat was pinned
+  // to the industrial-machinery thermostat line - moved to the general
+  // "Other" thermostat line. smart plug was pinned to "Lamp-holders" -
+  // moved to the same heading's generic plugs/sockets "Other" line.
+  // smartwatch/fitness tracker were pinned to a precious-metal,
+  // diamond-set wrist-watch line (heading 91.01, jewellery-grade
+  // watches) - moved to heading 91.02's electrically-operated,
+  // opto-electronic-display wrist-watch line, the correct family for
+  // electronic wearables. vr headset had no clean dedicated line; moved
+  // off a plastics-chapter exemption list onto the general "other
+  // optical devices/instruments" catch-all, a closer fit. game
+  // controller/gaming console were both pinned to the billiards-articles
+  // line under the video-game heading's own general text - moved to the
+  // heading's actual video-game-console subheading (console itself vs.
+  // controller as an accessory of it). graphics card was pinned to the
+  // portable-computer line itself; a graphics card is a component, not
+  // a computer - moved to the ADP-machine parts-and-accessories heading.
+  "smart thermostat": ["9032.10.90.00"],
+  "smart plug": ["8536.69.00.90"],
+  "smart light bulb": ["8539.52.00.00"],
+  "smartwatch": ["9102.12.00.00"],
+  "fitness tracker": ["9102.12.00.00"],
+  "vr headset": ["9013.80.00.90"],
+  "game controller": ["9504.50.00.80"],
+  "gaming console": ["9504.50.00.10"],
+  "graphics card": ["8473.30.90.00"],
+  "gum": ["1704.10.00.00"],
+  "tablet computer": ["8471.30.00.00"],
+  "e-reader": ["8471.30.00.00"],
+  // FIX (4 SEPT 2026): "computer" and "laptop" previously relied on the
+  // SEARCH_SYNONYMS phrase "automatic data processing machine" - but
+  // that exact phrase also appears, worded slightly more fully, inside
+  // an unrelated PARTS listing ("Other parts of power supplies for
+  // automatic data processing machines of heading 84.71"), which
+  // outranked the actual computer heading itself. Both terms were
+  // pointing to a power-supply PART, not a computer, for an unknown
+  // amount of time - a significant miss given how common a search term
+  // this is. Moved off the synonym mechanism entirely onto a direct pin,
+  // removed the now-unused synonym entries.
+  "computer": ["8471.30.00.00"],
+  "laptop": ["8471.30.00.00"],
+  // Found via testing computer peripherals, home theater, storage
+  // devices, kitchen appliances, personal care electronics, outdoor
+  // power equipment (4 SEPT 2026). Several terms (usb hub, instant pot,
+  // stand mixer, hair straightener, lawn mower/leaf blower as full
+  // machines, soundbar, sous vide, sd card) had no clean match and were
+  // deliberately left as genuine gaps. Notably bad: keyboard -> a
+  // musical instrument; air fryer -> air-zinc batteries; instant pot ->
+  // instant coffee.
+  // CORRECTED (6 SEPT 2026, pre-push spot check): all 5 fixes below
+  // initially landed on the wrong subheading within the right heading -
+  // the same recurring pattern as every prior audited round, just not
+  // yet caught for this batch. keyboard was on "combined input/output
+  // units" instead of the heading's own dedicated "Keyboards" line.
+  // webcam was on "transmission apparatus for television" (broadcast
+  // transmission gear) instead of the heading's "digital cameras and
+  // video camera recorders" line, the correct family for a webcam.
+  // hdmi cable was on "winding wire" (motor/electromagnet wire), the
+  // same wrong-subheading bug already caught twice this session on
+  // extension cable and charging cable - moved to "fitted with
+  // connectors > Other". air fryer was on "immersion heaters for
+  // photographic solutions" instead of the heading's own "counter-top
+  // appliances" line. electric toothbrush was on "grape crushers for
+  // domestic purposes" instead of the heading's general "other
+  // appliances > Other" line.
+  "keyboard": ["8471.60.00.50"],
+  "webcam": ["8525.89.00.20"],
+  "hdmi cable": ["8544.42.00.90"],
+  "air fryer": ["8516.60.90.10"],
+  "electric toothbrush": ["8509.80.90.90"]
 };
 function searchCodes(query, maxResults){
   const trimmed = (query || "").trim();

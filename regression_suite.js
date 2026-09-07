@@ -1154,7 +1154,16 @@ if (!jsdomAvailable) {
     // individually through the real search function before being added.
     {
       const terms = {
-        recliner: '9401', ottoman: '9401', earbuds: '8518', webcam: '8529',
+        recliner: '9401', ottoman: '9401', earbuds: '8518',
+        // webcam corrected 4 SEPT 2026: this check originally locked in
+        // 8529 (a TV antenna PARTS listing, via the old "webcam"->
+        // "television" synonym) as if it were correct - it wasn't. Found
+        // during this round's testing that it's also a bad match, same
+        // as several others found this session. Now pinned directly to
+        // 8525's "digital cameras and video camera recorders" line
+        // (corrected 6 SEPT 2026 from an initial mis-pin to that
+        // heading's TV-broadcast "transmission apparatus" line instead).
+        webcam: '8525',
         blender: '8509', kettle: '8516', fridge: '8418', jewelry: '7113',
         scarf: '6214', sweater: '6110', skateboard: '9506', dumbbell: '9506',
         treadmill: '9506', surfboard: '9506', makeup: '3304', toothbrush: '9603',
@@ -1890,6 +1899,137 @@ if (!jsdomAvailable) {
         if (!(r.length > 0 && r[0].code.startsWith(prefix))) { allPass = false; failures.push(term); }
       });
       check('A32', 'All 12 fixes from this round resolve to their correct heading',
+        allPass, failures.length ? `Failed: ${failures.join(', ')}` : '');
+    }
+
+    // A33 — More untested-category search fixes (4 SEPT 2026): kitchen
+    // appliances, emergency/safety, EV charging, solar, sewing notions,
+    // holiday supplies. Same pinned-term pattern. Notably bizarre: carbon
+    // monoxide detector -> lead oxide minerals; solar battery -> inactive
+    // yeasts; waffle iron -> unroasted iron pyrites (a mineral).
+    // CORRECTED (6 SEPT 2026, pre-push spot check): charging cable was
+    // pinned to "winding wire" - the same wrong-subheading bug already
+    // caught once this session on extension cable - moved to "fitted
+    // with connectors > Other". zipper was on the narrow air-tight/
+    // watertight variant, moved to the general "other" slide-fastener
+    // line. No heading (prefix) changes in this round.
+    {
+      const terms = {
+        'rice cooker': '8516', juicer: '8509', 'smoke detector': '8531',
+        'carbon monoxide detector': '8531', 'charging cable': '8544',
+        'charging station': '8504', zipper: '9607', 'sewing thread': '5401',
+        'fabric scissors': '8213'
+      };
+      let allPass = true; const failures = [];
+      Object.entries(terms).forEach(([term, prefix]) => {
+        const r = searchCodes(term, 1);
+        if (!(r.length > 0 && r[0].code.startsWith(prefix))) { allPass = false; failures.push(term); }
+      });
+      check('A33', 'All 9 fixes from this round resolve to their correct heading',
+        allPass, failures.length ? `Failed: ${failures.join(', ')}` : '');
+    }
+
+    // A34 — More untested-category search fixes (4 SEPT 2026): automotive
+    // fluids, metalworking, roofing, window/door hardware, locks,
+    // agricultural chemicals, construction sealants, playground
+    // equipment. Smaller confirmed batch this round - several terms had
+    // no clean match and were deliberately left as genuine gaps. Notably
+    // bizarre: window latch -> tailors' dummies/automata; swing set ->
+    // personal toiletry travel kits.
+    // CORRECTED (6 SEPT 2026, pre-push spot check): door lock and
+    // deadbolt were both pinned to "Padlocks" - a padlock is a distinct
+    // product, not an installed door lock - moved to heading 83.01's own
+    // locksets/dead-bolt-lock lines. No heading (prefix) changes.
+    {
+      const terms = {
+        'door lock': '8301', deadbolt: '8301', 'plant fertilizer': '3102',
+        'swing set': '9506'
+      };
+      let allPass = true; const failures = [];
+      Object.entries(terms).forEach(([term, prefix]) => {
+        const r = searchCodes(term, 1);
+        if (!(r.length > 0 && r[0].code.startsWith(prefix))) { allPass = false; failures.push(term); }
+      });
+      check('A34', 'All 4 fixes from this round resolve to their correct heading',
+        allPass, failures.length ? `Failed: ${failures.join(', ')}` : '');
+    }
+
+    // A35 — Smart home/wearable/gaming search fixes (4 SEPT 2026): a
+    // deliberate pivot back to consumer electronics after the prior
+    // round's lower hit rate in construction/hardware chemicals. Notably
+    // bad: graphics card -> printed paper cards/pictures; tablet
+    // computer/game controller -> electrical power converters; gum ->
+    // raw natural tree resin.
+    // CORRECTED (6 SEPT 2026, pre-push spot check): several of this
+    // round's fixes also landed on the wrong subheading within the right
+    // heading - see the matching comment above PINNED_SEARCH_TERMS in
+    // data.js. smartwatch/fitness tracker (9101 -> 9102): the initial
+    // pin was a precious-metal, diamond-set watch line, not the
+    // electronic-wearable one. vr headset (3926 -> 9013): moved off a
+    // plastics-chapter exemption list onto "other optical
+    // devices/instruments". graphics card (8471 -> 8473): a graphics
+    // card is a computer component, not a portable computer itself.
+    {
+      const terms = {
+        'smart thermostat': '9032', 'smart plug': '8536',
+        'smart light bulb': '8539', smartwatch: '9102',
+        'fitness tracker': '9102', 'vr headset': '9013',
+        'game controller': '9504', 'gaming console': '9504',
+        'graphics card': '8473', gum: '1704', 'tablet computer': '8471',
+        'e-reader': '8471'
+      };
+      let allPass = true; const failures = [];
+      Object.entries(terms).forEach(([term, prefix]) => {
+        const r = searchCodes(term, 1);
+        if (!(r.length > 0 && r[0].code.startsWith(prefix))) { allPass = false; failures.push(term); }
+      });
+      check('A35', 'All 12 fixes from this round resolve to their correct heading',
+        allPass, failures.length ? `Failed: ${failures.join(', ')}` : '');
+    }
+
+    // A36 — Real, pre-existing bug found while testing this round (not
+    // introduced by A35): "computer" and "laptop" had been pointing to
+    // 8504.90.20.00, a PARTS listing ("Other parts of power supplies for
+    // automatic data processing machines of heading 84.71") - not the
+    // computer itself. Root cause: both relied on the SEARCH_SYNONYMS
+    // phrase "automatic data processing machine", which happened to
+    // match that parts listing's fuller wording more precisely than the
+    // actual computer heading's own text. This had been live since the
+    // earlier "laptop" synonym-chain fix and was never caught until this
+    // session's testing - a significant miss given how common this
+    // search term is. Fixed by moving both off the synonym mechanism
+    // onto a direct pin at the real computer heading (8471.30.00.00).
+    {
+      check('A36a', '"computer" now resolves to the actual computer heading (8471.30), not a power-supply parts listing (8504.90)',
+        searchCodes('computer', 1)[0].code === '8471.30.00.00');
+      check('A36b', '"laptop" matches the same fix',
+        searchCodes('laptop', 1)[0].code === '8471.30.00.00');
+      check('A36c', 'Plurals of both still resolve correctly',
+        searchCodes('computers', 1)[0].code === '8471.30.00.00' && searchCodes('laptops', 1)[0].code === '8471.30.00.00');
+    }
+
+    // A37 — Computer peripherals/home theater/kitchen appliance search
+    // fixes (4 SEPT 2026). Several terms (usb hub, instant pot, stand
+    // mixer, hair straightener, lawn mower/leaf blower as full machines,
+    // soundbar, sous vide, sd card) had no clean match and were
+    // deliberately left as genuine gaps. Notably bad: keyboard -> a
+    // musical instrument; air fryer -> air-zinc batteries; instant pot
+    // -> instant coffee.
+    // CORRECTED (6 SEPT 2026, pre-push spot check): all 5 fixes below
+    // initially landed on the wrong subheading within the right heading
+    // - see the matching comment above PINNED_SEARCH_TERMS in data.js.
+    // No heading (prefix) changes in this round.
+    {
+      const terms = {
+        keyboard: '8471', webcam: '8525', 'hdmi cable': '8544',
+        'air fryer': '8516', 'electric toothbrush': '8509'
+      };
+      let allPass = true; const failures = [];
+      Object.entries(terms).forEach(([term, prefix]) => {
+        const r = searchCodes(term, 1);
+        if (!(r.length > 0 && r[0].code.startsWith(prefix))) { allPass = false; failures.push(term); }
+      });
+      check('A37', 'All 5 fixes from this round resolve to their correct heading',
         allPass, failures.length ? `Failed: ${failures.join(', ')}` : '');
     }
 
