@@ -17536,7 +17536,37 @@ const PINNED_SEARCH_TERMS = {
   "fax machine": ["8443.11.00.00"],
   "eyeglass case": ["4202.11.00.00"],
   "shaving cream": ["3307.10.00.00"],
-  "baby wipes": ["3005.10.00.10"]
+  "baby wipes": ["3005.10.00.10"],
+  // Researched follow-up (4 SEPT 2026) on 5 safety/health gaps flagged
+  // in the prior testing round, rather than leaving them as open
+  // search-quality gaps. Confirmed against real CBSA/international
+  // sources: for 4 of the 5, the correct heading ALREADY EXISTED in
+  // CODE_DESCRIPTIONS - the earlier search attempts just never found the
+  // right phrase to surface it. Verified each against an authoritative
+  // source before pinning, same standard as the SIMA/Ch98 additions:
+  // - child car seat: 9401.80 confirmed as the real heading (Chapter 94
+  //   seating, not Chapter 87 vehicles or Chapter 63 safety equipment) -
+  //   CBSA's own Memorandum D10-14-68 and multiple customs rulings.
+  // - baby formula: 1901.10 confirmed directly against CBSA's own 2017
+  //   published schedule text, which explicitly lists the milk-solids-
+  //   based infant preparation sub-code.
+  // - contact lenses: 9001.30 confirmed as the internationally
+  //   consistent 6-digit heading, distinct from 9001.10 (optical
+  //   fibres) - our data already had 9001.30, the parent heading text
+  //   just buried "contact lenses" inside a long shared preamble.
+  // - safety harness: 6307.90.10.00 explicitly says "climbing harnesses"
+  //   in its own leaf text - confirmed via a real French customs ruling
+  //   and multiple consistent international sources pointing to Ch63.07.
+  // ear plugs/ear muffs deliberately NOT pinned: confirmed via research
+  // that the correct code genuinely depends on material (foam/plastic
+  // vs. rubber vs. electronic), not a single right answer a better
+  // search would have found - documented here as a considered decision,
+  // not an oversight.
+  "child car seat": ["9401.80.90.00"],
+  "baby formula": ["1901.10.20.20"],
+  "contact lenses": ["9001.30.00.00"],
+  "contact lens": ["9001.30.00.00"],
+  "safety harness": ["6307.90.10.00"]
 };
 function searchCodes(query, maxResults){
   const trimmed = (query || "").trim();

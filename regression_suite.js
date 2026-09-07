@@ -2072,6 +2072,30 @@ if (!jsdomAvailable) {
         allPass, failures.length ? `Failed: ${failures.join(', ')}` : '');
     }
 
+    // A40 — Researched follow-up on 5 safety/health gaps flagged in the
+    // prior round (4 SEPT 2026), not more search-quality guessing. For
+    // 4 of 5, confirmed the correct heading already existed in
+    // CODE_DESCRIPTIONS - verified against CBSA's own published
+    // schedule, real customs rulings, and internationally consistent
+    // 6-digit headings before pinning any of them. Ear plugs/ear muffs
+    // deliberately left unpinned - confirmed via research that the
+    // correct code genuinely depends on material (foam/plastic vs.
+    // rubber vs. electronic), a considered decision, not an oversight.
+    {
+      const terms = {
+        'child car seat': '9401', 'baby formula': '1901',
+        'contact lenses': '9001', 'contact lens': '9001',
+        'safety harness': '6307'
+      };
+      let allPass = true; const failures = [];
+      Object.entries(terms).forEach(([term, prefix]) => {
+        const r = searchCodes(term, 1);
+        if (!(r.length > 0 && r[0].code.startsWith(prefix))) { allPass = false; failures.push(term); }
+      });
+      check('A40', 'All 5 researched safety/health fixes resolve to their correct, verified heading',
+        allPass, failures.length ? `Failed: ${failures.join(', ')}` : '');
+    }
+
     printSummary();
   })();
 }
