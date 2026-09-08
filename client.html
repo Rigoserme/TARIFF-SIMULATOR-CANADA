@@ -1505,7 +1505,7 @@ let usdCadRateDate = null;
     // Sanity check: reject anything wildly outside a plausible USD/CAD
     // range rather than trust a malformed or unexpected response blindly.
     if(!rawRate || rawRate < 1.0 || rawRate > 2.0) throw new Error('Rate out of plausible range: ' + rawRate);
-    USD_TO_CAD_RATE = rawRate * (1 + FX_SAFETY_BUFFER);
+    USD_TO_CAD_RATE = rawRate;
     usdCadRateSource = 'live';
     usdCadRateDate = obs.d;
   } catch(e) {
