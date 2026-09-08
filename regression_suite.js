@@ -2429,15 +2429,19 @@ Date = class extends __RealDate {
         rChina.inputs.tradeMeasuresFlag.includes('SIMA (Anti-dumping)') && !rChina.inputs.tradeMeasuresFlag.includes('Countervailing)'));
     }
 
-    // C69 — TRQ notice fix (8 SEPT 2026), found via real use of the tool:
+    // C72 — TRQ notice fix (8 SEPT 2026), found via real use of the tool:
     // when a TRQ (quota-based) surtax order loses the tie-break to a
     // flat-rate order sharing the same origin scope, it used to be
     // silently dropped from the display entirely - a broker seeing only
     // the flat rate had no way to know a separate, quota-dependent
     // surtax risk also existed on the same shipment.
+    // RENUMBERED (8 SEPT 2026, cleanup): originally landed as 'C69',
+    // colliding with the pre-existing, unrelated print-media check of
+    // the same ID further up this file - renumbered to the next free ID
+    // (C71 was taken the same night by the live exchange rate feature).
     {
       const rChina = await runUI({ q: '7208.25.00.00', value: 1000, origin: 'China' });
-      check('C69', 'China correctly shows BOTH the flat 25% surtax AND a separate notice for the dropped TRQ order',
+      check('C72', 'China correctly shows BOTH the flat 25% surtax AND a separate notice for the dropped TRQ order',
         rChina.text.includes('25%') && rChina.text.includes('Possible additional quota-based surtax'));
     }
 
