@@ -17791,7 +17791,40 @@ const PINNED_SEARCH_TERMS = {
   // aircraft equipment - moved to the subheading's general "Other" line.
   "cb radio": ["8525.60.00.90"],
   "two-way radio": ["8525.60.00.90"],
-  "walkie talkie": ["8525.60.00.90"]
+  "walkie talkie": ["8525.60.00.90"],
+  // Found via testing drone accessories, action cameras/tripod gear, car
+  // audio, home theater/streaming, emergency/survival gear (4 SEPT
+  // 2026). Several deliberately left as genuine gaps: tripod head, water
+  // purification tablets, emergency radio. Notably bad: drone battery ->
+  // yeast/single-cell microorganisms; fire starter -> textile
+  // hosepiping; tripod head -> fish heads/tails/maws.
+  // CORRECTED (8 SEPT 2026, pre-push audit): 4 of these 6 initially
+  // landed on the wrong subheading, 2 of those on the wrong heading
+  // entirely. subwoofer was pinned to the "not mounted in enclosure"
+  // loudspeaker line (the same generic line "speaker"/"bluetooth
+  // speaker" use above) - a real CBP ruling (N312832) classifies a
+  // single-driver subwoofer in its own cabinet under the dedicated
+  // "single loudspeaker mounted in its enclosure" line instead - moved
+  // to match; car speakers (bare drivers with no enclosure of their own)
+  // stayed on the original "not mounted in enclosure" line, which is
+  // actually correct for that item. home theater receiver and streaming
+  // stick were both pinned to a CRT-monitor line under the
+  // monitors/projectors branch of heading 85.28 - completely wrong
+  // family for either device - moved home theater receiver to the
+  // "electric sound amplifier sets" line (same heading Yamaha/Samsung/
+  // Harman import full-size AV receivers under) and streaming stick to
+  // the reception-apparatus-for-television branch's own "set-top box...
+  // internet access... interactive information exchange" line, an exact
+  // functional match. fire starter was pinned to "liquid/liquefied-gas
+  // fuel for refilling cigarette lighters" - a real CBP ruling
+  // (N232824) classifies a ferrocerium fire starter under this same
+  // heading's general "Other" line instead - moved to match.
+  "drone battery": ["8507.60.90.00"],
+  "car speakers": ["8518.29.00.00"],
+  "subwoofer": ["8518.21.00.00"],
+  "home theater receiver": ["8518.50.00.00"],
+  "streaming stick": ["8528.71.00.10"],
+  "fire starter": ["3606.90.00.00"]
 };
 function searchCodes(query, maxResults){
   const trimmed = (query || "").trim();

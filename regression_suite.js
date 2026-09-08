@@ -2378,6 +2378,36 @@ Date = class extends __RealDate {
         allPass, failures.length ? `Failed: ${failures.join(', ')}` : '');
     }
 
+    // A51 — Drone/camera/car-audio/home-theater/survival search fixes
+    // (4 SEPT 2026). Several deliberately left as genuine gaps: tripod
+    // head, water purification tablets, emergency radio. Notably bad:
+    // drone battery -> yeast/single-cell microorganisms; fire starter ->
+    // textile hosepiping; tripod head -> fish heads/tails/maws.
+    // CORRECTED (8 SEPT 2026, pre-push audit): 4 of these 6 initially
+    // landed on the wrong subheading, 2 of those on the wrong heading
+    // entirely - see the matching comment above PINNED_SEARCH_TERMS in
+    // data.js. subwoofer's suffix changes (8518.29 -> 8518.21, matching
+    // real CBP ruling N312832 on single-driver enclosed subwoofers).
+    // home theater receiver and streaming stick both change heading
+    // families (8528.42, a CRT-monitor line, was wrong for both) - home
+    // theater receiver to 8518.50 (electric sound amplifier sets),
+    // streaming stick to 8528.71 (set-top box with communication
+    // function). fire starter's suffix changes (3606.10 -> 3606.90,
+    // matching real CBP ruling N232824 on ferrocerium fire starters).
+    {
+      const terms = {
+        'drone battery': '8507', 'car speakers': '8518', subwoofer: '8518',
+        'home theater receiver': '8518', 'streaming stick': '8528', 'fire starter': '3606'
+      };
+      let allPass = true; const failures = [];
+      Object.entries(terms).forEach(([term, prefix]) => {
+        const r = searchCodes(term, 1);
+        if (!(r.length > 0 && r[0].code.startsWith(prefix))) { allPass = false; failures.push(term); }
+      });
+      check('A51', 'All 6 fixes from this round resolve to their correct heading',
+        allPass, failures.length ? `Failed: ${failures.join(', ')}` : '');
+    }
+
     printSummary();
   })();
 }
