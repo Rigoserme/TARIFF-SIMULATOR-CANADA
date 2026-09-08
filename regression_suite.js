@@ -2408,6 +2408,39 @@ Date = class extends __RealDate {
         allPass, failures.length ? `Failed: ${failures.join(', ')}` : '');
     }
 
+    // C68 — SIMA label/rate specificity fix (8 SEPT 2026), found via real
+    // use of the tool on "Flat Hot-Rolled Carbon and Alloy Steel Sheet
+    // and Strips" (Brazil/China = anti-dumping only, India = countervailing
+    // only, per the case's own data). describeSimaRate() never checked
+    // the applicableOrigins/applicableOrigin fields at all, so an
+    // India-origin shipment was incorrectly described as also facing the
+    // Brazil/China-only 77% anti-dumping rate (and vice versa) - not just
+    // a label issue, the explanation text itself was materially wrong.
+    // Affects 13 of 93 rate objects dataset-wide that carry this field.
+    {
+      const rBrazil = await runUI({ q: '7208.25.00.00', value: 1000, origin: 'Brazil' });
+      const rChina = await runUI({ q: '7208.25.00.00', value: 1000, origin: 'China' });
+      const rIndia = await runUI({ q: '7208.25.00.00', value: 1000, origin: 'India' });
+      check('C68a', 'Brazil (anti-dumping only) shows the specific label, not the generic both-types one',
+        rBrazil.inputs.tradeMeasuresFlag.includes('SIMA (Anti-dumping)') && !rBrazil.inputs.tradeMeasuresFlag.includes('Countervailing)'));
+      check('C68b', 'India (countervailing only) shows the specific label, not the generic both-types one',
+        rIndia.inputs.tradeMeasuresFlag.includes('SIMA (Countervailing)') && !rIndia.inputs.tradeMeasuresFlag.includes('Anti-dumping)'));
+      check('C68c', 'China (anti-dumping only, same as Brazil) does not incorrectly show Countervailing',
+        rChina.inputs.tradeMeasuresFlag.includes('SIMA (Anti-dumping)') && !rChina.inputs.tradeMeasuresFlag.includes('Countervailing)'));
+    }
+
+    // C69 — TRQ notice fix (8 SEPT 2026), found via real use of the tool:
+    // when a TRQ (quota-based) surtax order loses the tie-break to a
+    // flat-rate order sharing the same origin scope, it used to be
+    // silently dropped from the display entirely - a broker seeing only
+    // the flat rate had no way to know a separate, quota-dependent
+    // surtax risk also existed on the same shipment.
+    {
+      const rChina = await runUI({ q: '7208.25.00.00', value: 1000, origin: 'China' });
+      check('C69', 'China correctly shows BOTH the flat 25% surtax AND a separate notice for the dropped TRQ order',
+        rChina.text.includes('25%') && rChina.text.includes('Possible additional quota-based surtax'));
+    }
+
     printSummary();
   })();
 }

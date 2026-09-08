@@ -1417,6 +1417,19 @@ document.addEventListener('click', e => {
 // known weight — described in words instead of a fabricated number.
 function describeSimaRate(rateObj, origin){
   if(!rateObj) return null;
+  // BUG FIX (8 SEPT 2026): found via a real case (Flat Hot-Rolled Carbon
+  // and Alloy Steel Sheet and Strips) where anti-dumping only applies to
+  // Brazil/China (India's dumping order was discontinued) and
+  // countervailing only applies to India (Brazil/China have no subsidy
+  // finding) - both explicitly documented in the data's own
+  // applicableOrigins/applicableOrigin fields. This function never
+  // checked those fields at all, so an India-origin shipment was
+  // incorrectly described as potentially facing the Brazil/China-only
+  // 77% anti-dumping rate too, and vice versa for Brazil/China with
+  // India's countervailing rate. Affects 13 of 93 rate objects
+  // dataset-wide that carry this field - not an isolated case.
+  if(rateObj.applicableOrigins && !rateObj.applicableOrigins.some(c => (COUNTRY_NAME_ALIASES[c] || c) === origin)) return null;
+  if(rateObj.applicableOrigin && (COUNTRY_NAME_ALIASES[rateObj.applicableOrigin] || rateObj.applicableOrigin) !== origin) return null;
   if(rateObj.type === 'percent'){
     if(rateObj.countryRates){
       // BUG FIX (11 AUG 2026): countries arrays store "United States",
@@ -1749,8 +1762,20 @@ function runEstimate(){
       return bRate - aRate;
     })[0];
     const otherApplicableCount = surtaxMatches.length - 1;
-    const stackingNote = otherApplicableCount > 0
-      ? ` This code/origin combination also matched ${otherApplicableCount} other surtax order${otherApplicableCount === 1 ? '' : 's'}, which don't apply here due to documented non-stacking rules.`
+    const otherMatches = surtaxMatches.filter(o => o !== order);
+    // TRQ NOTICE FIX (8 SEPT 2026): found via a real test - when a TRQ
+    // (tariff-rate quota) order loses the tie-break to a flat-rate order
+    // (since a TRQ's rate can't be numerically compared until quota
+    // status is known), it was silently dropped entirely from the
+    // display. The old stackingNote text also incorrectly implied this
+    // was a "non-stacking rule" exclusion, when actually the TRQ order
+    // might genuinely still apply on top of the shown surtax if the
+    // country's quarterly quota for this steel class has been exceeded -
+    // something this tool cannot check. A broker seeing only the flat
+    // rate had no way to know this additional risk existed at all.
+    const droppedTrqOrders = otherMatches.filter(o => o.type === 'trq');
+    const stackingNote = otherApplicableCount > droppedTrqOrders.length
+      ? ` This code/origin combination also matched ${otherApplicableCount - droppedTrqOrders.length} other surtax order${(otherApplicableCount - droppedTrqOrders.length) === 1 ? '' : 's'}, which don't apply here due to documented non-stacking rules.`
       : '';
     if(order.type === 'flat'){
       const amt = value * (order.rate/100);
@@ -1765,6 +1790,19 @@ function runEstimate(){
           kv: [['Regulation', order.regNo], ['Potential rate', `${order.rate}%`], ['Estimated amount', formatMoney(amt)]],
           caution: (order.exclusionNote ? order.exclusionNote + ' ' : '') + 'Applicability depends on the specific measure and its conditions — confirm with a broker before relying on this.'
         }
+      });
+      droppedTrqOrders.forEach(trqOrder => {
+        charges.push({
+          label: 'Possible additional quota-based surtax', subtitle: 'Depends on current import quota',
+          tooltip: 'A separate tariff-rate quota (TRQ) order may add a further surtax once your quarterly import volume for this product exceeds Canada\'s allocated quota.',
+          amount: null, qualifier: 'Not calculable here', warning: true, category: 'trade',
+          explain: {
+            headline: 'Why is this showing?',
+            body: `This code/origin also matches a quota-based order (${trqOrder.regNo}) separate from the surtax shown above. ${trqOrder.rateNote || 'Rate depends on quota status.'}`,
+            kv: [['Regulation', trqOrder.regNo]],
+            caution: (trqOrder.exclusionNote ? trqOrder.exclusionNote + ' ' : '') + 'This tool cannot check your current quota utilization — check Global Affairs Canada\'s import permit system or your broker before assuming this doesn\'t apply.'
+          }
+        });
       });
     } else {
       charges.push({
@@ -1798,9 +1836,21 @@ function runEstimate(){
       // nothing to distinguish them. A broker would have to expand BOTH
       // entries individually just to discover they weren't a duplicate.
       // Now includes each case's own product name directly in the label.
+      //
+      // FURTHER FIX (8 SEPT 2026): found via a real case where Brazil/
+      // China have only an anti-dumping finding and India has only a
+      // countervailing finding (same case) - even with a single matching
+      // case, the label always said the generic "(Anti-dumping/
+      // Countervailing)" regardless of which type actually applies to
+      // the selected origin. Now derived directly from parts, which
+      // (after the describeSimaRate fix above) already correctly
+      // reflects only the type(s) genuinely applicable to this origin.
+      const singleLabel = adDesc && cvdDesc ? 'SIMA (Anti-dumping/Countervailing)'
+        : adDesc ? 'SIMA (Anti-dumping)'
+        : 'SIMA (Countervailing)';
       const simaLabel = simaMatches.length > 1
         ? `SIMA — ${c.product}`
-        : 'SIMA (Anti-dumping/Countervailing)';
+        : singleLabel;
       charges.push({
         label: simaLabel, subtitle: 'Anti-dumping / countervailing screening',
         tooltip: 'SIMA (Special Import Measures Act) — extra duties Canada can charge on certain products from certain countries found to be unfairly priced or subsidized.',
