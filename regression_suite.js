@@ -2177,6 +2177,131 @@ Date = class extends __RealDate {
         allPass, failures.length ? `Failed: ${failures.join(', ')}` : '');
     }
 
+    // A43 — Phone/laptop/desk/kitchen/bathroom/car accessory search
+    // fixes (4 SEPT 2026), a deliberate pivot back to everyday consumer
+    // items. Several deliberately left as genuine gaps: mouse pad, cable
+    // management, garlic press, vegetable peeler, measuring cups, toilet
+    // paper holder. Notably bad: garlic press -> raw garlic; dash cam ->
+    // engine camshafts; toilet paper holder -> the toilet paper itself.
+    // CORRECTED (8 SEPT 2026, pre-push audit): 4 of these 5 initially
+    // landed on the wrong subheading (or, for laptop sleeve, the wrong
+    // heading entirely) - see the matching comment above
+    // PINNED_SEARCH_TERMS in data.js. laptop sleeve's heading changes
+    // (3926 -> 4202) since the corrected code is a protective carrying
+    // case/bag, not an office-supply binder cover.
+    {
+      const terms = {
+        'phone case': '4202', 'screen protector': '3919',
+        'laptop bag': '4202', 'laptop sleeve': '4202', 'dash cam': '8525'
+      };
+      let allPass = true; const failures = [];
+      Object.entries(terms).forEach(([term, prefix]) => {
+        const r = searchCodes(term, 1);
+        if (!(r.length > 0 && r[0].code.startsWith(prefix))) { allPass = false; failures.push(term); }
+      });
+      check('A43', 'All 5 fixes from this round resolve to their correct heading',
+        allPass, failures.length ? `Failed: ${failures.join(', ')}` : '');
+    }
+
+    // A44 — Gift/outdoor-living/garden-decor/pest-control/photo-framing
+    // search fixes (4 SEPT 2026). Unusually high gap rate this round,
+    // similar to the earlier safety/health round - gift bag/wrap/box,
+    // hammock, bird feeder, garden gnome, solar garden light, mosquito
+    // repellent, fly swatter, bug spray, and photo album all
+    // deliberately left as genuine gaps. Notably bizarre: garden gnome
+    // -> umbrellas; mosquito repellent -> laboratory diagnostic reagents.
+    {
+      const terms = { 'picture frame': '8306', 'poster frame': '8306', 'canvas frame': '8306' };
+      let allPass = true; const failures = [];
+      Object.entries(terms).forEach(([term, prefix]) => {
+        const r = searchCodes(term, 1);
+        if (!(r.length > 0 && r[0].code.startsWith(prefix))) { allPass = false; failures.push(term); }
+      });
+      check('A44', 'All 3 fixes from this round resolve to their correct heading',
+        allPass, failures.length ? `Failed: ${failures.join(', ')}` : '');
+    }
+
+    // A45 — Mattress/storage/craft-machine/photography/water-sports
+    // search fixes (4 SEPT 2026). Several deliberately left as genuine
+    // gaps: futon, vinyl cutting machine, laser engraver, audio
+    // interface, pop filter, kayak paddle. Notably bizarre: softbox
+    // light -> honey color grading; photo backdrop -> vacuum tubes.
+    // CORRECTED (8 SEPT 2026, pre-push audit): 4 of these 8 initially
+    // landed on the wrong subheading (or, for softbox light and scuba
+    // tank, the wrong heading entirely) - see the matching comment above
+    // PINNED_SEARCH_TERMS in data.js. softbox light's heading changes
+    // (9006 -> 9405, matching stage light's family) and scuba tank's
+    // (7309 -> 7311, the dedicated compressed-gas-container heading -
+    // 7309's own text explicitly excludes compressed/liquefied gas).
+    {
+      const terms = {
+        'memory foam mattress': '9404', 'mattress topper': '9404',
+        'closet organizer': '9403', 'moving blankets': '6307',
+        'softbox light': '9405', 'photo backdrop': '5907',
+        'scuba tank': '7311', paddleboard: '9506'
+      };
+      let allPass = true; const failures = [];
+      Object.entries(terms).forEach(([term, prefix]) => {
+        const r = searchCodes(term, 1);
+        if (!(r.length > 0 && r[0].code.startsWith(prefix))) { allPass = false; failures.push(term); }
+      });
+      check('A45', 'All 8 fixes from this round resolve to their correct heading',
+        allPass, failures.length ? `Failed: ${failures.join(', ')}` : '');
+    }
+
+    // A46 — Golf/climbing-archery/orthopedic/swim/towing search fixes
+    // (4 SEPT 2026). "massage gun" is the standout fix here - it was
+    // matching MILITARY WEAPONS (heading 93.01), a genuinely serious
+    // misclassification for a common consumer product, not a comic
+    // mismatch like most others found this session. Several other terms
+    // deliberately left as genuine gaps: golf tees, carabiner, archery
+    // bow, arrows, foam roller, compression sleeve, swim cap, swim fins,
+    // tow strap, boat cover.
+    // CORRECTED (8 SEPT 2026, pre-push audit): chalk bag was pinned to
+    // the same leather-outer-surface line already caught on phone
+    // case/laptop bag above - see the matching comment above
+    // PINNED_SEARCH_TERMS in data.js. No heading (prefix) change.
+    {
+      check('A46a', '"massage gun" no longer resolves to military weapons - confirmed pointing to the actual massage-apparatus heading (9019.10)',
+        searchCodes('massage gun', 1)[0].code === '9019.10.00.10');
+
+      const terms = { 'chalk bag': '4202', 'knee brace': '9021', 'back brace': '9021' };
+      let allPass = true; const failures = [];
+      Object.entries(terms).forEach(([term, prefix]) => {
+        const r = searchCodes(term, 1);
+        if (!(r.length > 0 && r[0].code.startsWith(prefix))) { allPass = false; failures.push(term); }
+      });
+      check('A46b', 'All other fixes from this round resolve to their correct heading',
+        allPass, failures.length ? `Failed: ${failures.join(', ')}` : '');
+    }
+
+    // A47 — E-bike/team-sports/bowling/outdoor-play/cleaning search
+    // fixes (4 SEPT 2026). Several deliberately left as genuine gaps:
+    // baseball bat, boxing gloves, punching bag, bowling ball, billiard
+    // balls, kite, frisbee, slingshot. Notably bad: e-bike battery ->
+    // yeast/single-cell microorganisms; boxing gloves -> a porcelain
+    // glove-shaped mannequin display form; punching bag -> African
+    // cherry bark.
+    // CORRECTED (8 SEPT 2026, pre-push audit): all 4 of these initially
+    // landed on the wrong subheading (or, for bowling pins, the wrong
+    // heading entirely) - see the matching comment above
+    // PINNED_SEARCH_TERMS in data.js. bowling pins's heading changes
+    // (9504 -> 9506): it had been pinned to a COIN-OPERATED video
+    // arcade game line, not a physical sports-equipment line.
+    {
+      const terms = {
+        'e-bike battery': '8507', 'e-bike motor': '8501',
+        'electric bike charger': '8504', 'bowling pins': '9506'
+      };
+      let allPass = true; const failures = [];
+      Object.entries(terms).forEach(([term, prefix]) => {
+        const r = searchCodes(term, 1);
+        if (!(r.length > 0 && r[0].code.startsWith(prefix))) { allPass = false; failures.push(term); }
+      });
+      check('A47', 'All 4 fixes from this round resolve to their correct heading',
+        allPass, failures.length ? `Failed: ${failures.join(', ')}` : '');
+    }
+
     // A48 — Surtax escalation tie-break fix (8 SEPT 2026): found live, the
     // night the Sept 8 countermeasures actually activated. A real,
     // financial-impact bug: when a product matches BOTH the pre-existing

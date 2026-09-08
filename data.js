@@ -17623,7 +17623,141 @@ const PINNED_SEARCH_TERMS = {
   // ("Industrial robots") was already an exact match and unchanged.
   "guitar case": ["4202.12.90.00"],
   "robotic arm": ["8428.70.00.00"],
-  "scoreboard": ["8531.20.00.90"]
+  "scoreboard": ["8531.20.00.90"],
+  // Found via testing phone/laptop/desk/kitchen/bathroom/car accessories
+  // (4 SEPT 2026), a deliberate pivot back to everyday consumer items
+  // after the prior round's more industrial/niche territory. Notably
+  // bad: garlic press -> raw garlic; dash cam -> engine camshafts;
+  // toilet paper holder -> the toilet paper itself; mouse pad -> generic
+  // furniture moving pads. Several deliberately left as genuine gaps:
+  // mouse pad, cable management, garlic press, vegetable peeler,
+  // measuring cups, toilet paper holder.
+  // CORRECTED (8 SEPT 2026, pre-push audit): phone case/laptop bag/chalk
+  // bag (below, other batches) were all pinned to the leather-outer-
+  // surface line - the same recurring "most aren't leather" bug already
+  // caught on backpack/duffel bag/garment bag/guitar case - moved phone
+  // case to the plastics/textile CASES line and laptop bag to the
+  // plastics/textile BAGS line (matching duffel bag's precedent: a
+  // structured protective case vs. a soft carrying bag get different
+  // subheadings within 42.02). laptop sleeve was pinned to "looseleaf
+  // binders and similar covers" under office/school supplies - not
+  // remotely an electronics sleeve - moved to the same bags line as
+  // laptop bag, since Chapter 39 has no dedicated electronics-sleeve
+  // line. dash cam was pinned to "transmission apparatus for
+  // television" (broadcast transmission gear), the exact same bug
+  // already caught on webcam - moved to the same "digital cameras and
+  // video camera recorders" line webcam uses.
+  "phone case": ["4202.12.90.00"],
+  "screen protector": ["3919.10.10.00"],
+  "laptop bag": ["4202.92.90.00"],
+  "laptop sleeve": ["4202.92.90.00"],
+  "dash cam": ["8525.89.00.20"],
+  // Found via testing gift/party items, outdoor living, garden decor,
+  // pest control, photo/framing (4 SEPT 2026). Unusually high gap rate
+  // this round, similar to the earlier safety/health round - gift bag,
+  // gift wrap, gift box, hammock, bird feeder, garden gnome, solar
+  // garden light, mosquito repellent, fly swatter, bug spray, and photo
+  // album all had no clean match and were deliberately left as genuine
+  // gaps rather than forced. Notably bizarre: garden gnome -> umbrellas;
+  // mosquito repellent -> laboratory diagnostic reagents.
+  "picture frame": ["8306.30.00.00"],
+  "poster frame": ["8306.30.00.00"],
+  "canvas frame": ["8306.30.00.00"],
+  // Found via testing mattress/bedroom, storage/organization, craft
+  // machines, photography/podcast, water sports (4 SEPT 2026). Several
+  // deliberately left as genuine gaps: futon, vinyl cutting machine,
+  // laser engraver, audio interface, pop filter, kayak paddle. Notably
+  // bizarre: softbox light -> honey color grading (same "light" issue as
+  // stage light earlier); photo backdrop -> vacuum tubes; moving
+  // blankets -> electric heated blankets instead of the plain furniture-
+  // moving-pad heading that already existed and was an exact match.
+  // CORRECTED (8 SEPT 2026, pre-push audit): memory foam mattress/
+  // mattress topper were both pinned to "Mattress supports" - the
+  // structural base/frame a mattress SITS ON, not the mattress itself -
+  // moved to the same heading's actual "Mattresses" line (cellular
+  // plastics for memory foam specifically; other materials for a
+  // topper, since toppers come in varied fill). softbox light was
+  // pinned to a forensic/medical comparison-camera line - moved to the
+  // same continuous-professional-lighting line as stage light (94.05),
+  // since a softbox light kit is lighting equipment, not a camera.
+  // scuba tank was pinned to steel tanks EXCEEDING 300 LITRES - the
+  // heading's own text explicitly excludes compressed/liquefied gas
+  // containers, which is exactly what a scuba tank is - moved to
+  // heading 73.11, the dedicated "containers for compressed or
+  // liquefied gas" line, an exact match. paddleboard was pinned
+  // specifically to "sailboards" (wind-propelled, with a mast) - a
+  // paddleboard has neither - moved to the same water-sport-equipment
+  // heading's general "Other" line.
+  "memory foam mattress": ["9404.21.00.00"],
+  "mattress topper": ["9404.29.00.00"],
+  "closet organizer": ["9403.20.00.60"],
+  "moving blankets": ["6307.90.40.00"],
+  "softbox light": ["9405.49.20.00"],
+  "photo backdrop": ["5907.00.21.00"],
+  "scuba tank": ["7311.00.00.00"],
+  "paddleboard": ["9506.29.00.00"],
+  // Found via testing golf/tennis, climbing/archery, orthopedic/PT,
+  // swim gear, towing equipment (4 SEPT 2026). "massage gun" is the most
+  // important fix in this batch by far - it was matching MILITARY
+  // WEAPONS (heading 93.01), a genuinely serious misclassification for a
+  // common consumer product, not just a comic mismatch like most others
+  // found this session. Several other terms deliberately left as
+  // genuine gaps: golf tees, carabiner, archery bow, arrows, foam
+  // roller, compression sleeve, swim cap, swim fins, tow strap, boat
+  // cover.
+  // CORRECTED (8 SEPT 2026, pre-push audit): chalk bag was pinned to
+  // the leather-outer-surface line - same "most aren't leather" bug as
+  // phone case/laptop bag above - moved to the same plastics/textile
+  // bags line as laptop bag.
+  "massage gun": ["9019.10.00.10"],
+  "chalk bag": ["4202.92.90.00"],
+  "knee brace": ["9021.10.00.00"],
+  "back brace": ["9021.10.00.00"],
+  // Found via testing e-bike/electric mobility, team sports, bowling/
+  // billiards, outdoor play, cleaning tools (4 SEPT 2026). Several
+  // deliberately left as genuine gaps: baseball bat, boxing gloves,
+  // punching bag, bowling ball, billiard balls, kite, frisbee,
+  // slingshot. Notably bad: e-bike battery -> yeast/single-cell
+  // microorganisms (same "cell" issue as cell tower antenna); boxing
+  // gloves -> a porcelain glove-shaped display mannequin form; punching
+  // bag -> African cherry bark (same bizarre "bag" match as duffel bag).
+  // CORRECTED (8 SEPT 2026, pre-push audit): e-bike battery was pinned
+  // to a lithium-ion line restricted to primary power packs for
+  // electrically-powered CARS (subheading 8703.80/90) - moved to the
+  // same heading's general "Other" lithium-ion line. e-bike motor was
+  // pinned to a tiny sub-18.65W AC motor line (a fraction-of-a-watt
+  // motor) when real e-bike motors run 250-750W DC - moved to the DC
+  // motor line actually covering that wattage range (75-750W). electric
+  // bike charger was pinned to "Ballasts for discharge lamps or tubes"
+  // (fluorescent lighting gear, unrelated) - moved to the heading's own
+  // general "Battery chargers > Other" line (not the USB-specific line
+  // used for phone charger/wall adapter, since e-bike chargers aren't
+  // USB). bowling pins was pinned to a COIN-OPERATED video arcade game
+  // line under 95.04 - a physical bowling pin isn't an amusement
+  // machine at all - moved to the general sports-equipment catch-all
+  // under 95.06, since this dataset has no dedicated bowling-equipment
+  // line.
+  "e-bike battery": ["8507.60.90.00"],
+  "e-bike motor": ["8501.31.00.20"],
+  "electric bike charger": ["8504.40.90.49"],
+  "bowling pins": ["9506.99.00.90"],
+  // Found via testing winter driving equipment, motorcycle gear, home
+  // brewing/winemaking, food preservation, hydroponics/gardening tech
+  // (4 SEPT 2026). This was one of the worst-yield rounds of the whole
+  // session - 17 of 19 terms tested were wrong, but confirmed matches
+  // for replacement were only found for 1. Direct phrase searches across
+  // the entire CODE_DESCRIPTIONS dataset came back completely empty for
+  // most of these (snow chains, ice scraper, motorcycle helmet/gloves/
+  // jacket, beer brewing kit, wine making kit, airlock, vacuum sealer,
+  // food dehydrator, pressure canner, grow light, hydroponic system,
+  // plant humidifier, soil ph meter) - genuinely sparse categories in
+  // the underlying data, not a search-ranking problem a better algorithm
+  // would fix. Notably bizarre: motorcycle helmet/gloves/jacket all
+  // matched motorcycle TIRES; snow chains matched snow CRABS; grow light
+  // matched honey color grading (same "light" issue as stage
+  // light/softbox light earlier).
+  "canning jars": ["7010.10.00.00"],
+  "canning jar": ["7010.10.00.00"]
 };
 function searchCodes(query, maxResults){
   const trimmed = (query || "").trim();
