@@ -1723,10 +1723,31 @@ function runEstimate(){
     // with Rigo on 12 AUG 2026. If a future order's exclusionNote describes
     // a different relationship, this ranking needs a manual re-check — it's
     // a heuristic grounded in today's data, not a legal rule in itself.
+    //
+    // TIE-BREAK FIX (8 SEPT 2026, found live the night the Sept 8
+    // countermeasures actually activated): the original scopeRank sort is
+    // a STABLE sort, so when two orders tie on originScope (e.g. the
+    // pre-existing "United States Surtax Order (Steel and Aluminum 2025)"
+    // at 25% and the new Sept 2026 countermeasures order at 50%, both
+    // scoped "US"), array order alone decided the winner — which picked
+    // the OLDER, lower-rate order for a real, currently-active shipment,
+    // undercharging the surtax. Confirmed against multiple independent
+    // customs-broker sources that the real policy is an escalation, not a
+    // stack: "on some steel and aluminum lines, the rate moves from 25%
+    // to 50% under this package" — not 25%+50%=75%. Neither order's
+    // exclusionNote documents this specific relationship (the new order's
+    // is undefined), so this is a genuine gap the original heuristic
+    // didn't anticipate, not a data-entry mistake. Fix: on a scopeRank
+    // tie, prefer the higher rate, since within the same origin scope a
+    // higher rate represents the escalated, superseding measure.
     const scopeRank = {'China':0, 'US':0, 'exclude-US':1, 'any-except-us-china':2, 'any':3};
-    const order = surtaxMatches.slice().sort((a,b) =>
-      (scopeRank[a.originScope] ?? 99) - (scopeRank[b.originScope] ?? 99)
-    )[0];
+    const order = surtaxMatches.slice().sort((a,b) => {
+      const rankDiff = (scopeRank[a.originScope] ?? 99) - (scopeRank[b.originScope] ?? 99);
+      if(rankDiff !== 0) return rankDiff;
+      const aRate = a.type === 'flat' ? a.rate : -1;
+      const bRate = b.type === 'flat' ? b.rate : -1;
+      return bRate - aRate;
+    })[0];
     const otherApplicableCount = surtaxMatches.length - 1;
     const stackingNote = otherApplicableCount > 0
       ? ` This code/origin combination also matched ${otherApplicableCount} other surtax order${otherApplicableCount === 1 ? '' : 's'}, which don't apply here due to documented non-stacking rules.`

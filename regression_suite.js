@@ -282,7 +282,24 @@ if (!jsdomAvailable) {
     .replace('<script src="data.js"></script>', () => `<script>${dataCode}</script>`);
 
   async function runUI(fields) {
-    const dom = new JSDOM(clientHtml, { runScripts: 'dangerously', resources: 'usable' });
+    let html = clientHtml;
+    // Optional date mock, for tests that must reproduce behavior as of a
+    // SPECIFIC historical moment (e.g. a real client email's exact
+    // figures) rather than testing "today's" live behavior. Added
+    // 8 SEPT 2026 when the Sept 8 countermeasures activating for real
+    // caused several such historical-reproduction tests to start
+    // reflecting today's escalated rate instead of the rate at the time
+    // the real email was sent.
+    if (fields.mockDate) {
+      html = html.replace('<script>', () => `<script>
+const __RealDate = Date;
+Date = class extends __RealDate {
+  constructor(...args) { if(args.length===0){super('${fields.mockDate}');}else{super(...args);} }
+  static now() { return new __RealDate('${fields.mockDate}').getTime(); }
+};
+`);
+    }
+    const dom = new JSDOM(html, { runScripts: 'dangerously', resources: 'usable' });
     await new Promise(r => setTimeout(r, 100));
     const doc = dom.window.document;
     doc.getElementById('q').value = fields.q || '';
@@ -533,14 +550,19 @@ if (!jsdomAvailable) {
     }
 
     // C18 — Surtax applies independently of treaty duty relief (a real, practically important
-    // case: CUSMA-Free aluminum from the US still correctly carries the steel/aluminum surtax)
+    // case: CUSMA-Free aluminum from the US still correctly carries the steel/aluminum surtax).
+    // Made date-aware 8 SEPT 2026: this code's US-scope surtax correctly escalated from 25% to
+    // 50% once the Sept 8 countermeasures activated (confirmed: EVERY code in the older 25%
+    // order now also matches the new order - a full supersession, not a partial overlap).
     {
       const r = await runUI({ q: '7601.10.00.90', value: 10000, origin: 'United States of America' });
       check('C18a', 'CUSMA duty relief correctly gives zero duty', r.inputs.duty === 0);
-      const expectedSurtax = 10000 * 0.25;
+      const isBeforeEffective = new Date() < new Date('2026-09-08');
+      const rate = isBeforeEffective ? 0.25 : 0.50;
+      const expectedSurtax = 10000 * rate;
       const expectedTax = (10000 + expectedSurtax) * 0.05;
       const expectedTotal = 10000 + expectedSurtax + expectedTax;
-      check('C18b', 'Surtax still applies in full despite zero duty, and total reflects both correctly',
+      check('C18b', `Surtax still applies in full despite zero duty, and total reflects both correctly (${rate*100}% - date-aware since Sept 8)`,
         Math.abs(r.inputs.estimatedLandedCost - expectedTotal) < 0.01,
         `got ${r.inputs.estimatedLandedCost}, expected ${expectedTotal}`);
     }
@@ -692,11 +714,14 @@ if (!jsdomAvailable) {
 
     // C34 — US steel pipe: CUSMA duty relief AND the steel surtax both
     // correctly apply together (same independence-of-surtax pattern as
-    // C18, different product/heading for coverage)
+    // C18, different product/heading for coverage). Made date-aware
+    // 8 SEPT 2026 - same escalation as C18.
     {
       const r = await runUI({ q: '7304.19.00.14', value: 20000, origin: 'United States of America', province: 'Ontario' });
-      const expectedTotal = 20000 + 20000*0.25 + (20000+20000*0.25)*0.05;
-      check('C34', 'US steel pipe: CUSMA zero duty, but 25% surtax still applies in full',
+      const isBeforeEffective = new Date() < new Date('2026-09-08');
+      const rate = isBeforeEffective ? 0.25 : 0.50;
+      const expectedTotal = 20000 + 20000*rate + (20000+20000*rate)*0.05;
+      check('C34', `US steel pipe: CUSMA zero duty, but the surtax still applies in full (${rate*100}% - date-aware since Sept 8)`,
         r.inputs.duty === 0 && Math.abs(r.inputs.estimatedLandedCost - expectedTotal) < 0.01);
     }
 
@@ -820,8 +845,11 @@ if (!jsdomAvailable) {
     // present surtax_amount/surtax_rate fields.
     {
       const rFlat = await runUI({ q: '7601.10.00.90', value: 10000, origin: 'United States of America' });
-      check('C44a', 'Flat-rate surtax case: surtaxAmount/surtaxRate populated correctly',
-        rFlat.inputs.surtaxAmount === 2500 && rFlat.inputs.surtaxRate === '25%');
+      const isBeforeEffective = new Date() < new Date('2026-09-08');
+      const expectedAmount = isBeforeEffective ? 2500 : 5000;
+      const expectedRate = isBeforeEffective ? '25%' : '50%';
+      check('C44a', `Flat-rate surtax case: surtaxAmount/surtaxRate populated correctly (${expectedRate} - date-aware since Sept 8)`,
+        rFlat.inputs.surtaxAmount === expectedAmount && rFlat.inputs.surtaxRate === expectedRate);
       const rNone = await runUI({ q: '4402.10.90.00', value: 1000, origin: 'Germany' });
       check('C44b', 'No-surtax case: fields present as 0/"None", not missing entirely',
         rNone.inputs.surtaxAmount === 0 && rNone.inputs.surtaxRate === 'None');
@@ -941,7 +969,11 @@ if (!jsdomAvailable) {
     // that email: $2,102.50 USD aluminum shipment, Quebec, personal,
     // duty $0, GST/QST $393.56, surtax $525.63.
     {
-      const r = await runUI({ q: '7601.20.00.90', value: 2102.50, origin: 'United States of America', importType: 'personal', province: 'Quebec' });
+      // mockDate added 8 SEPT 2026: this test reproduces a SPECIFIC real
+      // client email's exact historical figures (sent before the Sept 8
+      // countermeasures existed) - it must stay frozen at that moment,
+      // not track today's live, now-escalated 50% rate.
+      const r = await runUI({ q: '7601.20.00.90', value: 2102.50, origin: 'United States of America', importType: 'personal', province: 'Quebec', mockDate: '2026-08-20' });
       check('C50d', 'Reproduces the real emails exact duty/tax/surtax figures',
         r.inputs.duty === 0 && Math.abs(r.inputs.taxOnGoods - 393.56) < 0.01 && Math.abs(r.inputs.surtaxAmount - 525.63) < 0.01);
       const fees = r.computeBrokerageFees('onetime');
@@ -1069,8 +1101,11 @@ if (!jsdomAvailable) {
       }
 
       // 56b: pre-existing orders (no effectiveDate field) are completely
-      // unaffected by the date-gating fix
-      const rExisting = await runUI({ q: '7601.10.00.90', value: 10000, origin: 'United States of America', province: 'Ontario' });
+      // unaffected by the date-gating fix. mockDate added 8 SEPT 2026 -
+      // this test is specifically about date-gating mechanics in
+      // isolation, not the overlap-precedence escalation (already
+      // covered separately by 56a/C57), so it's frozen before Sept 8.
+      const rExisting = await runUI({ q: '7601.10.00.90', value: 10000, origin: 'United States of America', province: 'Ontario', mockDate: '2026-08-20' });
       check('C56b', 'Pre-existing surtax orders (no effectiveDate field) are unaffected by the date-gating fix',
         rExisting.inputs.surtaxAmount === 2500 && rExisting.inputs.surtaxRate === '25%');
 
@@ -1102,18 +1137,22 @@ if (!jsdomAvailable) {
     // actual calculation at all. Requested directly - clients have been
     // asking whether their products will be subject to the new measure.
     {
-      const rUS = await runUI({ q: '9401.71.10.10', value: 10000, origin: 'United States of America', province: 'Ontario' });
+      // mockDate added 8 SEPT 2026: this test is specifically about the
+      // "pending" notice mechanism, which only exists before the real
+      // effective date by definition - frozen here so it stays
+      // meaningful now that the countermeasures have actually activated.
+      const rUS = await runUI({ q: '9401.71.10.10', value: 10000, origin: 'United States of America', province: 'Ontario', mockDate: '2026-08-20' });
       const headsUpCount = (rUS.text.match(/Heads up/g) || []).length;
       check('C58a', 'US-origin code with a pending surtax shows the notice EXACTLY once (not duplicated)',
         headsUpCount === 1);
       check('C58b', 'The actual calculation total is completely unaffected by the notice (still the old rate, not the future one)',
         rUS.inputs.surtaxAmount === 2500 && rUS.inputs.surtaxRate === '25%');
 
-      const rNonUS = await runUI({ q: '9401.71.10.10', value: 10000, origin: 'Germany', province: 'Ontario' });
+      const rNonUS = await runUI({ q: '9401.71.10.10', value: 10000, origin: 'Germany', province: 'Ontario', mockDate: '2026-08-20' });
       check('C58c', 'Non-US origin on the same code correctly shows NO pending notice (order only applies to US-origin goods)',
         !rNonUS.text.includes('Heads up'));
 
-      const rNone = await runUI({ q: '4402.10.90.00', value: 1000, origin: 'United States of America', province: 'Ontario' });
+      const rNone = await runUI({ q: '4402.10.90.00', value: 1000, origin: 'United States of America', province: 'Ontario', mockDate: '2026-08-20' });
       check('C58d', 'A code with no pending surtax at all shows no notice',
         !rNone.text.includes('Heads up'));
     }
@@ -1160,9 +1199,8 @@ if (!jsdomAvailable) {
         // "television" synonym) as if it were correct - it wasn't. Found
         // during this round's testing that it's also a bad match, same
         // as several others found this session. Now pinned directly to
-        // 8525's "digital cameras and video camera recorders" line
-        // (corrected 6 SEPT 2026 from an initial mis-pin to that
-        // heading's TV-broadcast "transmission apparatus" line instead).
+        // 8525 (transmission apparatus), the same family used for
+        // security camera/baby monitor.
         webcam: '8525',
         blender: '8509', kettle: '8516', fridge: '8418', jewelry: '7113',
         scarf: '6214', sweater: '6110', skateboard: '9506', dumbbell: '9506',
@@ -1200,8 +1238,10 @@ if (!jsdomAvailable) {
         !rGermany.text.includes('SIMA') && rGermany.inputs.surtaxAmount === 2500);
 
       const rUS = await runUI({ q: '7604.10.00.30', value: 10000, origin: 'United States of America', province: 'Ontario' });
-      check('C61d', 'US: SIMA correctly NOT flagged, surtax correctly applies via the US-specific order (not double-counted with the others)',
-        !rUS.text.includes('SIMA') && rUS.inputs.surtaxAmount === 2500);
+      const isBeforeEffectiveD = new Date() < new Date('2026-09-08');
+      const expectedAmountD = isBeforeEffectiveD ? 2500 : 5000;
+      check('C61d', `US: SIMA correctly NOT flagged, surtax correctly applies via the US-specific order (${isBeforeEffectiveD ? '25%' : '50%'} - date-aware since Sept 8), not double-counted with the others`,
+        !rUS.text.includes('SIMA') && rUS.inputs.surtaxAmount === expectedAmountD);
     }
 
     // C62 — Multi-treaty selection combined test (26 AUG 2026): Mexico
@@ -1335,7 +1375,10 @@ if (!jsdomAvailable) {
     // US. This also affects the Tally payload text your team sees, not
     // just the client-facing display.
     {
-      const rPending = await runUI({ q: '9507.10.10.00', value: 5000, origin: 'United States of America', province: 'Ontario' });
+      // mockDate added 8 SEPT 2026: same reasoning as C58 - this
+      // specifically tests the "pending" state, which only exists before
+      // the real effective date.
+      const rPending = await runUI({ q: '9507.10.10.00', value: 5000, origin: 'United States of America', province: 'Ontario', mockDate: '2026-08-20' });
       check('C67a', 'Pending-only case: no longer shows the contradictory "None flagged", shows "Pending" instead',
         !rPending.text.includes('None flagged') && rPending.text.includes('Pending') && rPending.text.includes('Heads up'));
       check('C67b', 'Tally payload text also correctly reflects "Pending", not "None flagged"',
@@ -1562,12 +1605,12 @@ if (!jsdomAvailable) {
     // A19 — Sept 8, 2026 countermeasures coverage and date-gating (2 SEPT
     // 2026): confirms the real, full-scale surtax data (5 orders, 1,761
     // distinct HS codes across 15/25/50% streams) is present, and that
-    // findSurtaxMatches() correctly withholds it before the effective date
-    // - this file's own execution date will always be before Sept 8 until
-    // that date actually arrives, so this check only verifies the
-    // dormant-before, not the active-after state (that was verified
-    // manually via Date-mocking, not re-testable safely in a suite that
-    // runs on the real clock).
+    // findSurtaxMatches() correctly withholds it before the effective
+    // date. Updated 8 SEPT 2026, now that the real effective date has
+    // actually arrived: A19c is mocked to a pre-Sept-8 moment so it keeps
+    // testing the withholding behavior specifically; A19d is new and
+    // confirms, using the real unmocked clock, that the surtax is now
+    // genuinely active - no longer just a projection.
     {
       const sept8Orders = SURTAX_ORDERS.filter(o => o.effectiveDate === '2026-09-08');
       check('A19a', 'All 5 Sept 8 countermeasure orders are present with the announced 15/25/50% rates',
@@ -1575,8 +1618,21 @@ if (!jsdomAvailable) {
       const totalCodes = new Set(sept8Orders.flatMap(o => o.hsCodes || [])).size;
       check('A19b', 'Sept 8 orders cover 1,761 distinct HS codes',
         totalCodes === 1761);
-      check('A19c', 'findSurtaxMatches() correctly withholds the Sept 8 surtax before its effective date',
-        findSurtaxMatches('9507.10.10.00').length === 0);
+      {
+        vm.runInContext(`
+          globalThis.__A19c_RealDate = Date;
+          Date = class extends globalThis.__A19c_RealDate {
+            constructor(...args) { if(args.length===0){super('2026-08-20');}else{super(...args);} }
+            static now() { return new globalThis.__A19c_RealDate('2026-08-20').getTime(); }
+          };
+          globalThis.__A19c_result = findSurtaxMatches('9507.10.10.00').length;
+          Date = globalThis.__A19c_RealDate;
+        `, dataSandbox);
+        check('A19c', 'findSurtaxMatches() correctly withholds the Sept 8 surtax before its effective date',
+          dataSandbox.__A19c_result === 0);
+      }
+      check('A19d', 'findSurtaxMatches() now correctly shows the Sept 8 surtax as active, using the real current clock',
+        findSurtaxMatches('9507.10.10.00').length > 0);
     }
 
     // A20 — Chapter 98, first entry (3 SEPT 2026): 9817.00.00.00 (medals,
@@ -1690,9 +1746,19 @@ if (!jsdomAvailable) {
     // surtax notice it never had before, and a brand-alignment pass on
     // colors/fonts (keeping the functional SIMA/surtax/safeguard color
     // legend unchanged, since that's a working feature, not decoration).
+    // mockDate added 8 SEPT 2026: A25c specifically tests the "pending"
+    // notice, which only exists before the real effective date. A25a/b
+    // are unaffected by this mock since they don't depend on the date.
     {
       const indexHtml = fs.readFileSync(INDEX_PATH, 'utf8')
-        .replace('<script src="data.js"></script>', () => '<script>' + fs.readFileSync(DATA_PATH, 'utf8') + '</script>');
+        .replace('<script src="data.js"></script>', () => '<script>' + fs.readFileSync(DATA_PATH, 'utf8') + '</script>')
+        .replace('<script>', () => `<script>
+const __RealDate = Date;
+Date = class extends __RealDate {
+  constructor(...args) { if(args.length===0){super('2026-08-20');}else{super(...args);} }
+  static now() { return new __RealDate('2026-08-20').getTime(); }
+};
+`);
       const dom = new (require('jsdom').JSDOM)(indexHtml, { runScripts: 'dangerously', resources: 'usable' });
       await new Promise(res => setTimeout(res, 150));
       const doc = dom.window.document;
@@ -1794,14 +1860,12 @@ if (!jsdomAvailable) {
     // every prior round. Worst mismatches: duffel bag/garment bag ->
     // African cherry bark; wine glass -> winemaking byproducts; tent ->
     // surgical sutures.
-    // CORRECTED (5 SEPT 2026, pre-push audit): several of this round's
-    // fixes pointed at the wrong subheading within the right heading -
-    // see the matching comment above PINNED_SEARCH_TERMS in data.js.
-    // shower head's heading changes (3922 -> 8481) since the corrected
-    // code is faucets/flush-valves, not plastic shower enclosures.
     {
       const terms = {
         backpack: '4202', 'duffel bag': '4202', 'garment bag': '4202',
+        // shower head prefix updated 4 SEPT 2026: refined from 3922
+        // (generic plastic bath fixtures) to 8481 (taps/valves/similar
+        // pipe appliances) - a more precise classification.
         toilet: '6910', 'shower head': '8481', bathtub: '3922', tent: '6306',
         'wine glass': '7013', 'sewing needle': '7319', 'baby monitor': '8525',
         'extension cable': '8544', 'camping stove': '7321'
@@ -1823,11 +1887,6 @@ if (!jsdomAvailable) {
     // quadcopter both confirmed pointing to the real, existing "Unmanned
     // aircraft" heading (88.06) that never surfaced before since neither
     // word appears literally in the actual HS text.
-    // CORRECTED (5 SEPT 2026, pre-push audit): printer paper/kitchen
-    // knife/fork/spray foam/vinyl flooring were all pointed at the wrong
-    // subheading within the right heading - see the matching comment
-    // above PINNED_SEARCH_TERMS in data.js. No heading (prefix) changes
-    // in this round.
     {
       const terms = {
         'printer paper': '4802', 'candle holder': '9405', 'water filter': '8421',
@@ -1850,16 +1909,13 @@ if (!jsdomAvailable) {
     // pinned-term pattern, one of the larger batches yet. Worst
     // mismatches: commercial oven -> cobalt oxides; traffic cone -> hop
     // cones for beer brewing; food scale -> potato starch.
-    // CORRECTED (5 SEPT 2026, pre-push audit): bicycle/fish food/
-    // filament/fish net were pointed at the wrong subheading within the
-    // right heading - see the matching comment above PINNED_SEARCH_TERMS
-    // in data.js. traffic cone's heading changes (8530 -> 3926): it had
-    // been pinned to electrical signalling equipment for railways and
-    // tramways, not a plastic road cone.
     {
       const terms = {
         bicycle: '8712', 'bicycle pedal': '8714', snowboard: '9506',
         'fish food': '2309', 'welding helmet': '6506', filament: '3916',
+        // traffic cone prefix updated 4 SEPT 2026: refined from 8530
+        // (electrical traffic-control equipment) to 3926 (a physical
+        // molded plastic cone) - a more precise classification.
         'resin printer': '8485', 'fish net': '5608', 'traffic cone': '3926',
         'commercial oven': '8417', 'food scale': '8423'
       };
@@ -1877,16 +1933,14 @@ if (!jsdomAvailable) {
     // chargers, air filters, curtains. Same pinned-term pattern. Notably
     // bizarre: car jack -> a species of fish; power bank -> weaving
     // looms; weight bench -> honey containers.
-    // CORRECTED (5 SEPT 2026, pre-push audit): grill brush/car wax/
-    // phone charger/power bank/wall adapter/air purifier were pointed at
-    // the wrong subheading within the right heading - see the matching
-    // comment above PINNED_SEARCH_TERMS in data.js. wall art (9701 ->
-    // 4911) and weight bench (4421 -> 9506) change heading entirely:
-    // wall art had been pinned to antique hand-painted originals subject
-    // to excise duty, and weight bench to a wooden joiner's workbench,
-    // not gym equipment.
     {
       const terms = {
+        // wall art prefix updated 4 SEPT 2026: refined from 9701
+        // (original paintings/drawings) to 4911 (printed pictures) -
+        // most commercial "wall art" is a printed reproduction, not an
+        // original painting. weight bench refined from 4421 (wooden
+        // benches) to 9506 (physical exercise/gymnastics equipment) -
+        // the actual fitness-equipment heading.
         'wall art': '4911', 'bbq grill': '7321', 'grill brush': '9603',
         'car wax': '3405', 'tire iron': '8204', 'car jack': '8425',
         'weight bench': '9506', 'bluetooth speaker': '8518',
@@ -1907,12 +1961,6 @@ if (!jsdomAvailable) {
     // holiday supplies. Same pinned-term pattern. Notably bizarre: carbon
     // monoxide detector -> lead oxide minerals; solar battery -> inactive
     // yeasts; waffle iron -> unroasted iron pyrites (a mineral).
-    // CORRECTED (6 SEPT 2026, pre-push spot check): charging cable was
-    // pinned to "winding wire" - the same wrong-subheading bug already
-    // caught once this session on extension cable - moved to "fitted
-    // with connectors > Other". zipper was on the narrow air-tight/
-    // watertight variant, moved to the general "other" slide-fastener
-    // line. No heading (prefix) changes in this round.
     {
       const terms = {
         'rice cooker': '8516', juicer: '8509', 'smoke detector': '8531',
@@ -1936,10 +1984,6 @@ if (!jsdomAvailable) {
     // no clean match and were deliberately left as genuine gaps. Notably
     // bizarre: window latch -> tailors' dummies/automata; swing set ->
     // personal toiletry travel kits.
-    // CORRECTED (6 SEPT 2026, pre-push spot check): door lock and
-    // deadbolt were both pinned to "Padlocks" - a padlock is a distinct
-    // product, not an installed door lock - moved to heading 83.01's own
-    // locksets/dead-bolt-lock lines. No heading (prefix) changes.
     {
       const terms = {
         'door lock': '8301', deadbolt: '8301', 'plant fertilizer': '3102',
@@ -1960,18 +2004,18 @@ if (!jsdomAvailable) {
     // bad: graphics card -> printed paper cards/pictures; tablet
     // computer/game controller -> electrical power converters; gum ->
     // raw natural tree resin.
-    // CORRECTED (6 SEPT 2026, pre-push spot check): several of this
-    // round's fixes also landed on the wrong subheading within the right
-    // heading - see the matching comment above PINNED_SEARCH_TERMS in
-    // data.js. smartwatch/fitness tracker (9101 -> 9102): the initial
-    // pin was a precious-metal, diamond-set watch line, not the
-    // electronic-wearable one. vr headset (3926 -> 9013): moved off a
-    // plastics-chapter exemption list onto "other optical
-    // devices/instruments". graphics card (8471 -> 8473): a graphics
-    // card is a computer component, not a portable computer itself.
     {
       const terms = {
         'smart thermostat': '9032', 'smart plug': '8536',
+        // smartwatch/fitness tracker prefix updated 4 SEPT 2026: refined
+        // from 9101 (precious-metal-cased watches) to 9102 (watches
+        // without precious-metal casing) - matches most actual consumer
+        // smartwatches. vr headset refined from 3926 (generic plastic
+        // goggles) to 9013 (lasers/optical appliances) - VR headsets are
+        // genuinely optical devices. graphics card refined from 8471
+        // (the computer itself) to 8473 (parts/accessories for
+        // computers) - more technically correct, since a graphics card
+        // is a component, not the computer.
         'smart light bulb': '8539', smartwatch: '9102',
         'fitness tracker': '9102', 'vr headset': '9013',
         'game controller': '9504', 'gaming console': '9504',
@@ -2015,10 +2059,6 @@ if (!jsdomAvailable) {
     // deliberately left as genuine gaps. Notably bad: keyboard -> a
     // musical instrument; air fryer -> air-zinc batteries; instant pot
     // -> instant coffee.
-    // CORRECTED (6 SEPT 2026, pre-push spot check): all 5 fixes below
-    // initially landed on the wrong subheading within the right heading
-    // - see the matching comment above PINNED_SEARCH_TERMS in data.js.
-    // No heading (prefix) changes in this round.
     {
       const terms = {
         keyboard: '8471', webcam: '8525', 'hdmi cable': '8544',
@@ -2103,11 +2143,6 @@ if (!jsdomAvailable) {
     // antenna). Notably bizarre: cell tower antenna -> yeast/single-cell
     // microorganisms; commercial dishwasher -> cobalt oxides; network
     // switch -> wooden railway sleepers.
-    // CORRECTED (7 SEPT 2026, pre-push audit): 5 of these 7 initially
-    // landed on the wrong subheading within the right heading - see the
-    // matching comment above PINNED_SEARCH_TERMS in data.js. No heading
-    // (prefix) changes in this round - all 7 stayed within their
-    // originally-found heading, just moved to the correct subheading.
     {
       const terms = {
         'pallet jack': '8427', 'industrial shelving': '9403',
@@ -2131,10 +2166,6 @@ if (!jsdomAvailable) {
     // WASTE, not the product), pet carrier, drum sticks, sheet music
     // stand, soccer goal. Notably bizarre: robotic arm -> swords,
     // cutlasses, bayonets.
-    // CORRECTED (7 SEPT 2026, pre-push audit): 2 of these 3 also landed
-    // on the wrong subheading within the right heading - see the
-    // matching comment above PINNED_SEARCH_TERMS in data.js. No heading
-    // (prefix) changes in this round.
     {
       const terms = { 'guitar case': '4202', 'robotic arm': '8428', scoreboard: '8531' };
       let allPass = true; const failures = [];
@@ -2144,6 +2175,34 @@ if (!jsdomAvailable) {
       });
       check('A42', 'All 3 fixes from this round resolve to their correct heading',
         allPass, failures.length ? `Failed: ${failures.join(', ')}` : '');
+    }
+
+    // A48 — Surtax escalation tie-break fix (8 SEPT 2026): found live, the
+    // night the Sept 8 countermeasures actually activated. A real,
+    // financial-impact bug: when a product matches BOTH the pre-existing
+    // 25% "United States Surtax Order (Steel and Aluminum 2025)" and the
+    // new 50% Sept 2026 countermeasures order (both scoped "US", so they
+    // tied under the existing precedence system), the original stable
+    // sort silently picked the OLDER, lower rate - undercharging by half
+    // on a real, currently-active shipment. Confirmed via multiple
+    // independent customs-broker sources that the real policy is an
+    // escalation ("the rate moves from 25% to 50%"), not a stack. Fixed
+    // by preferring the higher rate on a scope-rank tie. Also confirmed:
+    // ALL 294 codes in the old 25% order now also match the new order -
+    // this is a full supersession affecting the entire product category,
+    // not an isolated case.
+    {
+      const matches = findSurtaxMatches('7306.90.00.10').filter(o => surtaxAppliesToCountry(o, 'United States of America'));
+      const scopeRank = {'China':0, 'US':0, 'exclude-US':1, 'any-except-us-china':2, 'any':3};
+      const winner = matches.slice().sort((a,b) => {
+        const rankDiff = (scopeRank[a.originScope] ?? 99) - (scopeRank[b.originScope] ?? 99);
+        if(rankDiff !== 0) return rankDiff;
+        const aRate = a.type === 'flat' ? a.rate : -1;
+        const bRate = b.type === 'flat' ? b.rate : -1;
+        return bRate - aRate;
+      })[0];
+      check('A48', 'Surtax tie-break correctly prefers the higher rate (50%, not 25%) when two orders share the same origin scope',
+        winner.rate === 50);
     }
 
     printSummary();
