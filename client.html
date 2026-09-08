@@ -1848,15 +1848,29 @@ function runEstimate(){
     if(order.type === 'flat'){
       const amt = value * (order.rate/100);
       total += amt;
+      // FIX (8 SEPT 2026): found via a real question about why Italy-COO
+      // goods carry this surtax. The order's body text said "based on the
+      // selected country of origin" for every order - factually wrong for
+      // this one specifically, which is based on where the raw steel/
+      // aluminum was melted/cast, not the finished good's origin at all.
+      // The caution previously only showed exclusionNote (the non-
+      // stacking rule) and never surfaced this more important distinction
+      // at all, even though the Ledger already explains it in the order's
+      // own origin field. Kept to one short line here rather than the
+      // Ledger's full explanation, per the same "keep it short" standard
+      // as the Place of Export feature.
+      const isMeltPourOrder = order.origin && order.origin.startsWith('⚠');
       charges.push({
         label: `Surtax (${order.rate}%)`, subtitle: 'Additional duty from a trade measure',
         tooltip: `Surtax — an additional import charge Canada can apply to specific products, separate from standard customs duty, applied here at ${order.rate}%.`,
         amount: amt, warning: true, category: 'trade',
         explain: {
           headline: 'Why is this showing?',
-          body: `A Canadian surtax (${order.name}) may apply to this tariff item based on the selected country of origin.${stackingNote}`,
+          body: isMeltPourOrder
+            ? `A Canadian surtax (${order.name}) applies here — this order is based on where the raw steel/aluminum was melted or cast, not the finished good's declared origin.${stackingNote}`
+            : `A Canadian surtax (${order.name}) may apply to this tariff item based on the selected country of origin.${stackingNote}`,
           kv: [['Regulation', order.regNo], ['Potential rate', `${order.rate}%`], ['Estimated amount', formatMoney(amt)]],
-          caution: (order.exclusionNote ? order.exclusionNote + ' ' : '') + 'Applicability depends on the specific measure and its conditions — confirm with a broker before relying on this.'
+          caution: (isMeltPourOrder ? 'Based on melt/pour or smelt/cast country, not declared origin — the importer is presumed Chinese-material unless proven otherwise with a mill test certificate or similar. ' : '') + (order.exclusionNote ? order.exclusionNote + ' ' : '') + 'Applicability depends on the specific measure and its conditions — confirm with a broker before relying on this.'
         }
       });
       droppedTrqOrders.forEach(trqOrder => {

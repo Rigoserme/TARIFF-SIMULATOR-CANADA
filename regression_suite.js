@@ -2529,6 +2529,22 @@ Date = class extends __RealDate {
         rBlank.inputs.duty === 0 && rBlank.text.includes('certificate of origin'));
     }
 
+    // C74 — Melt-and-pour clarity fix (8 SEPT 2026), found via a real
+    // question about why Italy-COO steel carries a surtax at all. The
+    // calculator's caution text only ever showed the non-stacking rule
+    // (exclusionNote) and never surfaced the more important distinction
+    // that this specific order is based on where the steel was melted/
+    // cast, not the declared country of origin - even though the Ledger
+    // already explains this clearly in the order's own data. The body
+    // text also incorrectly said "based on the selected country of
+    // origin" for every surtax order, including this one where that's
+    // factually wrong.
+    {
+      const r = await runUI({ q: '7220.20.00.90', value: 1000, origin: 'Italy' });
+      check('C74', 'Melt/pour-based surtax order now clearly explains the origin-vs-melt distinction, short and specific',
+        r.text.includes('melted or cast') && r.text.includes('mill test certificate'));
+    }
+
     printSummary();
   })();
 }
