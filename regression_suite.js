@@ -305,6 +305,7 @@ Date = class extends __RealDate {
     doc.getElementById('q').value = fields.q || '';
     doc.getElementById('value').value = fields.value != null ? String(fields.value) : '';
     doc.getElementById('origin').value = fields.origin || '';
+    doc.getElementById('placeOfExport').value = fields.placeOfExport || '';
     doc.getElementById('importType').value = fields.importType || 'commercial';
     // Province is now required for BOTH import types (25 AUG 2026 fix) -
     // default to Ontario when a test doesn't specify one at all, so the
@@ -2501,6 +2502,31 @@ Date = class extends __RealDate {
       await new Promise(r => setTimeout(r, 50));
       check('C71c', 'An implausible rate value (out of 1.0-2.0 range) is rejected by the sanity check and falls back safely',
         Math.abs(dom.window.__brokerageInputs.estimatedLandedCost - 152.25) < 0.01);
+    }
+
+    // C73 — Place of Export feature (8 SEPT 2026), added at Rigo's boss's
+    // request after a real example: COO Italy, shipped via the US, must
+    // NOT get CETA/treaty treatment just because of the shipping route -
+    // preferential treatment is about where a good was made, not how it
+    // got here. A mismatch between origin and export point conservatively
+    // falls back to MFN (this tool can't verify customs-control
+    // compliance for genuinely-originating goods routed through a third
+    // country), with a short caution explaining why. When they match (or
+    // the field is left blank, the default), existing behavior is
+    // unchanged, plus a short reminder that preferential treatment still
+    // requires an actual certificate of origin on file.
+    {
+      const rMismatch = await runUI({ q: '4202.11.00.00', value: 1000, origin: 'Italy', placeOfExport: 'United States of America' });
+      check('C73a', 'COO Italy + export via US: MFN duty applies (not preferential), with a short mismatch caution',
+        rMismatch.inputs.duty > 0 && rMismatch.text.includes('differ'));
+
+      const rMatch = await runUI({ q: '4202.11.00.00', value: 1000, origin: 'Italy', placeOfExport: 'Italy' });
+      check('C73b', 'COO Italy + export from Italy (direct): preferential rate applies as before, with a certificate-of-origin reminder',
+        rMatch.inputs.duty === 0 && rMatch.text.includes('certificate of origin'));
+
+      const rBlank = await runUI({ q: '4202.11.00.00', value: 1000, origin: 'Italy' });
+      check('C73c', 'Blank place of export (default): behaves identically to the direct-shipment match case - unchanged for anyone who ignores the new field',
+        rBlank.inputs.duty === 0 && rBlank.text.includes('certificate of origin'));
     }
 
     printSummary();

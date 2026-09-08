@@ -829,6 +829,12 @@
             </select>
           </div>
           <div class="field">
+            <label for="placeOfExport">Place of export <span style="font-weight:400; color:var(--ink-faint);">(optional)</span></label>
+            <select id="placeOfExport">
+              <option value="">Same as country of origin</option>
+            </select>
+          </div>
+          <div class="field">
             <label for="value">Shipment value</label>
             <div class="value-currency-group">
               <input type="number" id="value" placeholder="e.g. 10000" min="0">
@@ -1326,8 +1332,8 @@ function renderBrokeragePanel(clientType){
 // "Turkey", where the canonical name is actually the more recognizable one
 // for this audience, not the alias. "Other" stays as a fallback for
 // anything genuinely outside CBSA's list.
-function populateOriginDropdown(){
-  const select = document.getElementById('origin');
+function populateOriginDropdown(selectId){
+  const select = document.getElementById(selectId);
   const countries = new Set(Object.keys(COUNTRY_TREATIES));
   // Only union in a SIMA-case country name if it doesn't already resolve
   // (directly or via alias) to something already in the set — otherwise
@@ -1348,7 +1354,8 @@ function populateOriginDropdown(){
   otherOpt.textContent = 'Other / not listed';
   select.appendChild(otherOpt);
 }
-populateOriginDropdown();
+populateOriginDropdown('origin');
+populateOriginDropdown('placeOfExport');
 
 // Type-ahead code search — searches the full CODE_DESCRIPTIONS dataset
 // (all 97 chapters as of the 12 AUG 2026 build). Purely a picking aid:
@@ -1512,6 +1519,22 @@ let usdCadRateDate = null;
 function runEstimate(){
   const q = document.getElementById('q').value.trim();
   const origin = document.getElementById('origin').value;
+  // FEATURE (8 SEPT 2026): Place of Export, added at Rigo's boss's
+  // request after a real example - COO Italy, shipped via the US, does
+  // NOT qualify for CUSMA treatment just because it transits the US.
+  // Preferential treaty treatment depends on where a good was actually
+  // made, not its shipping route - but a mismatch between origin and
+  // export point is also a real compliance flag worth surfacing, since
+  // CETA/CUSMA-style "direct shipment" rules require goods that DO
+  // genuinely originate in a treaty country to either ship directly or
+  // remain under customs control if routed through a third country. This
+  // tool can't verify customs-control compliance from a simple dropdown,
+  // so a mismatch conservatively falls back to MFN rather than assuming
+  // the transit rule was satisfied. Blank/unset defaults to "same as
+  // origin" (direct shipment) - the previous, unchanged behavior for
+  // anyone who doesn't touch this new field at all.
+  const placeOfExport = document.getElementById('placeOfExport').value;
+  const exportMismatch = !!(placeOfExport && origin && placeOfExport !== origin);
   const enteredValue = parseFloat(document.getElementById('value').value) || 0;
   const currency = document.getElementById('currency').value;
   // Convert to CAD immediately if the client entered USD - everything
@@ -1700,9 +1723,13 @@ function runEstimate(){
   // all 97 chapters as of the 12 AUG 2026 build; codes with no specific
   // preferential entry correctly fall back to MFN.
   const applicable = getApplicableRate(matchedCode, origin);
-  const mfn = applicable.rate;
+  // On an origin/export mismatch, conservatively fall back to plain MFN
+  // rather than the preferential rate - see the placeOfExport comment
+  // above for why. getMfnRate() gives the plain rate directly, bypassing
+  // any treaty logic entirely for this case.
+  const mfn = exportMismatch ? getMfnRate(matchedCode) : applicable.rate;
   const mfnRate = mfn && mfn.type === 'percent' ? mfn.rate : (mfn && mfn.type === 'free' ? 0 : null);
-  const isPreferential = applicable.source === 'preferential';
+  const isPreferential = !exportMismatch && applicable.source === 'preferential';
 
   let total = value;
   // Each charge answers "why am I seeing this number?" — not a generic
@@ -1718,15 +1745,20 @@ function runEstimate(){
     const amt = value * (mfnRate/100);
     total += amt;
     charges.push({
-      label: `Customs Duty (${mfnRate}%)`, subtitle: isPreferential ? `Preferential rate under treaty ${applicable.treaty}` : 'Applicable MFN rate based on selected HS code',
+      label: `Customs Duty (${mfnRate}%)`, subtitle: isPreferential ? `Preferential rate under treaty ${applicable.treaty}` : (exportMismatch ? 'MFN rate — origin and export point differ' : 'Applicable MFN rate based on selected HS code'),
       tooltip: `Customs Duty — the tariff charged on imported goods based on their HS classification, applied here at ${mfnRate}%.`,
-      amount: amt, warning: false, category: 'duty',
+      amount: amt, warning: exportMismatch, category: 'duty',
       explain: {
         headline: mfnRate === 0 ? 'Why $0?' : `Why ${mfnRate}%?`,
         body: isPreferential
           ? `The selected origin qualifies for a preferential tariff rate under Canada's trade agreement (treaty code ${applicable.treaty}), which sets this item's duty to ${mfnRate}%.`
           : `The selected tariff item carries a Most-Favoured-Nation (MFN) rate of ${mfnRate}%, which applies regardless of origin unless a trade agreement provides a lower rate.`,
-        kv: [['HS Code', matchedCode], ['Origin', origin || '—'], ['Tariff treatment', isPreferential ? `Preferential (${applicable.treaty})` : 'MFN'], ['Rate', `${mfnRate}%`]]
+        kv: [['HS Code', matchedCode], ['Origin', origin || '—'], ...(placeOfExport ? [['Place of export', placeOfExport]] : []), ['Tariff treatment', isPreferential ? `Preferential (${applicable.treaty})` : 'MFN'], ['Rate', `${mfnRate}%`]],
+        // Kept short per Rigo's request - one line per condition, not a
+        // paragraph. Only one of these two shows per result, never both.
+        caution: exportMismatch
+          ? `Origin (${origin}) and export point (${placeOfExport}) differ — MFN applied instead of a treaty rate. If the goods stayed under customs control in transit, ask your broker about claiming preferential treatment.`
+          : (isPreferential ? 'Preferential treatment requires a valid certificate of origin on file — confirm one exists before relying on this rate.' : undefined)
       }
     });
   } else if(mfn && (mfn.type === 'compound' || mfn.type === 'specific')){
