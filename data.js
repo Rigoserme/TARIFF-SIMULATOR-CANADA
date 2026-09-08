@@ -17757,7 +17757,41 @@ const PINNED_SEARCH_TERMS = {
   // matched honey color grading (same "light" issue as stage
   // light/softbox light earlier).
   "canning jars": ["7010.10.00.00"],
-  "canning jar": ["7010.10.00.00"]
+  "canning jar": ["7010.10.00.00"],
+  // Found via testing DJ/music production, ergonomic office equipment,
+  // painting/wallpaper supplies, ladders/step tools, elderly care/
+  // mobility products (4 SEPT 2026). Several deliberately left as
+  // genuine gaps: dj mixer, wrist rest, footrest, step stool. Notably
+  // bad: dj mixer -> wooden skewers/tongue depressors; wrist rest ->
+  // wristwatches; standing desk -> lighting fixtures/lamp stands.
+  // CORRECTED (8 SEPT 2026, pre-push audit): 2 of these 4 initially
+  // landed on the wrong subheading within the right heading. ergonomic
+  // keyboard was pinned to "Combined input/output units" - a catch-all
+  // for combo devices - when this same dataset already has a dedicated
+  // "Keyboards" line (used by the plain "keyboard" pin above) - moved
+  // to match it. stair lift was pinned to "Passenger elevator" (an
+  // enclosed elevator car in a shaft) - a real CBP ruling (NY 871628)
+  // classifies stair lifts under the general "Other machinery" line
+  // instead - moved to match.
+  "ergonomic keyboard": ["8471.60.00.50"],
+  "drop cloth": ["6306.12.00.00"],
+  "stair lift": ["8428.90.00.90"],
+  "standing desk": ["9403.30.00.10"],
+  // Found via testing retail fixtures, event/conference supplies,
+  // two-way radios, gaming/theater seating, pool/water toys (4 SEPT
+  // 2026). Several deliberately left as genuine gaps: mannequin, receipt
+  // printer, banner stand, podium, lanyard, pool float, water gun,
+  // theater seating. Notably bad: pool float -> float glass
+  // manufacturing; mannequin -> tailors' scissors.
+  // CORRECTED (8 SEPT 2026, pre-push audit): all 3 of these initially
+  // landed on the wrong subheading within the right heading - pinned to
+  // "For aircraft" within the transmission-apparatus-incorporating-
+  // reception (transceiver) subheading, the same "For aircraft" trap
+  // already caught elsewhere in this dataset - none of these are
+  // aircraft equipment - moved to the subheading's general "Other" line.
+  "cb radio": ["8525.60.00.90"],
+  "two-way radio": ["8525.60.00.90"],
+  "walkie talkie": ["8525.60.00.90"]
 };
 function searchCodes(query, maxResults){
   const trimmed = (query || "").trim();

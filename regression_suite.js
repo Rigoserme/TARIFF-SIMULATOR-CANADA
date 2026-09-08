@@ -2330,6 +2330,54 @@ Date = class extends __RealDate {
         winner.rate === 50);
     }
 
+    // A49 — DJ/ergonomic-office/painting/ladders/mobility search fixes
+    // (4 SEPT 2026). Several deliberately left as genuine gaps: dj mixer,
+    // wrist rest, footrest, step stool. Notably bad: dj mixer -> wooden
+    // skewers/tongue depressors; wrist rest -> wristwatches; standing
+    // desk -> lighting fixtures/lamp stands.
+    // CORRECTED (8 SEPT 2026, pre-push audit): 2 of these 4 initially
+    // landed on the wrong subheading within the right heading - see the
+    // matching comment above PINNED_SEARCH_TERMS in data.js. ergonomic
+    // keyboard's suffix changes (8471.60.00.10 -> .00.50, matching the
+    // dataset's existing dedicated Keyboards line) and stair lift's
+    // (8428.10.00.10 -> 8428.90.00.90, matching real CBP ruling NY
+    // 871628). No heading (prefix) changes.
+    {
+      const terms = {
+        'ergonomic keyboard': '8471', 'drop cloth': '6306',
+        'stair lift': '8428', 'standing desk': '9403'
+      };
+      let allPass = true; const failures = [];
+      Object.entries(terms).forEach(([term, prefix]) => {
+        const r = searchCodes(term, 1);
+        if (!(r.length > 0 && r[0].code.startsWith(prefix))) { allPass = false; failures.push(term); }
+      });
+      check('A49', 'All 4 fixes from this round resolve to their correct heading',
+        allPass, failures.length ? `Failed: ${failures.join(', ')}` : '');
+    }
+
+    // A50 — Retail-fixtures/event-supplies/two-way-radio/pool-toys search
+    // fixes (4 SEPT 2026). Several deliberately left as genuine gaps:
+    // mannequin, receipt printer, banner stand, podium, lanyard, pool
+    // float, water gun, theater seating. Notably bad: pool float -> float
+    // glass manufacturing; mannequin -> tailors' scissors.
+    // CORRECTED (8 SEPT 2026, pre-push audit): all 3 of these initially
+    // landed on the wrong subheading within the right heading - see the
+    // matching comment above PINNED_SEARCH_TERMS in data.js. All 3
+    // changed from the transceiver subheading's "For aircraft" line
+    // (8525.60.00.40) to its general "Other" line (8525.60.00.90). No
+    // heading (prefix) change.
+    {
+      const terms = { 'cb radio': '8525', 'two-way radio': '8525', 'walkie talkie': '8525' };
+      let allPass = true; const failures = [];
+      Object.entries(terms).forEach(([term, prefix]) => {
+        const r = searchCodes(term, 1);
+        if (!(r.length > 0 && r[0].code.startsWith(prefix))) { allPass = false; failures.push(term); }
+      });
+      check('A50', 'All 3 fixes from this round resolve to their correct heading',
+        allPass, failures.length ? `Failed: ${failures.join(', ')}` : '');
+    }
+
     printSummary();
   })();
 }
