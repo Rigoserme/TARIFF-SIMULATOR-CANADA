@@ -1460,18 +1460,54 @@ function findTariffDataMatch(query){
   return matches.length === 1 ? matches[0] : null;
 }
 
-// Fixed USD->CAD exchange rate used ONLY for converting a client-entered
+// USD->CAD exchange rate used ONLY for converting a client-entered
 // shipment value from USD into CAD before running the duty/tax estimate.
-// Deliberately set higher than the live market rate (confirmed with Rigo,
-// 25 AUG 2026) - if the real rate is lower on the day of actual customs
-// clearance, the client's real cost comes in under this estimate rather
-// than over it, which is the safer direction to be wrong in for a
-// compliance tool. This is separate from and does not affect the 0.9 flat
-// rate used elsewhere to convert Hemisphere's own brokerage fees into USD.
-// UPDATE (25 AUG 2026): the live "= $X CAD at a fixed rate of Y" preview
-// below the input was removed on request - the exact rate is internal
-// pricing information, not something to expose to the client while typing.
-const USD_TO_CAD_RATE = 1.45;
+// This is separate from and does not affect the 0.9 flat rate used
+// elsewhere to convert Hemisphere's own brokerage fees into USD.
+//
+// UPDATED (8 SEPT 2026): now fetches the real, official Bank of Canada
+// daily rate (the same rate CBSA recognizes for customs valuation) on
+// page load, rather than a single hardcoded number. Falls back to the
+// previous fixed rate below if the fetch fails, is still in flight, or
+// returns something unusable - the tool must never show a broken
+// calculation just because an external site is unreachable.
+//
+// A small safety buffer is kept on top of the live rate, preserving the
+// original design decision (confirmed with Rigo, 25 AUG 2026): estimates
+// should err toward the client's real cost coming in UNDER the estimate,
+// not over it, since that's the safer direction to be wrong in for a
+// compliance tool. Set FX_SAFETY_BUFFER to 0 to use the raw live rate
+// with no buffer, if that's ever preferred instead.
+//
+// The live "= $X CAD at rate Y" preview below the input stays removed
+// per the same 25 AUG 2026 request - the exact rate isn't shown to the
+// client while typing, calculation-time use only.
+const FX_FALLBACK_RATE = 1.45;
+const FX_SAFETY_BUFFER = 0.01; // 1% on top of the live rate
+let USD_TO_CAD_RATE = FX_FALLBACK_RATE;
+let usdCadRateSource = 'fallback';
+let usdCadRateDate = null;
+
+(async function fetchLiveExchangeRate(){
+  try {
+    const res = await fetch('https://www.bankofcanada.ca/valet/observations/FXUSDCAD/json?recent=1');
+    if(!res.ok) throw new Error('Bank of Canada API returned ' + res.status);
+    const data = await res.json();
+    const obs = data.observations && data.observations[0];
+    const rawRate = obs && obs.FXUSDCAD && parseFloat(obs.FXUSDCAD.v);
+    // Sanity check: reject anything wildly outside a plausible USD/CAD
+    // range rather than trust a malformed or unexpected response blindly.
+    if(!rawRate || rawRate < 1.0 || rawRate > 2.0) throw new Error('Rate out of plausible range: ' + rawRate);
+    USD_TO_CAD_RATE = rawRate * (1 + FX_SAFETY_BUFFER);
+    usdCadRateSource = 'live';
+    usdCadRateDate = obs.d;
+  } catch(e) {
+    // Silent fallback by design - this must never surface an error to
+    // the client or block the calculator from working. USD_TO_CAD_RATE
+    // stays at FX_FALLBACK_RATE, set above.
+    usdCadRateSource = 'fallback';
+  }
+})();
 
 function runEstimate(){
   const q = document.getElementById('q').value.trim();

@@ -2441,6 +2441,64 @@ Date = class extends __RealDate {
         rChina.text.includes('25%') && rChina.text.includes('Possible additional quota-based surtax'));
     }
 
+    // C71 — Live exchange rate feature (8 SEPT 2026): replaces the single
+    // hardcoded USD->CAD rate with a live fetch of the Bank of Canada's
+    // official daily rate (the same rate CBSA recognizes for customs
+    // valuation), with a 1% safety buffer preserving the original
+    // design decision (client's real cost should land under the
+    // estimate, not over it) and full silent fallback to the previous
+    // fixed rate (1.45) if the fetch fails, is unreachable, or returns
+    // something implausible. The tool must never show a broken
+    // calculation just because an external site is unreachable.
+    {
+      // C71a: fetch genuinely unavailable (this jsdom sandbox has no
+      // global fetch, so the reference throws synchronously and is
+      // caught) - confirms the silent fallback produces the exact same
+      // result the old hardcoded rate always gave.
+      const rFallback = await runUI({ q: '9507.10.10.00', value: 100, currency: 'USD', origin: 'Germany', province: 'Ontario' });
+      check('C71a', 'With no live rate available, falls back to the exact same result the old fixed rate always gave',
+        Math.abs(rFallback.inputs.estimatedLandedCost - 152.25) < 0.01);
+    }
+    {
+      // C71b: mocked successful live rate - confirms the fetched rate
+      // plus the 1% safety buffer are both correctly applied.
+      const htmlWithMockFetch = clientHtml.replace('<script>', () => `<script>
+        globalThis.fetch = async () => ({ ok: true, json: async () => ({ observations: [{ d: '2026-09-08', FXUSDCAD: { v: '1.4068' } }] }) });
+      `);
+      const dom = new (require('jsdom').JSDOM)(htmlWithMockFetch, { runScripts: 'dangerously', resources: 'usable' });
+      await new Promise(r => setTimeout(r, 300));
+      const doc = dom.window.document;
+      doc.getElementById('q').value = '9507.10.10.00';
+      doc.getElementById('value').value = '100';
+      doc.getElementById('currency').value = 'USD';
+      doc.getElementById('origin').value = 'Germany';
+      doc.getElementById('province').value = 'Ontario';
+      dom.window.runEstimate();
+      await new Promise(r => setTimeout(r, 50));
+      const expected = 100 * 1.4068 * 1.01 * 1.05;
+      check('C71b', 'A successful live rate fetch correctly applies the fetched rate plus the 1% safety buffer',
+        Math.abs(dom.window.__brokerageInputs.estimatedLandedCost - expected) < 0.01);
+    }
+    {
+      // C71c: implausible rate value (e.g. a malformed API response)
+      // must be rejected by the sanity check, not trusted blindly.
+      const htmlWithBadFetch = clientHtml.replace('<script>', () => `<script>
+        globalThis.fetch = async () => ({ ok: true, json: async () => ({ observations: [{ d: '2026-09-08', FXUSDCAD: { v: '999.99' } }] }) });
+      `);
+      const dom = new (require('jsdom').JSDOM)(htmlWithBadFetch, { runScripts: 'dangerously', resources: 'usable' });
+      await new Promise(r => setTimeout(r, 300));
+      const doc = dom.window.document;
+      doc.getElementById('q').value = '9507.10.10.00';
+      doc.getElementById('value').value = '100';
+      doc.getElementById('currency').value = 'USD';
+      doc.getElementById('origin').value = 'Germany';
+      doc.getElementById('province').value = 'Ontario';
+      dom.window.runEstimate();
+      await new Promise(r => setTimeout(r, 50));
+      check('C71c', 'An implausible rate value (out of 1.0-2.0 range) is rejected by the sanity check and falls back safely',
+        Math.abs(dom.window.__brokerageInputs.estimatedLandedCost - 152.25) < 0.01);
+    }
+
     printSummary();
   })();
 }
