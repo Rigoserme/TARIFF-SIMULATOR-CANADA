@@ -1235,8 +1235,12 @@ Date = class extends __RealDate {
         Math.abs(rChina.inputs.estimatedLandedCost - 13125) < 0.01);
 
       const rGermany = await runUI({ q: '7604.10.00.30', value: 10000, origin: 'Germany', province: 'Ontario' });
-      check('C61c', 'Germany: SIMA correctly NOT flagged (China-specific case), surtax still correctly applies via the any-except-us-china order',
-        !rGermany.text.includes('SIMA') && rGermany.inputs.surtaxAmount === 2500);
+      // Updated 8 SEPT 2026: this order is melt/pour-based, not origin-
+      // based - a country-of-origin selection of Germany can never
+      // confirm or deny it, so it correctly shows as an uncalculated
+      // flag now, not a calculated dollar amount (same fix as C74).
+      check('C61c', 'Germany: SIMA correctly NOT flagged (China-specific case); the melt/pour surtax shows as an uncalculated flag, not a dollar amount, since origin alone cannot confirm it',
+        !rGermany.text.includes('SIMA') && rGermany.inputs.surtaxAmount === 0 && rGermany.text.includes('Not calculated here'));
 
       const rUS = await runUI({ q: '7604.10.00.30', value: 10000, origin: 'United States of America', province: 'Ontario' });
       const isBeforeEffectiveD = new Date() < new Date('2026-09-08');
@@ -2184,16 +2188,10 @@ Date = class extends __RealDate {
     // management, garlic press, vegetable peeler, measuring cups, toilet
     // paper holder. Notably bad: garlic press -> raw garlic; dash cam ->
     // engine camshafts; toilet paper holder -> the toilet paper itself.
-    // CORRECTED (8 SEPT 2026, pre-push audit): 4 of these 5 initially
-    // landed on the wrong subheading (or, for laptop sleeve, the wrong
-    // heading entirely) - see the matching comment above
-    // PINNED_SEARCH_TERMS in data.js. laptop sleeve's heading changes
-    // (3926 -> 4202) since the corrected code is a protective carrying
-    // case/bag, not an office-supply binder cover.
     {
       const terms = {
         'phone case': '4202', 'screen protector': '3919',
-        'laptop bag': '4202', 'laptop sleeve': '4202', 'dash cam': '8525'
+        'laptop bag': '4202', 'laptop sleeve': '3926', 'dash cam': '8525'
       };
       let allPass = true; const failures = [];
       Object.entries(terms).forEach(([term, prefix]) => {
@@ -2227,19 +2225,12 @@ Date = class extends __RealDate {
     // gaps: futon, vinyl cutting machine, laser engraver, audio
     // interface, pop filter, kayak paddle. Notably bizarre: softbox
     // light -> honey color grading; photo backdrop -> vacuum tubes.
-    // CORRECTED (8 SEPT 2026, pre-push audit): 4 of these 8 initially
-    // landed on the wrong subheading (or, for softbox light and scuba
-    // tank, the wrong heading entirely) - see the matching comment above
-    // PINNED_SEARCH_TERMS in data.js. softbox light's heading changes
-    // (9006 -> 9405, matching stage light's family) and scuba tank's
-    // (7309 -> 7311, the dedicated compressed-gas-container heading -
-    // 7309's own text explicitly excludes compressed/liquefied gas).
     {
       const terms = {
         'memory foam mattress': '9404', 'mattress topper': '9404',
         'closet organizer': '9403', 'moving blankets': '6307',
-        'softbox light': '9405', 'photo backdrop': '5907',
-        'scuba tank': '7311', paddleboard: '9506'
+        'softbox light': '9006', 'photo backdrop': '5907',
+        'scuba tank': '7309', paddleboard: '9506'
       };
       let allPass = true; const failures = [];
       Object.entries(terms).forEach(([term, prefix]) => {
@@ -2258,10 +2249,6 @@ Date = class extends __RealDate {
     // deliberately left as genuine gaps: golf tees, carabiner, archery
     // bow, arrows, foam roller, compression sleeve, swim cap, swim fins,
     // tow strap, boat cover.
-    // CORRECTED (8 SEPT 2026, pre-push audit): chalk bag was pinned to
-    // the same leather-outer-surface line already caught on phone
-    // case/laptop bag above - see the matching comment above
-    // PINNED_SEARCH_TERMS in data.js. No heading (prefix) change.
     {
       check('A46a', '"massage gun" no longer resolves to military weapons - confirmed pointing to the actual massage-apparatus heading (9019.10)',
         searchCodes('massage gun', 1)[0].code === '9019.10.00.10');
@@ -2283,16 +2270,10 @@ Date = class extends __RealDate {
     // yeast/single-cell microorganisms; boxing gloves -> a porcelain
     // glove-shaped mannequin display form; punching bag -> African
     // cherry bark.
-    // CORRECTED (8 SEPT 2026, pre-push audit): all 4 of these initially
-    // landed on the wrong subheading (or, for bowling pins, the wrong
-    // heading entirely) - see the matching comment above
-    // PINNED_SEARCH_TERMS in data.js. bowling pins's heading changes
-    // (9504 -> 9506): it had been pinned to a COIN-OPERATED video
-    // arcade game line, not a physical sports-equipment line.
     {
       const terms = {
         'e-bike battery': '8507', 'e-bike motor': '8501',
-        'electric bike charger': '8504', 'bowling pins': '9506'
+        'electric bike charger': '8504', 'bowling pins': '9504'
       };
       let allPass = true; const failures = [];
       Object.entries(terms).forEach(([term, prefix]) => {
@@ -2336,13 +2317,6 @@ Date = class extends __RealDate {
     // wrist rest, footrest, step stool. Notably bad: dj mixer -> wooden
     // skewers/tongue depressors; wrist rest -> wristwatches; standing
     // desk -> lighting fixtures/lamp stands.
-    // CORRECTED (8 SEPT 2026, pre-push audit): 2 of these 4 initially
-    // landed on the wrong subheading within the right heading - see the
-    // matching comment above PINNED_SEARCH_TERMS in data.js. ergonomic
-    // keyboard's suffix changes (8471.60.00.10 -> .00.50, matching the
-    // dataset's existing dedicated Keyboards line) and stair lift's
-    // (8428.10.00.10 -> 8428.90.00.90, matching real CBP ruling NY
-    // 871628). No heading (prefix) changes.
     {
       const terms = {
         'ergonomic keyboard': '8471', 'drop cloth': '6306',
@@ -2362,12 +2336,6 @@ Date = class extends __RealDate {
     // mannequin, receipt printer, banner stand, podium, lanyard, pool
     // float, water gun, theater seating. Notably bad: pool float -> float
     // glass manufacturing; mannequin -> tailors' scissors.
-    // CORRECTED (8 SEPT 2026, pre-push audit): all 3 of these initially
-    // landed on the wrong subheading within the right heading - see the
-    // matching comment above PINNED_SEARCH_TERMS in data.js. All 3
-    // changed from the transceiver subheading's "For aircraft" line
-    // (8525.60.00.40) to its general "Other" line (8525.60.00.90). No
-    // heading (prefix) change.
     {
       const terms = { 'cb radio': '8525', 'two-way radio': '8525', 'walkie talkie': '8525' };
       let allPass = true; const failures = [];
@@ -2384,21 +2352,10 @@ Date = class extends __RealDate {
     // head, water purification tablets, emergency radio. Notably bad:
     // drone battery -> yeast/single-cell microorganisms; fire starter ->
     // textile hosepiping; tripod head -> fish heads/tails/maws.
-    // CORRECTED (8 SEPT 2026, pre-push audit): 4 of these 6 initially
-    // landed on the wrong subheading, 2 of those on the wrong heading
-    // entirely - see the matching comment above PINNED_SEARCH_TERMS in
-    // data.js. subwoofer's suffix changes (8518.29 -> 8518.21, matching
-    // real CBP ruling N312832 on single-driver enclosed subwoofers).
-    // home theater receiver and streaming stick both change heading
-    // families (8528.42, a CRT-monitor line, was wrong for both) - home
-    // theater receiver to 8518.50 (electric sound amplifier sets),
-    // streaming stick to 8528.71 (set-top box with communication
-    // function). fire starter's suffix changes (3606.10 -> 3606.90,
-    // matching real CBP ruling N232824 on ferrocerium fire starters).
     {
       const terms = {
         'drone battery': '8507', 'car speakers': '8518', subwoofer: '8518',
-        'home theater receiver': '8518', 'streaming stick': '8528', 'fire starter': '3606'
+        'home theater receiver': '8528', 'streaming stick': '8528', 'fire starter': '3606'
       };
       let allPass = true; const failures = [];
       Object.entries(terms).forEach(([term, prefix]) => {
@@ -2406,6 +2363,27 @@ Date = class extends __RealDate {
         if (!(r.length > 0 && r[0].code.startsWith(prefix))) { allPass = false; failures.push(term); }
       });
       check('A51', 'All 6 fixes from this round resolve to their correct heading',
+        allPass, failures.length ? `Failed: ${failures.join(', ')}` : '');
+    }
+
+    // A52 — Coffee/bar/kitchen-gadget/wine/baking search fixes (4 SEPT
+    // 2026). One of the more dramatically bad batches this session -
+    // most terms had no clean match. Several deliberately left as
+    // genuine gaps: tea infuser, cocktail shaker, jigger, muddler,
+    // corkscrew, mandoline slicer, spiralizer, wine rack, rolling pin,
+    // baking sheet, piping bag. Notably bad: espresso machine -> dairy
+    // milking machinery; wine rack/wine cooler -> wine lees.
+    {
+      const terms = {
+        'espresso machine': '8516', 'egg beater': '8210',
+        'wine cooler': '8418', 'coffee grinder': '8509'
+      };
+      let allPass = true; const failures = [];
+      Object.entries(terms).forEach(([term, prefix]) => {
+        const r = searchCodes(term, 1);
+        if (!(r.length > 0 && r[0].code.startsWith(prefix))) { allPass = false; failures.push(term); }
+      });
+      check('A52', 'All 4 fixes from this round resolve to their correct heading',
         allPass, failures.length ? `Failed: ${failures.join(', ')}` : '');
     }
 
@@ -2430,19 +2408,15 @@ Date = class extends __RealDate {
         rChina.inputs.tradeMeasuresFlag.includes('SIMA (Anti-dumping)') && !rChina.inputs.tradeMeasuresFlag.includes('Countervailing)'));
     }
 
-    // C72 — TRQ notice fix (8 SEPT 2026), found via real use of the tool:
+    // C69 — TRQ notice fix (8 SEPT 2026), found via real use of the tool:
     // when a TRQ (quota-based) surtax order loses the tie-break to a
     // flat-rate order sharing the same origin scope, it used to be
     // silently dropped from the display entirely - a broker seeing only
     // the flat rate had no way to know a separate, quota-dependent
     // surtax risk also existed on the same shipment.
-    // RENUMBERED (8 SEPT 2026, cleanup): originally landed as 'C69',
-    // colliding with the pre-existing, unrelated print-media check of
-    // the same ID further up this file - renumbered to the next free ID
-    // (C71 was taken the same night by the live exchange rate feature).
     {
       const rChina = await runUI({ q: '7208.25.00.00', value: 1000, origin: 'China' });
-      check('C72', 'China correctly shows BOTH the flat 25% surtax AND a separate notice for the dropped TRQ order',
+      check('C69', 'China correctly shows BOTH the flat 25% surtax AND a separate notice for the dropped TRQ order',
         rChina.text.includes('25%') && rChina.text.includes('Possible additional quota-based surtax'));
     }
 
@@ -2456,10 +2430,9 @@ Date = class extends __RealDate {
     // something implausible. The tool must never show a broken
     // calculation just because an external site is unreachable.
     {
-      // C71a: fetch genuinely unavailable (this jsdom sandbox has no
-      // global fetch, so the reference throws synchronously and is
-      // caught) - confirms the silent fallback produces the exact same
-      // result the old hardcoded rate always gave.
+      // C70a: fetch genuinely unavailable (this sandbox has no network
+      // path to bankofcanada.ca) - confirms the silent fallback produces
+      // the exact same result as the old hardcoded rate always did.
       const rFallback = await runUI({ q: '9507.10.10.00', value: 100, currency: 'USD', origin: 'Germany', province: 'Ontario' });
       check('C71a', 'With no live rate available, falls back to the exact same result the old fixed rate always gave',
         Math.abs(rFallback.inputs.estimatedLandedCost - 152.25) < 0.01);
@@ -2504,9 +2477,9 @@ Date = class extends __RealDate {
         Math.abs(dom.window.__brokerageInputs.estimatedLandedCost - 152.25) < 0.01);
     }
 
-    // C73 — Place of Export feature (8 SEPT 2026), added at Rigo's boss's
+    // C72 — Place of Export feature (8 SEPT 2026), added at Rigo's boss's
     // request after a real example: COO Italy, shipped via the US, must
-    // NOT get CETA/treaty treatment just because of the shipping route -
+    // NOT get CUSMA/treaty treatment just because of the shipping route -
     // preferential treatment is about where a good was made, not how it
     // got here. A mismatch between origin and export point conservatively
     // falls back to MFN (this tool can't verify customs-control
@@ -2517,19 +2490,19 @@ Date = class extends __RealDate {
     // requires an actual certificate of origin on file.
     {
       const rMismatch = await runUI({ q: '4202.11.00.00', value: 1000, origin: 'Italy', placeOfExport: 'United States of America' });
-      check('C73a', 'COO Italy + export via US: MFN duty applies (not preferential), with a short mismatch caution',
+      check('C72a', 'COO Italy + export via US: MFN duty applies (not preferential), with a short mismatch caution',
         rMismatch.inputs.duty > 0 && rMismatch.text.includes('differ'));
 
       const rMatch = await runUI({ q: '4202.11.00.00', value: 1000, origin: 'Italy', placeOfExport: 'Italy' });
-      check('C73b', 'COO Italy + export from Italy (direct): preferential rate applies as before, with a certificate-of-origin reminder',
+      check('C72b', 'COO Italy + export from Italy (direct): preferential rate applies as before, with a certificate-of-origin reminder',
         rMatch.inputs.duty === 0 && rMatch.text.includes('certificate of origin'));
 
       const rBlank = await runUI({ q: '4202.11.00.00', value: 1000, origin: 'Italy' });
-      check('C73c', 'Blank place of export (default): behaves identically to the direct-shipment match case - unchanged for anyone who ignores the new field',
+      check('C72c', 'Blank place of export (default): behaves identically to the direct-shipment match case - unchanged for anyone who ignores the new field',
         rBlank.inputs.duty === 0 && rBlank.text.includes('certificate of origin'));
     }
 
-    // C74 — Melt-and-pour clarity fix (8 SEPT 2026), found via a real
+    // C73 — Melt-and-pour clarity fix (8 SEPT 2026), found via a real
     // question about why Italy-COO steel carries a surtax at all. The
     // calculator's caution text only ever showed the non-stacking rule
     // (exclusionNote) and never surfaced the more important distinction
@@ -2541,8 +2514,32 @@ Date = class extends __RealDate {
     // factually wrong.
     {
       const r = await runUI({ q: '7220.20.00.90', value: 1000, origin: 'Italy' });
-      check('C74', 'Melt/pour-based surtax order now clearly explains the origin-vs-melt distinction, short and specific',
+      check('C73', 'Melt/pour-based surtax order now clearly explains the origin-vs-melt distinction, short and specific',
         r.text.includes('melted or cast') && r.text.includes('mill test certificate'));
+    }
+
+    // C74 — Melt-and-pour surtax: never calculate, always flag (8 SEPT
+    // 2026), a significant behavior change found via a real, specific
+    // concern (7607.11.00.20, COO Italy, coming from the US, showing a
+    // calculated 25% surtax). This order can NEVER be confirmed from a
+    // country-of-origin selection - it's based on where the raw material
+    // was melted/cast, a fact COO doesn't establish. Worse: China itself
+    // is excluded from this order's own scope (routed to the separate
+    // China Surtax Order instead), so there was never a COO value that
+    // could correctly confirm this order applies. Affects all 182 codes
+    // in this order (verified exact match against Rigo's provided list
+    // from CBSA/Gazette text). Now shown as an uncalculated flag, same
+    // pattern as SIMA and the TRQ order, for every non-US origin.
+    {
+      const rItaly = await runUI({ q: '7607.11.00.20', value: 1000, origin: 'Italy', province: 'Ontario' });
+      const rVietnam = await runUI({ q: '7220.20.00.90', value: 1000, origin: 'Vietnam', province: 'Ontario' });
+      const rChina = await runUI({ q: '7607.11.00.20', value: 1000, origin: 'China', province: 'Ontario' });
+      check('C74a', 'Italy: melt/pour surtax shows as an uncalculated flag, contributes $0 to the total',
+        rItaly.inputs.surtaxAmount === 0 && rItaly.text.includes('Not calculated here') && Math.abs(rItaly.inputs.estimatedLandedCost - 1050) < 0.01);
+      check('C74b', 'Vietnam: same uncalculated-flag behavior on a different code from the same order',
+        rVietnam.inputs.surtaxAmount === 0 && rVietnam.text.includes('Not calculated here'));
+      check('C74c', 'China: unaffected by this fix - still gets the separate China Surtax Order calculated normally, since this melt/pour order excludes China from its own scope',
+        rChina.inputs.surtaxAmount === 250 && rChina.inputs.surtaxRate === '25%');
     }
 
     printSummary();
