@@ -2650,6 +2650,75 @@ Date = class extends __RealDate {
         /^HFQ-\d{8}-\d{4}$/.test(ref));
     }
 
+    // C79 — additional_notes field (11 SEPT 2026): the only field in
+    // Rigo's confirmed Tally hidden-field list that had no source in the
+    // UI at all. Added as a new optional textarea (#bpNotes) rather than
+    // sending an always-empty value, per Rigo's explicit choice. Verifies
+    // both that a typed note is passed through unchanged, and that
+    // leaving it blank sends an empty string rather than "undefined" or
+    // being omitted entirely (Tally's Hidden Field mapping needs the key
+    // present even when empty).
+    {
+      const dom = new (require('jsdom').JSDOM)(clientHtml, { runScripts: 'dangerously', resources: 'usable', url: 'https://example.com' });
+      await new Promise(r => setTimeout(r, 200));
+      const win = dom.window;
+      const doc = win.document;
+      win.__brokerageInputs = { value: 1000, duty: 0, taxOnGoods: 50, surtaxAmount: 0, hsCode: '1234.56.78.90', productDescription: 'test', origin: 'Canada', placeOfExport: '', province: 'Ontario', currency: 'CAD', originalEnteredValue: 1000, importType: 'commercial', frequency: 'once', dutyRate: '0%', dutyCalculable: true, tradeMeasuresFlag: 'None', preferentialTreatment: 'N/A', estimatedLandedCost: 1050 };
+      win.__carmStatus = 'yes';
+      win.renderBrokeragePanel('onetime');
+      doc.getElementById('bpName').value = 'Test User';
+      doc.getElementById('bpEmail').value = 'test@example.com';
+      doc.getElementById('bpNotes').value = 'Fragile - handle with care';
+      let capturedUrl = null;
+      win.open = (url) => { capturedUrl = url; };
+      doc.getElementById('bpSubmitBtn').click();
+      check('C79a', 'additional_notes carries a typed note through to the Tally URL unchanged',
+        new URL(capturedUrl).searchParams.get('additional_notes') === 'Fragile - handle with care');
+
+      const dom2 = new (require('jsdom').JSDOM)(clientHtml, { runScripts: 'dangerously', resources: 'usable', url: 'https://example.com' });
+      await new Promise(r => setTimeout(r, 200));
+      const win2 = dom2.window;
+      const doc2 = win2.document;
+      win2.__brokerageInputs = { value: 1000, duty: 0, taxOnGoods: 50, surtaxAmount: 0, hsCode: '1234.56.78.90', productDescription: 'test', origin: 'Canada', placeOfExport: '', province: 'Ontario', currency: 'CAD', originalEnteredValue: 1000, importType: 'commercial', frequency: 'once', dutyRate: '0%', dutyCalculable: true, tradeMeasuresFlag: 'None', preferentialTreatment: 'N/A', estimatedLandedCost: 1050 };
+      win2.__carmStatus = 'yes';
+      win2.renderBrokeragePanel('onetime');
+      doc2.getElementById('bpName').value = 'Test User';
+      doc2.getElementById('bpEmail').value = 'test@example.com';
+      let capturedUrl2 = null;
+      win2.open = (url) => { capturedUrl2 = url; };
+      doc2.getElementById('bpSubmitBtn').click();
+      const params2 = new URL(capturedUrl2).searchParams;
+      check('C79b', 'additional_notes is still present as an explicit empty-string key when left blank, not omitted',
+        params2.has('additional_notes') && params2.get('additional_notes') === '');
+    }
+
+    // C80 — Tally/Make field-name contract guard (11 SEPT 2026): Rigo
+    // manually created Hidden Fields in Tally form GxE6jp matching these
+    // 27 exact names (confirmed via audit against the live submit-handler
+    // code, no mismatches found). This check guards that contract going
+    // forward - if any of these keys is ever renamed in the submit
+    // handler without updating Tally/Make in lockstep, this fails loudly
+    // instead of silently dropping data on the Tally side.
+    {
+      const dom = new (require('jsdom').JSDOM)(clientHtml, { runScripts: 'dangerously', resources: 'usable', url: 'https://example.com' });
+      await new Promise(r => setTimeout(r, 200));
+      const win = dom.window;
+      const doc = win.document;
+      win.__brokerageInputs = { value: 1000, duty: 25, taxOnGoods: 50, surtaxAmount: 5, hsCode: '1234.56.78.90', productDescription: 'test', origin: 'Canada', placeOfExport: 'United States of America', province: 'Ontario', currency: 'CAD', originalEnteredValue: 1000, importType: 'commercial', frequency: 'once', dutyRate: '2.5%', dutyCalculable: true, tradeMeasuresFlag: 'None', preferentialTreatment: 'N/A', estimatedLandedCost: 1080 };
+      win.__carmStatus = 'yes';
+      win.renderBrokeragePanel('onetime');
+      doc.getElementById('bpName').value = 'Test User';
+      doc.getElementById('bpEmail').value = 'test@example.com';
+      let capturedUrl = null;
+      win.open = (url) => { capturedUrl = url; };
+      doc.getElementById('bpSubmitBtn').click();
+      const sentKeys = new Set([...new URL(capturedUrl).searchParams.keys()]);
+      const expectedTallyHiddenFields = ['client_type','referral_source','additional_notes','shipment_value_cad','hs_code','product_description','origin','province','import_type','frequency','carm_status','freight_quote_requested','entry_fee','aci_fee','carm_fee','account_setup_fee','bond_fee','duty_amount','gst_hst_pst_amount','hst_on_goods','surtax_amount','hst_on_fees','disbursement_fee','grand_total_cad','grand_total_usd','quote_reference','place_of_export'];
+      const missing = expectedTallyHiddenFields.filter(f => !sentKeys.has(f));
+      check('C80', 'Every one of Rigo\'s 27 confirmed Tally hidden-field names is sent with that exact spelling/casing',
+        missing.length === 0);
+    }
+
     printSummary();
   })();
 }

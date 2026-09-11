@@ -117,7 +117,7 @@
     color:var(--brown-mid);
     margin-bottom:3px;
   }
-  .field input, .field select{
+  .field input, .field select, .field textarea{
     width:100%;
     padding:8px 12px;
     border:1.5px solid var(--line);
@@ -127,7 +127,8 @@
     background:#fff;
     color:var(--ink);
   }
-  .field input:focus, .field select:focus{
+  .field textarea{ resize:vertical; min-height:60px; }
+  .field input:focus, .field select:focus, .field textarea:focus{
     outline:none;
     border-color:var(--teal);
     box-shadow:0 0 0 3px var(--teal-soft);
@@ -1012,7 +1013,8 @@ function formatMoney(n){
 // from URL). Every param name built in the submit handler below
 // (quote_reference, client_type, shipment_value_cad, entry_fee, aci_fee,
 // carm_fee, account_setup_fee, bond_fee, hst_on_goods, hst_on_fees,
-// disbursement_fee, grand_total_cad, grand_total_usd, name, email, phone)
+// disbursement_fee, grand_total_cad, grand_total_usd, additional_notes,
+// name, email, phone)
 // needs a Hidden Field of that exact name added in the Tally form builder,
 // or that value just won't show up pre-filled. The client still fills in
 // nothing extra beyond what's already there and hits Tally's own submit —
@@ -1251,6 +1253,7 @@ function renderBrokeragePanel(clientType){
         </select>
         <input type="text" id="bpReferralOther" placeholder="Please specify" style="display:none; margin-top:8px;">
       </div>
+      <div class="field"><label for="bpNotes">Additional notes (optional)</label><textarea id="bpNotes" placeholder="Anything else we should know about this shipment?"></textarea></div>
       <div class="bp-upload-notice" id="bpUploadNotice">${ICON_DOCUMENT} Have your commercial invoice or other customs paperwork ready? You'll be able to attach it on the next screen when you submit — no need to email it separately.</div>
       <div id="bpValidationMsg" class="bp-unavailable" style="display:none;">Please enter your name and email so we can reply with your quote.</div>
       <button type="button" class="bp-submit-btn" id="bpSubmitBtn">Request Official Quote</button>
@@ -1326,6 +1329,7 @@ function renderBrokeragePanel(clientType){
         }
         return selected || 'Not specified';
       })(),
+      additional_notes: document.getElementById('bpNotes').value.trim(),
       // Shipment
       hs_code: inputs.hsCode,
       product_description: inputs.productDescription,
