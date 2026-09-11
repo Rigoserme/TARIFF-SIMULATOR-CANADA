@@ -1800,7 +1800,16 @@ function runEstimate(){
   const charges = [];
 
   if(mfnRate !== null){
-    const amt = value * (mfnRate/100);
+    // ROUNDING FIX (11 SEPT 2026): rounded to the cent immediately, same
+    // pattern as roundMoney() elsewhere - previously this stayed a raw
+    // float and accumulated into `total` unrounded, while the line item
+    // below displays formatMoney(amt) rounded. That gap could make the
+    // big "Estimated Import Cost" total a cent off from the sum of the
+    // displayed line items (real case: $14,584.65 shown vs $14,584.66 =
+    // sum of displayed duty+GST+QST+shipment value). Rounding here once
+    // means every downstream use of `amt` (total, and the charge's own
+    // displayed amount) is already the same number the client sees.
+    const amt = roundMoney(value * (mfnRate/100));
     total += amt;
     charges.push({
       label: `Customs Duty (${mfnRate}%)`, subtitle: isPreferential ? `Preferential rate under treaty ${applicable.treaty}` : (exportMismatch ? 'MFN rate — origin and export point differ' : 'Applicable MFN rate based on selected HS code'),
@@ -1935,7 +1944,9 @@ function runEstimate(){
           }
         });
       } else {
-        const amt = value * (order.rate/100);
+        // ROUNDING FIX (11 SEPT 2026): see the matching comment at the
+        // Customs Duty amt above - same fix, same reason.
+        const amt = roundMoney(value * (order.rate/100));
         total += amt;
         // FIX (8 SEPT 2026): found via a real question about why Italy-COO
         // goods carry this surtax. The order's body text said "based on the
@@ -2103,7 +2114,9 @@ function runEstimate(){
   const isCommercial = importType === 'commercial';
   let taxApplied = false;
   if(isCommercial){
-    const amt = dutyPaidValue * 0.05;
+    // ROUNDING FIX (11 SEPT 2026): see the matching comment at the
+    // Customs Duty amt above - same fix, same reason.
+    const amt = roundMoney(dutyPaidValue * 0.05);
     total += amt;
     taxApplied = true;
     charges.push({
@@ -2128,7 +2141,9 @@ function runEstimate(){
     });
   } else if(province){
     (PROVINCE_TAX_RATES[province] || []).forEach(t => {
-      const amt = dutyPaidValue * (t.rate/100);
+      // ROUNDING FIX (11 SEPT 2026): see the matching comment at the
+      // Customs Duty amt above - same fix, same reason.
+      const amt = roundMoney(dutyPaidValue * (t.rate/100));
       total += amt;
       taxApplied = true;
       // Some provinces (BC, MB, QC, SK) list GST as a separate entry
