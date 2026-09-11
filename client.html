@@ -976,6 +976,22 @@ const ICON_CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" s
 const ICON_WARNING = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5L21.5 20h-19L12 3.5z"/><path d="M12 10v4"/><circle cx="12" cy="17" r="0.5" fill="currentColor"/></svg>';
 const ICON_DOCUMENT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h7l5 5v13a1 1 0 01-1 1H7a1 1 0 01-1-1V4a1 1 0 011-1z"/><path d="M14 3v5h5"/></svg>';
 
+// AUDIT FIX (8 SEPT 2026), explicit spec from Rigo: every monetary
+// intermediate value used to be carried at full floating-point precision
+// through the entire chain (duty -> tax -> surtax -> bond fee -> HST on
+// fees -> disbursement base -> disbursement fee -> grand total), with
+// rounding only applied at final display time via toFixed(2). This meant
+// the displayed line items (each individually rounded) could sum to a
+// different number than the displayed final total (built from the
+// unrounded chain) - a real $0.01 reconciliation mismatch, confirmed via
+// a real test case. Fixed by rounding every monetary value to the cent
+// immediately after it's calculated, before it's used in any subsequent
+// calculation - so every step of the chain operates on already-rounded
+// numbers, guaranteeing the final total always exactly equals the sum of
+// the displayed line items, for any input, not just the one reported.
+function roundMoney(n){
+  return Math.round((n + Number.EPSILON) * 100) / 100;
+}
 function formatMoney(n){
   return '$' + n.toLocaleString('en-CA', {minimumFractionDigits:2, maximumFractionDigits:2});
 }
@@ -1046,7 +1062,7 @@ function computeBrokerageFees(clientType){
   // has moved - surtax is now added at the disbursement-base level
   // instead of inside Bond Fee's own formula, avoiding double-counting
   // once duty was also added directly to that same base (see below).
-  const bondFee = Math.max(c.bondFeeRate * (inputs.duty + inputs.taxOnGoods), c.bondFeeMinimum);
+  const bondFee = roundMoney(Math.max(c.bondFeeRate * (inputs.duty + inputs.taxOnGoods), c.bondFeeMinimum));
   const hstOnGoods = inputs.taxOnGoods;
   const feesSubtotal = entryFee + aciFee + carmFee + accountSetupFee + bondFee;
   // BUG FIX (13 AUG 2026): this used to be a flat 13% (Ontario HST) on our
@@ -1060,7 +1076,7 @@ function computeBrokerageFees(clientType){
   // getFeesTaxForProvince() lives in data.js next to PROVINCE_TAX_RATES so
   // the two stay in sync if a province's rate ever changes.
   const feesTax = getFeesTaxForProvince(inputs.province);
-  const hstOnFees = feesSubtotal * (feesTax.rate/100);
+  const hstOnFees = roundMoney(feesSubtotal * (feesTax.rate/100));
   // FORMULA UPDATE (8 SEPT 2026, explicit spec from Rigo): grandTotalCAD
   // previously excluded Customs Duty entirely - duty only ever entered
   // indirectly through Bond Fee's own calculation, never as its own line
@@ -1071,14 +1087,14 @@ function computeBrokerageFees(clientType){
   // Shipment value is deliberately still excluded, per the standing rule
   // that the total represents charges Hemisphere bills, not the
   // underlying commercial value of the goods.
-  const disbursementBase = inputs.duty + inputs.surtaxAmount + hstOnGoods + entryFee + bondFee + accountSetupFee + aciFee + carmFee + hstOnFees;
-  const disbursementFee = disbursementBase * c.disbursementFeeRate;
-  const grandTotalCAD = disbursementBase + disbursementFee;
+  const disbursementBase = roundMoney(inputs.duty + inputs.surtaxAmount + hstOnGoods + entryFee + bondFee + accountSetupFee + aciFee + carmFee + hstOnFees);
+  const disbursementFee = roundMoney(disbursementBase * c.disbursementFeeRate);
+  const grandTotalCAD = roundMoney(disbursementBase + disbursementFee);
   // USD conversion intentionally stays a fixed rate (0.9), separate from
   // the live Bank of Canada rate used for shipment-value conversion
   // elsewhere - confirmed with Rigo this is deliberate, not something to
   // unify with the live-rate feature.
-  const grandTotalUSD = grandTotalCAD * c.usdConversionRate;
+  const grandTotalUSD = roundMoney(grandTotalCAD * c.usdConversionRate);
 
   return {
     overLimit: false, isSetup, entryFee, aciFee, carmFee, accountSetupFee, bondFee,
@@ -2284,14 +2300,14 @@ function runEstimate(){
   // ("Safeguard Surtax") by prefix - confirmed the exact label text used
   // for each trade-measure type before relying on this check.
   const surtaxCharge = tradeCharges.find(c => c.label.startsWith('Surtax'));
-  const surtaxAmount = surtaxCharge && surtaxCharge.amount !== null ? surtaxCharge.amount : 0;
+  const surtaxAmount = roundMoney(surtaxCharge && surtaxCharge.amount !== null ? surtaxCharge.amount : 0);
   const surtaxRate = surtaxCharge ? (surtaxCharge.amount !== null ? surtaxCharge.label.replace('Surtax ','').replace(/[()]/g,'') : 'Quota-dependent') : 'None';
   const freqLabels = {once:'One-time', weekly:'Weekly', monthly:'Monthly', custom:'Custom'};
   window.__brokerageInputs = {
     value,
     originalEnteredValue: enteredValue,
     currency,
-    duty: dutyCharge && dutyCharge.amount !== null ? dutyCharge.amount : 0,
+    duty: roundMoney(dutyCharge && dutyCharge.amount !== null ? dutyCharge.amount : 0),
     // BUG FIX (26 AUG 2026): found via systematic testing of specific/
     // compound rate codes. duty was always sent as a plain number (0 when
     // unknown), and dutyRate showed the ambiguous "N/A" for this same
@@ -2315,7 +2331,7 @@ function runEstimate(){
     // in the future and this would otherwise become a live, silent bug at
     // that point rather than being caught now.
     dutyCalculable: !(dutyCharge && dutyCharge.amount === null),
-    taxOnGoods: taxCharges.reduce((sum, c) => sum + (c.amount || 0), 0),
+    taxOnGoods: roundMoney(taxCharges.reduce((sum, c) => sum + (c.amount || 0), 0)),
     surtaxAmount,
     surtaxRate,
     hsCode: matchedCode,

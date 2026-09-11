@@ -2592,6 +2592,40 @@ Date = class extends __RealDate {
         fees.grandTotalUSD.toFixed(2) === '2162.00');
     }
 
+    // C77 — Monetary rounding/reconciliation fix (8 SEPT 2026), explicit
+    // spec from Rigo, found via a real reported $0.01 discrepancy between
+    // the sum of displayed line items and the displayed grand total.
+    // Root cause: every monetary value (duty, tax, surtax, bond fee, HST
+    // on fees, disbursement base/fee, grand totals) was carried at full
+    // floating-point precision through the entire calculation chain,
+    // with rounding only applied at final display time - so the
+    // individually-rounded line items could sum to a different number
+    // than the total built from unrounded intermediates. Fixed via a
+    // roundMoney() helper applied immediately after every monetary
+    // calculation, so every step of the chain operates on already-
+    // rounded numbers - this guarantees exact reconciliation for ANY
+    // input, not just the one reported.
+    {
+      const dom = new (require('jsdom').JSDOM)(clientHtml, { runScripts: 'dangerously', resources: 'usable' });
+      await new Promise(r => setTimeout(r, 200));
+      dom.window.__brokerageInputs = { value: 6500, duty: 410.15, taxOnGoods: 873.62, surtaxAmount: 0.00, province: 'Ontario' };
+      const fees = dom.window.computeBrokerageFees('onetime');
+      const sumOfDisplayed = fees.entryFee + fees.bondFee + fees.aciFee + fees.carmFee + 410.15 + 873.62 + 0.00 + fees.hstOnFees + fees.disbursementFee;
+      check('C77a', 'Rigo\'s exact reported case: sum of displayed line items exactly equals the displayed grand total, no $0.01 gap',
+        sumOfDisplayed.toFixed(2) === fees.grandTotalCAD.toFixed(2) && fees.grandTotalCAD.toFixed(2) === '2047.33');
+
+      // Stress test with repeating-decimal inputs designed to expose
+      // floating-point accumulation errors the old, unrounded-chain
+      // approach would have been vulnerable to.
+      const dom2 = new (require('jsdom').JSDOM)(clientHtml, { runScripts: 'dangerously', resources: 'usable' });
+      await new Promise(r => setTimeout(r, 200));
+      dom2.window.__brokerageInputs = { value: 6500, duty: 333.33, taxOnGoods: 111.11, surtaxAmount: 22.22, province: 'Ontario' };
+      const fees2 = dom2.window.computeBrokerageFees('onetime');
+      const sumOfDisplayed2 = fees2.entryFee + fees2.bondFee + fees2.aciFee + fees2.carmFee + 333.33 + 111.11 + 22.22 + fees2.hstOnFees + fees2.disbursementFee;
+      check('C77b', 'Repeating-decimal stress test also reconciles exactly - confirms this holds generally, not just for the one reported case',
+        sumOfDisplayed2.toFixed(2) === fees2.grandTotalCAD.toFixed(2));
+    }
+
     printSummary();
   })();
 }
