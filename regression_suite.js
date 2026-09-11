@@ -978,9 +978,15 @@ Date = class extends __RealDate {
       check('C50d', 'Reproduces the real emails exact duty/tax/surtax figures',
         r.inputs.duty === 0 && Math.abs(r.inputs.taxOnGoods - 393.56) < 0.01 && Math.abs(r.inputs.surtaxAmount - 525.63) < 0.01);
       const fees = r.computeBrokerageFees('onetime');
-      const expectedBond = Math.max(0.25 * (0 + r.inputs.taxOnGoods + r.inputs.surtaxAmount), 100);
-      check('C50e', 'Bond Fee now includes surtax in its base (was flat $100, now ~$229.80)',
-        Math.abs(fees.bondFee - expectedBond) < 0.01 && fees.bondFee > 100);
+      // Updated 8 SEPT 2026, explicit spec from Rigo: Bond Fee's base no
+      // longer includes surtax (moved to the disbursement-base level
+      // instead, alongside duty, avoiding double-counting). With duty=0
+      // and tax=393.56, 25% of that alone (98.39) falls under the $100
+      // floor, so this case now correctly hits the floor instead of the
+      // old surtax-inclusive ~$229.80 result.
+      const expectedBond = Math.max(0.25 * (0 + r.inputs.taxOnGoods), 100);
+      check('C50e', 'Bond Fee no longer includes surtax in its base - this case now correctly hits the $100 floor',
+        Math.abs(fees.bondFee - expectedBond) < 0.01 && fees.bondFee === 100);
     }
 
     // C51 — The actual real-world consequence of the province/commercial
@@ -2540,6 +2546,50 @@ Date = class extends __RealDate {
         rVietnam.inputs.surtaxAmount === 0 && rVietnam.text.includes('Not calculated here'));
       check('C74c', 'China: unaffected by this fix - still gets the separate China Surtax Order calculated normally, since this melt/pour order excludes China from its own scope',
         rChina.inputs.surtaxAmount === 250 && rChina.inputs.surtaxRate === '25%');
+    }
+
+    // C75 — Quote panel/Tally updates (8 SEPT 2026): (1) the "Quote for"
+    // summary line was showing the original as-entered currency (e.g.
+    // "$998.00 USD") instead of the converted CAD amount actually used
+    // for the quote - now always shows CAD. (2) place_of_export is now
+    // included in the Tally payload, added alongside the existing
+    // duty_amount/gst_hst_pst_amount/surtax_amount fields (confirmed
+    // these three already existed as separate fields before this round).
+    {
+      const rUSD = await runUI({ q: '9507.10.10.00', value: 998, currency: 'USD', origin: 'Italy', placeOfExport: 'United States of America', province: 'Ontario' });
+      check('C75a', 'brokerageInputs.value reflects the converted CAD amount, not the original USD figure',
+        Math.abs(rUSD.inputs.value - 1447.1) < 0.1);
+      check('C75b', 'placeOfExport is correctly captured in brokerageInputs for the Tally payload',
+        rUSD.inputs.placeOfExport === 'United States of America');
+      // Duty/GST/surtax already exist as separate Tally fields - confirmed
+      // directly in the payload construction code, not re-added here.
+    }
+
+    // C76 — Quote calculation formula audit and fix (8 SEPT 2026),
+    // explicit spec from Rigo. Fixed two real gaps found via audit: (1)
+    // Customs Duty was never included in grandTotalCAD at all - it only
+    // entered indirectly through Bond Fee's own calculation, never as
+    // its own line in the final total; (2) Bond Fee's base incorrectly
+    // included surtax (a prior, now-superseded decision) - surtax moved
+    // to the disbursement-base level instead, alongside duty, avoiding
+    // double-counting. The $100 Bond Fee floor is explicitly preserved.
+    // This is Rigo's own official test case, verified value-by-value.
+    {
+      const dom = new (require('jsdom').JSDOM)(clientHtml, { runScripts: 'dangerously', resources: 'usable' });
+      await new Promise(r => setTimeout(r, 200));
+      dom.window.__brokerageInputs = { value: 7497.05, duty: 487.31, taxOnGoods: 1037.97, surtaxAmount: 0.00, province: 'Ontario' };
+      const fees = dom.window.computeBrokerageFees('onetime');
+      check('C76a', 'Entry Fee = 275.00, Bond Fee = 381.32, ACI = 15.00, CARM = 3.50, HST on Fees = 87.73 (all exact)',
+        fees.entryFee.toFixed(2) === '275.00' && fees.bondFee.toFixed(2) === '381.32' &&
+        fees.aciFee.toFixed(2) === '15.00' && fees.carmFee.toFixed(2) === '3.50' && fees.hstOnFees.toFixed(2) === '87.73');
+      check('C76b', 'Disbursement base = 2287.83 exactly',
+        fees.disbursementBase.toFixed(2) === '2287.83');
+      check('C76c', 'Disbursement fee (5%) = 114.39 exactly',
+        fees.disbursementFee.toFixed(2) === '114.39');
+      check('C76d', 'Final CAD total = 2402.22 exactly',
+        fees.grandTotalCAD.toFixed(2) === '2402.22');
+      check('C76e', 'Final USD total (×0.9 fixed rate) = 2162.00 exactly',
+        fees.grandTotalUSD.toFixed(2) === '2162.00');
     }
 
     printSummary();

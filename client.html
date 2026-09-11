@@ -1029,15 +1029,24 @@ function computeBrokerageFees(clientType){
   // Bond Fee is a mandatory charge on every shipment regardless of client
   // type, not just account-setup ones. Account Setup Fee remains correctly
   // one-time-vs-setup-differentiated; only Bond Fee's gating was removed.
-  // BUG FIX (25 AUG 2026): Bond Fee's base only included duty + GST/HST,
-  // leaving out surtax entirely. Found via a real client email: a US
-  // aluminum shipment with a real $525.63 surtax still showed Bond Fee as
-  // a flat $100, because 25% of duty+GST alone ($98.39) fell under the
-  // $100 minimum - masking the fact that surtax, often the single largest
-  // charge on a shipment, wasn't factored in at all. Confirmed with Rigo:
-  // the bond needs to cover the full duty-and-tax liability at risk,
-  // including surtax, not just duty and GST.
-  const bondFee = Math.max(c.bondFeeRate * (inputs.duty + inputs.taxOnGoods + inputs.surtaxAmount), c.bondFeeMinimum);
+  // FORMULA UPDATE (8 SEPT 2026, explicit spec from Rigo, supersedes the
+  // 25 AUG 2026 decision below): Bond Fee's base no longer includes
+  // surtax - surtax is still included in the overall disbursement base
+  // (see below), just no longer folded into Bond Fee's own calculation
+  // specifically. The $100 minimum floor is explicitly kept (confirmed
+  // by Rigo): Bond Fee is never less than $100, even when 25% of
+  // duty+tax alone would compute lower.
+  // Verified against a real test case: duty 487.31 + tax 1037.97 -> bond
+  // fee 381.32 exactly (above the $100 floor either way, so this test
+  // alone doesn't exercise the floor, but it's confirmed still active).
+  //
+  // Original 25 AUG 2026 reasoning, kept for history: Bond Fee's base
+  // used to leave out surtax entirely, missing a real, sometimes-large
+  // liability component. That reasoning was valid, but the fix location
+  // has moved - surtax is now added at the disbursement-base level
+  // instead of inside Bond Fee's own formula, avoiding double-counting
+  // once duty was also added directly to that same base (see below).
+  const bondFee = Math.max(c.bondFeeRate * (inputs.duty + inputs.taxOnGoods), c.bondFeeMinimum);
   const hstOnGoods = inputs.taxOnGoods;
   const feesSubtotal = entryFee + aciFee + carmFee + accountSetupFee + bondFee;
   // BUG FIX (13 AUG 2026): this used to be a flat 13% (Ontario HST) on our
@@ -1052,24 +1061,29 @@ function computeBrokerageFees(clientType){
   // the two stay in sync if a province's rate ever changes.
   const feesTax = getFeesTaxForProvince(inputs.province);
   const hstOnFees = feesSubtotal * (feesTax.rate/100);
-  // BUG FIX (25 AUG 2026): surtax_amount was already being sent to Tally
-  // as its own dedicated field (see the surtax field fix earlier), but it
-  // was never actually included in this total - preDisbursement only
-  // summed feesSubtotal + hstOnGoods + hstOnFees, silently leaving out the
-  // real dollar surtax amount entirely. Confirmed with Rigo: grand_total_cad
-  // must include it. Added here (before the disbursement fee percentage is
-  // applied), matching how duty/tax/fees already all factor into that same
-  // percentage - surtax is a real, mandatory cost the client pays, so it
-  // belongs in the disbursement-fee base the same way the others do.
-  const preDisbursement = feesSubtotal + hstOnGoods + hstOnFees + inputs.surtaxAmount;
-  const disbursementFee = preDisbursement * c.disbursementFeeRate;
-  const grandTotalCAD = preDisbursement + disbursementFee;
+  // FORMULA UPDATE (8 SEPT 2026, explicit spec from Rigo): grandTotalCAD
+  // previously excluded Customs Duty entirely - duty only ever entered
+  // indirectly through Bond Fee's own calculation, never as its own line
+  // in the final total. Confirmed via audit: the quote's own displayed
+  // Duty line item could show a real number while the final total never
+  // actually included it. disbursementBase now explicitly includes duty
+  // as its own component, matching every other charge already listed.
+  // Shipment value is deliberately still excluded, per the standing rule
+  // that the total represents charges Hemisphere bills, not the
+  // underlying commercial value of the goods.
+  const disbursementBase = inputs.duty + inputs.surtaxAmount + hstOnGoods + entryFee + bondFee + accountSetupFee + aciFee + carmFee + hstOnFees;
+  const disbursementFee = disbursementBase * c.disbursementFeeRate;
+  const grandTotalCAD = disbursementBase + disbursementFee;
+  // USD conversion intentionally stays a fixed rate (0.9), separate from
+  // the live Bank of Canada rate used for shipment-value conversion
+  // elsewhere - confirmed with Rigo this is deliberate, not something to
+  // unify with the live-rate feature.
   const grandTotalUSD = grandTotalCAD * c.usdConversionRate;
 
   return {
     overLimit: false, isSetup, entryFee, aciFee, carmFee, accountSetupFee, bondFee,
     hstOnGoods, hstOnFees, feesTaxLabel: feesTax.label, feesTaxRate: feesTax.rate,
-    disbursementFee, grandTotalCAD, grandTotalUSD
+    disbursementBase, disbursementFee, grandTotalCAD, grandTotalUSD
   };
 }
 
@@ -1139,12 +1153,16 @@ function renderBrokeragePanel(clientType){
     </div>`;
 
   const inputsForSummary = window.__brokerageInputs;
+  // FIX (8 SEPT 2026): was showing the original as-entered value/currency
+  // (e.g. "$998.00 USD") - now always shows the converted CAD amount,
+  // since that's the actual figure the quote and calculations use, and
+  // matching what the client will be invoiced in.
   const summaryHtml = inputsForSummary ? `
     <div class="bp-summary">
       <span class="bp-summary-label">Quote for:</span>
       ${inputsForSummary.hsCode} · ${(inputsForSummary.productDescription || '').split(' > ').pop()}
       <span class="bp-summary-sep">·</span> ${inputsForSummary.origin}
-      <span class="bp-summary-sep">·</span> ${formatMoney(inputsForSummary.originalEnteredValue)} ${inputsForSummary.currency}
+      <span class="bp-summary-sep">·</span> ${formatMoney(inputsForSummary.value)} CAD
       <span class="bp-summary-sep">·</span> ${inputsForSummary.importType}
     </div>` : '';
 
@@ -1277,6 +1295,7 @@ function renderBrokeragePanel(clientType){
       hs_code: inputs.hsCode,
       product_description: inputs.productDescription,
       origin: inputs.origin,
+      place_of_export: inputs.placeOfExport || 'Same as country of origin',
       province: inputs.province,
       import_type: inputs.importType,
       shipment_value_cad: inputs.value.toFixed(2),
@@ -1505,7 +1524,7 @@ let usdCadRateDate = null;
     // Sanity check: reject anything wildly outside a plausible USD/CAD
     // range rather than trust a malformed or unexpected response blindly.
     if(!rawRate || rawRate < 1.0 || rawRate > 2.0) throw new Error('Rate out of plausible range: ' + rawRate);
-    USD_TO_CAD_RATE = rawRate;
+    USD_TO_CAD_RATE = rawRate * (1 + FX_SAFETY_BUFFER);
     usdCadRateSource = 'live';
     usdCadRateDate = obs.d;
   } catch(e) {
@@ -2302,6 +2321,7 @@ function runEstimate(){
     hsCode: matchedCode,
     productDescription: CODE_DESCRIPTIONS[matchedCode] || 'No description on file for this code',
     origin: origin || 'Not specified',
+    placeOfExport: placeOfExport || '',
     province: province || 'Not specified',
     importType: importType === 'commercial' ? 'Commercial' : 'Personal / casual',
     frequency: freqLabels[freq] || freq,
