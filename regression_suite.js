@@ -2626,6 +2626,30 @@ Date = class extends __RealDate {
         sumOfDisplayed2.toFixed(2) === fees2.grandTotalCAD.toFixed(2));
     }
 
+    // C78 — quote_reference feature (8 SEPT 2026): generated exactly
+    // once, at actual submission time, in HFQ-YYYYMMDD-#### format, and
+    // passed to Tally as its own field for Make/Tally to pass through
+    // (never regenerate) into both quote emails. Verified via the real
+    // submission flow (window.open with the Tally URL + params), not
+    // just the generation logic in isolation.
+    {
+      const dom = new (require('jsdom').JSDOM)(clientHtml, { runScripts: 'dangerously', resources: 'usable', url: 'https://example.com' });
+      await new Promise(r => setTimeout(r, 200));
+      const win = dom.window;
+      const doc = win.document;
+      win.__brokerageInputs = { value: 1000, duty: 0, taxOnGoods: 50, surtaxAmount: 0, hsCode: '1234.56.78.90', productDescription: 'test', origin: 'Canada', placeOfExport: '', province: 'Ontario', currency: 'CAD', originalEnteredValue: 1000, importType: 'commercial', frequency: 'once', dutyRate: '0%', dutyCalculable: true, tradeMeasuresFlag: 'None', preferentialTreatment: 'N/A', estimatedLandedCost: 1050 };
+      win.__carmStatus = 'yes';
+      win.renderBrokeragePanel('onetime');
+      doc.getElementById('bpName').value = 'Test User';
+      doc.getElementById('bpEmail').value = 'test@example.com';
+      let capturedUrl = null;
+      win.open = (url) => { capturedUrl = url; };
+      doc.getElementById('bpSubmitBtn').click();
+      const ref = new URL(capturedUrl).searchParams.get('quote_reference');
+      check('C78', 'quote_reference is generated in exact HFQ-YYYYMMDD-#### format and included in the real Tally submission URL',
+        /^HFQ-\d{8}-\d{4}$/.test(ref));
+    }
+
     printSummary();
   })();
 }

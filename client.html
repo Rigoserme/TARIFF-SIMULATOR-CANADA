@@ -1010,8 +1010,8 @@ function formatMoney(n){
 // form via URL query params when the form has a matching Hidden Field
 // configured for each param name (Tally docs: Hidden Fields > populate
 // from URL). Every param name built in the submit handler below
-// (client_type, shipment_value_cad, entry_fee, aci_fee, carm_fee,
-// account_setup_fee, bond_fee, hst_on_goods, hst_on_fees,
+// (quote_reference, client_type, shipment_value_cad, entry_fee, aci_fee,
+// carm_fee, account_setup_fee, bond_fee, hst_on_goods, hst_on_fees,
 // disbursement_fee, grand_total_cad, grand_total_usd, name, email, phone)
 // needs a Hidden Field of that exact name added in the Tally form builder,
 // or that value just won't show up pre-filled. The client still fills in
@@ -1292,8 +1292,27 @@ function renderBrokeragePanel(clientType){
     msg.style.display = 'none';
     const inputs = window.__brokerageInputs;
     const carmLabels = {yes:'Yes, registered', no:'No, not registered', unsure:'Not sure'};
+    // FEATURE (8 SEPT 2026): quote_reference, generated exactly once,
+    // right here at actual submission time - not earlier (so re-rendering
+    // the panel or adjusting inputs before submitting doesn't burn through
+    // multiple reference numbers for what's still the same quote attempt),
+    // and never regenerated downstream in Make/Tally, which only ever
+    // receive and pass through this same value. Format: HFQ-YYYYMMDD-####.
+    // The #### segment is a random 4-digit number, not a true incrementing
+    // sequence - this is a static, client-side site with no backend/
+    // database to track a real counter across sessions, so a random
+    // number is the only practical option here. At low quote volume the
+    // collision risk (two quotes same day, same random 4 digits) is
+    // negligible, but this is NOT a cryptographically unique ID - if
+    // guaranteed uniqueness ever matters, that needs real backend state,
+    // which this tool doesn't have.
+    const today = new Date();
+    const datePart = `${today.getFullYear()}${String(today.getMonth()+1).padStart(2,'0')}${String(today.getDate()).padStart(2,'0')}`;
+    const randomPart = String(Math.floor(Math.random() * 10000)).padStart(4,'0');
+    const quoteReference = `HFQ-${datePart}-${randomPart}`;
     const params = new URLSearchParams({
       // Client information
+      quote_reference: quoteReference,
       name,
       company: document.getElementById('bpCompany').value.trim(),
       email,
