@@ -11390,7 +11390,11 @@ function surtaxAppliesToCountry(order, country){
   }
 }
 
-function normCode(s){ return (s || "").toLowerCase().replace(/[.\s]/g, ""); }
+// BUG FIX (13 SEPT 2026): hyphenated HS code entry (e.g. "4402-10-90-00")
+// normalized to something that never matched any stored code, since only
+// "." and whitespace were stripped. Added "-" to the strip set so hyphen,
+// dot, and space-separated entry all normalize identically.
+function normCode(s){ return (s || "").toLowerCase().replace(/[.\-\s]/g, ""); }
 
 // Find every SIMA_CASES entry that has an HS code matching the query
 // (matches if the query is a prefix of the code, or the code is a prefix

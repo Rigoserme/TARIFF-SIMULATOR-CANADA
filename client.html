@@ -1574,6 +1574,28 @@ let usdCadRateDate = null;
   }
 })();
 
+// BUG FIX (13 SEPT 2026), found via an exhaustive HS-lookup audit: if the
+// quote/brokerage panel was already open from a prior valid search, and
+// the user then typed a new but invalid/unmatched code, the panel stayed
+// open and fully submittable with the STALE previous product's data -
+// __brokerageInputs was never cleared on a no-match result, only ever
+// overwritten by the next SUCCESSFUL match. A user could submit a quote
+// for the wrong product without realizing their new search had failed.
+// Called at every "no match" exit point in runEstimate() below. Setting
+// __brokerageInputs to null is sufficient on its own for the underlying
+// state (computeBrokerageFees() already returns null for a null input,
+// per existing code), but the panel itself doesn't auto-re-render - if
+// it's currently showing stale content, it needs to be actively told to
+// refresh so it reflects the now-invalid state rather than sitting frozen
+// with the old product still visible and submittable.
+function invalidateStaleQuoteState(){
+  window.__brokerageInputs = null;
+  const panel = document.getElementById('brokeragePanel');
+  if(panel && panel.innerHTML.trim()){
+    renderBrokeragePanel();
+  }
+}
+
 function runEstimate(){
   const q = document.getElementById('q').value.trim();
   const origin = document.getElementById('origin').value;
@@ -1606,6 +1628,7 @@ function runEstimate(){
   if(!q || !value){
     resultsEl.className = 'show';
     resultsEl.innerHTML = '<div class="card no-match">Enter a product and a shipment value to get an estimate.</div>';
+    invalidateStaleQuoteState();
     return;
   }
   // BUG FIX (13 AUG 2026): a negative shipment value (e.g. someone fat-
@@ -1616,6 +1639,7 @@ function runEstimate(){
   if(value < 0){
     resultsEl.className = 'show';
     resultsEl.innerHTML = '<div class="card no-match">Enter a shipment value of zero or more.</div>';
+    invalidateStaleQuoteState();
     return;
   }
   // BUG FIX (25 AUG 2026): this used to only require a province for
@@ -1626,6 +1650,7 @@ function runEstimate(){
   if(!document.getElementById('province').value){
     resultsEl.className = 'show';
     resultsEl.innerHTML = '<div class="card no-match">Select the destination province — it affects both the import tax and our own brokerage fees.</div>';
+    invalidateStaleQuoteState();
     return;
   }
 
@@ -1762,15 +1787,18 @@ function runEstimate(){
           runEstimate();
         });
       });
+      invalidateStaleQuoteState();
       return;
     }
     resultsEl.className = 'show';
     resultsEl.innerHTML = '<div class="card no-match">We don\'t have that product in our estimator yet. <a href="https://www.gohemisphere.ca/contact" style="color:var(--brown-mid);">Contact a broker</a> for an exact rate.</div>';
+    invalidateStaleQuoteState();
     return;
   }
   if(distinctCodes.length > 1){
     resultsEl.className = 'show';
     resultsEl.innerHTML = '<div class="card no-match">That description matches more than one tariff classification — try a more specific description, or the exact HS code if you know it.</div>';
+    invalidateStaleQuoteState();
     return;
   }
 
