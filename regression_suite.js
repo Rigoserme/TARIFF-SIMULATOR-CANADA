@@ -2796,6 +2796,70 @@ Date = class extends __RealDate {
         Math.abs(r.inputs.estimatedLandedCost - 14584.66) < 0.01);
     }
 
+    // C91 — Malformed-email validation fix (13 SEPT 2026), found via a
+    // production-readiness audit. The email input has type="email", but
+    // native HTML5 format validation only fires on a real <form> submit
+    // event - this project has neither, so a malformed address
+    // previously passed through unblocked, silently losing the lead.
+    // Fixed with an explicit checkValidity() call in the submit handler.
+    {
+      async function testEmail(email) {
+        const dom = new (require('jsdom').JSDOM)(clientHtml, { runScripts: 'dangerously', resources: 'usable', url: 'https://example.com' });
+        await new Promise(r => setTimeout(r, 100));
+        const doc = dom.window.document, win = dom.window;
+        doc.getElementById('q').value = '1109.00.10.00';
+        doc.getElementById('value').value = '1000';
+        doc.getElementById('origin').value = 'Italy';
+        doc.getElementById('province').value = 'Ontario';
+        win.runEstimate();
+        await new Promise(r => setTimeout(r, 30));
+        win.renderBrokeragePanel('onetime');
+        doc.getElementById('bpName').value = 'Test User';
+        doc.getElementById('bpEmail').value = email;
+        let capturedUrl = null;
+        win.open = (url) => { capturedUrl = url; };
+        doc.getElementById('bpSubmitBtn').click();
+        return capturedUrl === null;
+      }
+      const blocked1 = await testEmail('notanemail');
+      const blocked2 = await testEmail('test@');
+      const blocked3 = await testEmail('@test.com');
+      const allowed = !(await testEmail('valid@example.com'));
+      check('C91', 'Malformed emails (no @, no domain, no local part) are blocked; a valid email still submits normally',
+        blocked1 && blocked2 && blocked3 && allowed);
+    }
+
+    // C92 — Duplicate-submission (double-click) protection (13 SEPT
+    // 2026), found via the same audit. Nothing previously prevented a
+    // rapid double-click from opening two separate Tally tabs, each with
+    // a different, freshly-generated quote_reference. Fixed by disabling
+    // the submit button immediately once validation passes.
+    {
+      const dom = new (require('jsdom').JSDOM)(clientHtml, { runScripts: 'dangerously', resources: 'usable', url: 'https://example.com' });
+      await new Promise(r => setTimeout(r, 100));
+      const doc = dom.window.document, win = dom.window;
+      doc.getElementById('q').value = '1109.00.10.00';
+      doc.getElementById('value').value = '1000';
+      doc.getElementById('origin').value = 'Italy';
+      doc.getElementById('province').value = 'Ontario';
+      win.runEstimate();
+      await new Promise(r => setTimeout(r, 30));
+      win.renderBrokeragePanel('onetime');
+      doc.getElementById('bpName').value = 'Test User';
+      doc.getElementById('bpEmail').value = 'valid@example.com';
+      const capturedUrls = [];
+      win.open = (url) => { capturedUrls.push(url); };
+      const btn = doc.getElementById('bpSubmitBtn');
+      btn.click(); btn.click(); btn.click();
+      check('C92a', 'Three rapid clicks produce exactly one Tally submission, not three',
+        capturedUrls.length === 1 && btn.disabled === true);
+      // Confirm the button correctly resets (not stuck disabled) when the
+      // panel re-renders fresh for a new search/quote attempt.
+      win.renderBrokeragePanel('onetime');
+      check('C92b', 'Button correctly re-enables on a fresh panel render - not permanently stuck disabled',
+        doc.getElementById('bpSubmitBtn').disabled === false);
+    }
+
     printSummary();
   })();
 }

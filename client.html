@@ -1310,14 +1310,30 @@ function renderBrokeragePanel(clientType){
   });
 
   document.getElementById('bpSubmitBtn').addEventListener('click', () => {
+    const submitBtn = document.getElementById('bpSubmitBtn');
     const name = document.getElementById('bpName').value.trim();
-    const email = document.getElementById('bpEmail').value.trim();
+    const emailField = document.getElementById('bpEmail');
+    const email = emailField.value.trim();
     const msg = document.getElementById('bpValidationMsg');
-    if(!name || !email){
+    // FIX (13 SEPT 2026), found via a production-readiness audit: this
+    // input has type="email", but HTML5's native format validation only
+    // fires automatically on a real <form> submit event - this project
+    // has no <form> element and no explicit checkValidity() call, so a
+    // malformed address (no @, no domain) previously passed straight
+    // through to Tally with no warning at all, silently losing the lead
+    // since Hemisphere could never actually reply to it.
+    if(!name || !email || !emailField.checkValidity()){
       msg.style.display = 'block';
       return;
     }
     msg.style.display = 'none';
+    // FIX (13 SEPT 2026), found via the same audit: nothing prevented a
+    // rapid double-click from opening two separate Tally tabs, each with
+    // its own freshly-generated, different quote_reference - confirmed
+    // directly. Disabling immediately once validation passes closes this;
+    // re-enabling only happens on the invalid-input path above, so a
+    // genuine correction attempt is never permanently blocked.
+    submitBtn.disabled = true;
     const inputs = window.__brokerageInputs;
     const carmLabels = {yes:'Yes, registered', no:'No, not registered', unsure:'Not sure'};
     // FEATURE (8 SEPT 2026): quote_reference, generated exactly once,

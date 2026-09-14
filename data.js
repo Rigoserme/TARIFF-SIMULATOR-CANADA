@@ -19246,7 +19246,7 @@ function lookupEntryFee(valueForDutyCAD){
 //   Account Setup + Bond Fee; every other province gets GST (5%) only on
 //   that same sum — never QST, PST, or RST, regardless of what tax the
 //   goods themselves carry via the main duty/tax calculator.
-// - Disbursement Fee: 3% of every other computed line above (Entry Fee +
+// - Disbursement Fee: 5% of every other computed line above (Entry Fee +
 //   ACI + CARM + Account Setup + Bond Fee + HST on Goods + HST on Fees),
 //   computed last, applied whenever this fee schedule is used.
 // - USD conversion: always CAD × 0.9 for the fee-schedule grand total
