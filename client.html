@@ -993,6 +993,31 @@ const ICON_DOCUMENT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor
 function roundMoney(n){
   return Math.round((n + Number.EPSILON) * 100) / 100;
 }
+// BUG FIX (12 SEPT 2026), found via a real live test: the description
+// display picked only the LAST segment of a code's hierarchical
+// description (e.g. "Wheat gluten, whether or not dried > Within access
+// commitment" -> just "Within access commitment"). For most codes the
+// last segment is genuinely descriptive, but for a meaningful share of
+// the dataset it's a non-descriptive classification term instead - "Other"
+// (2,626 codes), or "Within/Over access commitment" (125 codes, dairy/
+// poultry TRQ classifications). Showing just "Within access commitment"
+// or "Other" alone gives zero indication of what the actual product is.
+// Fixed by walking backward from the last segment past any of these known
+// generic terms, showing the nearest genuinely descriptive one instead.
+// This only changes what's DISPLAYED - the underlying CODE_DESCRIPTIONS
+// data itself is untouched, since it's accurate, just not meant to be
+// read from the end alone.
+const NON_DESCRIPTIVE_TRAILING_TERMS = new Set(['within access commitment', 'over access commitment', 'in excess of access commitment', 'other', 'other.']);
+function bestDescriptionSegment(fullDescription){
+  const parts = (fullDescription || '').split(' > ').map(p => p.trim()).filter(Boolean);
+  for(let i = parts.length - 1; i >= 0; i--){
+    if(!NON_DESCRIPTIVE_TRAILING_TERMS.has(parts[i].toLowerCase())) return parts[i];
+  }
+  // every segment was generic (shouldn't happen in practice) - fall back
+  // to the original last-segment behavior rather than showing nothing
+  return parts[parts.length - 1] || '';
+}
+
 function formatMoney(n){
   return '$' + n.toLocaleString('en-CA', {minimumFractionDigits:2, maximumFractionDigits:2});
 }
@@ -1178,7 +1203,7 @@ function renderBrokeragePanel(clientType){
   const summaryHtml = inputsForSummary ? `
     <div class="bp-summary">
       <span class="bp-summary-label">Quote for:</span>
-      ${inputsForSummary.hsCode} · ${(inputsForSummary.productDescription || '').split(' > ').pop()}
+      ${inputsForSummary.hsCode} · ${bestDescriptionSegment(inputsForSummary.productDescription)}
       <span class="bp-summary-sep">·</span> ${inputsForSummary.origin}
       <span class="bp-summary-sep">·</span> ${formatMoney(inputsForSummary.value)} CAD
       <span class="bp-summary-sep">·</span> ${inputsForSummary.importType}
@@ -2290,7 +2315,7 @@ function runEstimate(){
 
   resultsEl.innerHTML = `
     <div class="result-hero">
-      <div class="hs-line">${matchedCode} · ${(CODE_DESCRIPTIONS[matchedCode] || '').split(' > ').pop()} <span class="hs-origin-inline">— Origin: ${origin || 'Not specified'}</span></div>
+      <div class="hs-line">${matchedCode} · ${bestDescriptionSegment(CODE_DESCRIPTIONS[matchedCode])} <span class="hs-origin-inline">— Origin: ${origin || 'Not specified'}</span></div>
       <div class="top-row">
         <div class="label-row">
           <div class="label-icon">${ICON_DOCUMENT}</div>

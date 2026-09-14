@@ -2719,6 +2719,32 @@ Date = class extends __RealDate {
         missing.length === 0);
     }
 
+    // C86 — Description display fix (12 SEPT 2026), found via a real live
+    // test: the description shown for a matched code picked only the
+    // LAST segment of its hierarchical description, which for 2,751
+    // codes (25% of the dataset) is a non-descriptive classification term
+    // ("Other" - 2,626 codes; "Within/Over access commitment" - 125
+    // codes) rather than anything describing the actual product. Fixed
+    // via bestDescriptionSegment(), which walks backward past any known
+    // generic trailing term to the nearest genuinely descriptive segment.
+    // Only the DISPLAY changed - CODE_DESCRIPTIONS itself is untouched.
+    {
+      const r = await runUI({ q: '1109.00.10.00', origin: 'China', value: 1000 });
+      check('C86a', 'Wheat gluten (2-segment, generic trailing term) now shows the real product name, not "Within access commitment"',
+        r.text.includes('Wheat gluten') && !r.text.includes('· Within access commitment'));
+    }
+    {
+      const dom = new (require('jsdom').JSDOM)(clientHtml, { runScripts: 'dangerously', resources: 'usable' });
+      await new Promise(r => setTimeout(r, 200));
+      const win = dom.window;
+      check('C86b', 'A 3-segment case with a generic trailing term correctly skips it for the nearest descriptive segment',
+        win.bestDescriptionSegment('Milk and cream, not concentrated nor containing added sugar > Of a fat content, by weight, not exceeding 1% > Within access commitment') === 'Of a fat content, by weight, not exceeding 1%');
+      check('C86c', 'A normal, non-generic-ending description is completely unaffected',
+        win.bestDescriptionSegment('Multiple-walled insulating units of glass') === 'Multiple-walled insulating units of glass');
+      check('C86d', 'The common "Other" trailing case correctly skips to the descriptive parent segment',
+        win.bestDescriptionSegment('Portable automatic data processing machines > Other') === 'Portable automatic data processing machines');
+    }
+
     printSummary();
   })();
 }
