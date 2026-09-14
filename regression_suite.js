@@ -1091,21 +1091,17 @@ Date = class extends __RealDate {
     // C56 — Sept 8, 2026 countermeasures order (Batch 2, 26 AUG 2026):
     // three critical, real findings from this build, all verified
     {
-      // 56a: the new order must NOT apply yet, since today is before its
-      // effective date. This guards against a real, serious risk - without
-      // date-gating, clients would be charged this surtax up to 2 weeks
-      // early. If this check ever fails after Sept 8, 2026, that's
-      // EXPECTED (the order should activate then) - update/remove this
-      // specific check once that date has passed.
+      // 56a: originally date-gated (if/else on new Date() < 2026-09-08),
+      // since the order must NOT have applied before its effective date.
+      // UPDATED (14 SEPT 2026): that date has now passed (confirmed live
+      // against the deployed site) and won't recur, so the "before"
+      // branch is permanently dead - collapsed to the single now-current
+      // assertion per this test's own original instruction to update it
+      // once the date passed. Also resolves a duplicate check('C56a', ...)
+      // ID that existed across the two branches.
       const rBefore = await runUI({ q: '9401.71.10.10', value: 10000, origin: 'United States of America', province: 'Ontario' });
-      const isBeforeEffective = new Date() < new Date('2026-09-08');
-      if (isBeforeEffective) {
-        check('C56a', 'New Sept 8 order correctly stays dormant before its effective date (old 25% order still applies)',
-          rBefore.inputs.surtaxAmount === 2500 && rBefore.inputs.surtaxRate === '25%');
-      } else {
-        check('C56a', 'Past Sept 8: new order should now be active (50%, not the old 25%) - update this check',
-          rBefore.inputs.surtaxAmount === 5000 && rBefore.inputs.surtaxRate === '50%');
-      }
+      check('C56a', 'Past Sept 8: new order is active (50%, not the old 25%)',
+        rBefore.inputs.surtaxAmount === 5000 && rBefore.inputs.surtaxRate === '50%');
 
       // 56b: pre-existing orders (no effectiveDate field) are completely
       // unaffected by the date-gating fix. mockDate added 8 SEPT 2026 -
@@ -1125,18 +1121,15 @@ Date = class extends __RealDate {
 
     // C57 — Sept 8, 2026 countermeasures order, Batch 3 (26 AUG 2026):
     // steel pipe fittings, heavy overlap with pre-existing steel surtax
-    // orders. Confirms today's date correctly keeps the new order dormant
-    // on a real Batch 3 code, matching the same finding as Batch 2.
+    // orders. Originally date-gated like C56a; that date has now passed
+    // (confirmed live, 14 SEPT 2026) and won't recur, so this is
+    // collapsed to the single current assertion - also resolves a
+    // duplicate check('C57', ...) ID that existed across the two
+    // branches.
     {
       const r = await runUI({ q: '7306.90.00.10', value: 10000, origin: 'United States of America', province: 'Ontario' });
-      const isBeforeEffective = new Date() < new Date('2026-09-08');
-      if (isBeforeEffective) {
-        check('C57', 'Batch 3 order correctly stays dormant before Sept 8 (pre-existing 25% order applies, undisturbed)',
-          r.inputs.surtaxAmount === 2500 && r.inputs.surtaxRate === '25%');
-      } else {
-        check('C57', 'Past Sept 8: Batch 3 order should now be active (50%) - update this check',
-          r.inputs.surtaxAmount === 5000 && r.inputs.surtaxRate === '50%');
-      }
+      check('C57', 'Past Sept 8: Batch 3 order is active (50%)',
+        r.inputs.surtaxAmount === 5000 && r.inputs.surtaxRate === '50%');
     }
 
     // C58 — Pending surtax "heads up" notice (26 AUG 2026): informs clients
@@ -2414,15 +2407,20 @@ Date = class extends __RealDate {
         rChina.inputs.tradeMeasuresFlag.includes('SIMA (Anti-dumping)') && !rChina.inputs.tradeMeasuresFlag.includes('Countervailing)'));
     }
 
-    // C69 — TRQ notice fix (8 SEPT 2026), found via real use of the tool:
+    // C70 — TRQ notice fix (8 SEPT 2026), found via real use of the tool:
     // when a TRQ (quota-based) surtax order loses the tie-break to a
     // flat-rate order sharing the same origin scope, it used to be
     // silently dropped from the display entirely - a broker seeing only
     // the flat rate had no way to know a separate, quota-dependent
     // surtax risk also existed on the same shipment.
+    // RENAMED (14 SEPT 2026): this was originally labeled C69, which
+    // collided with the unrelated print-contrast fix already using that
+    // ID earlier in this file. Renamed to C70, the sequence number this
+    // block actually sits at (C68abc, this, then C71ab) - no behavior
+    // change, ID only.
     {
       const rChina = await runUI({ q: '7208.25.00.00', value: 1000, origin: 'China' });
-      check('C69', 'China correctly shows BOTH the flat 25% surtax AND a separate notice for the dropped TRQ order',
+      check('C70', 'China correctly shows BOTH the flat 25% surtax AND a separate notice for the dropped TRQ order',
         rChina.text.includes('25%') && rChina.text.includes('Possible additional quota-based surtax'));
     }
 
