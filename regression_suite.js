@@ -2778,6 +2778,26 @@ Date = class extends __RealDate {
         r.text.includes('Quota-dependent') && r.text.includes('Possible melt/pour surtax'));
     }
 
+    // C90 — Main "Estimated Import Cost" total rounding fix (0fd88d9),
+    // found via a real reported case: $11,910.86 CAD shipment (China,
+    // 7610.10.00.20, personal import, Quebec) showed duty $774.21 + GST
+    // $634.25 + QST $1,265.34 = $14,584.66 in the displayed line items,
+    // but the big "Estimated Import Cost" card showed $14,584.65 - a
+    // one-cent gap. Root cause: runEstimate()'s own total accumulator
+    // (the main results card) is a separate code path from
+    // computeBrokerageFees() (the quote panel), which an earlier fix
+    // (116167b) never touched - it summed raw, unrounded amounts while
+    // each line item displayed the rounded figure. Fixed by wrapping the
+    // 4 charge calculations (duty, surtax, GST, PST/HST/QST) with the
+    // existing roundMoney() right where they're computed. Verified live
+    // against this exact case before this test was added.
+    {
+      const r = await runUI({ q: '7610.10.00.20', origin: 'China', value: 11910.86, currency: 'CAD', importType: 'personal', province: 'Quebec' });
+      check('C90', 'Estimated Import Cost total exactly equals the sum of displayed duty+GST+QST, no one-cent gap',
+        Math.abs(r.inputs.duty - 774.21) < 0.01 &&
+        Math.abs(r.inputs.estimatedLandedCost - 14584.66) < 0.01);
+    }
+
     printSummary();
   })();
 }
