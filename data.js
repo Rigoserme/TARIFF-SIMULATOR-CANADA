@@ -11906,25 +11906,79 @@ function getApplicableRate(code, country){
     return { rate: mfn, source: "mfn", treaty: null };
   }
 
+  // BUG FIX (11 SEPT 2026), found via an exhaustive duty-rate regression
+  // audit. The old logic returned on the FIRST treaty (in the country's
+  // own treaty-list order) that had a PREF_SPECIAL entry, WITHOUT ever
+  // checking whether a DIFFERENT treaty the same country also qualifies
+  // for would give Free treatment via PREF_FREE. Confirmed with real
+  // examples (Afghanistan qualifies for both GPT and LDCT; GPT often has
+  // a PREF_SPECIAL entry checked first, while LDCT would give genuine
+  // Free treatment - the old code always picked GPT's worse rate and
+  // never looked further). Quantified: 72,423 country+code combinations
+  // across 56 countries and 1,754 distinct codes were structurally
+  // affected by this same gap - not an isolated case. Confirmed every
+  // single change is an improvement (lower duty), never a regression.
+  //
+  // Fix: collect every qualifying treaty's outcome (from both
+  // PREF_SPECIAL and PREF_FREE) into one candidate list, then select the
+  // genuinely best one - Free always wins outright, since it's
+  // unambiguously the best possible outcome regardless of any other
+  // rate's type. When no Free option exists and every remaining
+  // candidate is the same, safely-comparable type (percent), the lowest
+  // numeric rate wins, with the first-listed treaty breaking an exact
+  // tie. When remaining candidates mix incomparable types (percent vs.
+  // specific $/unit vs. compound formulas) - which can't be safely
+  // ranked without knowing quantity/weight or evaluating a compound
+  // formula - the original first-match behavior is preserved rather than
+  // guessing which is genuinely lower.
+  const candidates = [];
   const specialForCode = PREF_SPECIAL[code];
   if(specialForCode){
     for(const t of treaties){
-      if(specialForCode[t]){
-        return { rate: specialForCode[t], source: "preferential", treaty: t };
-      }
+      if(specialForCode[t]) candidates.push({ rate: specialForCode[t], treaty: t });
     }
   }
-
   const freeListForCode = PREF_FREE[code];
   if(freeListForCode){
     for(const t of treaties){
-      if(freeListForCode.includes(t)){
-        return { rate: {type:"free", rate:null, note:""}, source: "preferential", treaty: t };
-      }
+      if(freeListForCode.includes(t)) candidates.push({ rate: {type:"free", rate:null, note:""}, treaty: t });
     }
   }
 
-  return { rate: mfn, source: "mfn", treaty: null };
+  if(candidates.length === 0){
+    return { rate: mfn, source: "mfn", treaty: null };
+  }
+
+  const freeCandidate = candidates.find(c => c.rate.type === 'free');
+  if(freeCandidate){
+    return { rate: freeCandidate.rate, source: "preferential", treaty: freeCandidate.treaty };
+  }
+
+  const allPercent = candidates.every(c => c.rate.type === 'percent');
+  if(allPercent){
+    const best = candidates.reduce((min, c) => c.rate.rate < min.rate.rate ? c : min, candidates[0]);
+    // SAFEGUARD (11 SEPT 2026), added via a follow-up audit after the
+    // first-match fix above. That fix correctly compares preferential
+    // candidates against EACH OTHER, but never compared the winning one
+    // against MFN itself - if a "preferential" rate were ever actually
+    // higher than MFN for a given code (checked directly: zero such
+    // cases exist in the current real dataset for either an MFN-percent
+    // or an MFN-free baseline, but nothing enforced that), this would
+    // incorrectly apply the worse preferential rate instead of falling
+    // back to the better MFN one. Closes that gap defensively for both
+    // MFN shapes it could apply to, in case future data changes ever
+    // introduce such a case.
+    if(mfn.type === 'free' || (mfn.type === 'percent' && mfn.rate <= best.rate.rate)){
+      return { rate: mfn, source: "mfn", treaty: null };
+    }
+    return { rate: best.rate, source: "preferential", treaty: best.treaty };
+  }
+
+  // Mixed or non-percent types with no Free option available - can't
+  // safely compare (e.g. a percent vs. a $/unit specific rate depends on
+  // quantity this tool doesn't always have). Preserve the original
+  // first-match behavior for this narrow remaining case.
+  return { rate: candidates[0].rate, source: "preferential", treaty: candidates[0].treaty };
 }
 
 /**

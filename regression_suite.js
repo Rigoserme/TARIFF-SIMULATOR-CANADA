@@ -2745,6 +2745,39 @@ Date = class extends __RealDate {
         win.bestDescriptionSegment('Portable automatic data processing machines > Other') === 'Portable automatic data processing machines');
     }
 
+    // C87 — getApplicableRate() first-match fix + MFN safeguard,
+    // reconciled from earlier session work (11 SEPT 2026) that had never
+    // made it into this file. Fixes 72,423 country+code combinations
+    // where the old logic stopped at the first qualifying treaty instead
+    // of checking whether a different treaty gives a genuinely better
+    // (or, defensively, worse-than-MFN) outcome.
+    {
+      const r = getApplicableRate('0401.10.10.00', 'Afghanistan');
+      check('C87', 'Afghanistan correctly gets Free via LDCT, not 7.5% via GPT (first-match bug)',
+        r.rate.type === 'free' && r.treaty === 'LDCT');
+    }
+
+    // C88 — SIMA residualRates fix, reconciled from earlier session work.
+    // 5 of 61 SIMA cases with no residualRates field were having their
+    // entire warning silently dropped instead of showing the generic
+    // screening-indication wording.
+    {
+      const r = await runUI({ q: '0701.90.00.20', origin: 'United States of America', value: 1000 });
+      check('C88', 'SIMA case with missing residualRates (Whole potatoes) now correctly shows a screening warning',
+        r.text.includes('SIMA'));
+    }
+
+    // C89 — Melt/pour dropped-order notice generalization, reconciled
+    // from earlier session work. 112 of 182 melt/pour codes also match a
+    // more-specific TRQ order that wins the primary slot - the melt/pour
+    // warning used to vanish entirely in that case instead of showing
+    // alongside the TRQ result.
+    {
+      const r = await runUI({ q: '7206.10.00.00', origin: 'Italy', value: 1000 });
+      check('C89', 'A melt/pour code that also has a competing TRQ order shows BOTH results, not just one',
+        r.text.includes('Quota-dependent') && r.text.includes('Possible melt/pour surtax'));
+    }
+
     printSummary();
   })();
 }

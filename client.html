@@ -1961,9 +1961,19 @@ function runEstimate(){
     // country's quarterly quota for this steel class has been exceeded -
     // something this tool cannot check. A broker seeing only the flat
     // rate had no way to know this additional risk existed at all.
-    const droppedTrqOrders = otherMatches.filter(o => o.type === 'trq');
-    const stackingNote = otherApplicableCount > droppedTrqOrders.length
-      ? ` This code/origin combination also matched ${otherApplicableCount - droppedTrqOrders.length} other surtax order${(otherApplicableCount - droppedTrqOrders.length) === 1 ? '' : 's'}, which don't apply here due to documented non-stacking rules.`
+    // NOTICE FIX (11 SEPT 2026), found via exhaustive 182-code regression
+    // audit: this used to only catch a dropped TRQ-type order. But when a
+    // matching melt/pour-type order (scope any-except-us-china, rank 2)
+    // loses to a DIFFERENT, more specific order (e.g. the exclude-US TRQ
+    // order, rank 1) - as happens for 112 of the 182 melt/pour codes -
+    // its warning was silently dropped entirely, since this whole notice
+    // loop lived inside the `if(order.type === 'flat')` branch below and
+    // never ran when a non-flat (TRQ) order won instead. Generalized to
+    // catch either dropped type, and moved outside that branch so it
+    // always runs regardless of which order type wins the primary slot.
+    const droppedInformationalOrders = otherMatches.filter(o => o.type === 'trq' || (o.origin && o.origin.startsWith('⚠')));
+    const stackingNote = otherApplicableCount > droppedInformationalOrders.length
+      ? ` This code/origin combination also matched ${otherApplicableCount - droppedInformationalOrders.length} other surtax order${(otherApplicableCount - droppedInformationalOrders.length) === 1 ? '' : 's'}, which don't apply here due to documented non-stacking rules.`
       : '';
     if(order.type === 'flat'){
       const isMeltPourOrder = order.origin && order.origin.startsWith('⚠');
@@ -2024,19 +2034,6 @@ function runEstimate(){
           }
         });
       }
-      droppedTrqOrders.forEach(trqOrder => {
-        charges.push({
-          label: 'Possible additional quota-based surtax', subtitle: 'Depends on current import quota',
-          tooltip: 'A separate tariff-rate quota (TRQ) order may add a further surtax once your quarterly import volume for this product exceeds Canada\'s allocated quota.',
-          amount: null, qualifier: 'Not calculable here', warning: true, category: 'trade',
-          explain: {
-            headline: 'Why is this showing?',
-            body: `This code/origin also matches a quota-based order (${trqOrder.regNo}) separate from the surtax shown above. ${trqOrder.rateNote || 'Rate depends on quota status.'}`,
-            kv: [['Regulation', trqOrder.regNo]],
-            caution: (trqOrder.exclusionNote ? trqOrder.exclusionNote + ' ' : '') + 'This tool cannot check your current quota utilization — check Global Affairs Canada\'s import permit system or your broker before assuming this doesn\'t apply.'
-          }
-        });
-      });
     } else {
       charges.push({
         label: 'Surtax', subtitle: 'Depends on current import quota',
@@ -2050,17 +2047,61 @@ function runEstimate(){
         }
       });
     }
+    // NOTICE FIX (11 SEPT 2026): moved outside the if/else above so this
+    // always runs regardless of which order type won the primary slot -
+    // previously lived only inside the `flat` branch, so a dropped
+    // melt/pour order's warning vanished entirely whenever a TRQ order
+    // won instead (112 of 182 melt/pour codes). Never creates a second
+    // monetary charge - both branches below use amount: null, same as
+    // before this fix.
+    droppedInformationalOrders.forEach(droppedOrder => {
+      const isDroppedMeltPour = droppedOrder.origin && droppedOrder.origin.startsWith('⚠');
+      charges.push(isDroppedMeltPour ? {
+        label: 'Possible melt/pour surtax (25%)', subtitle: 'Depends on where the raw material was melted/cast',
+        tooltip: 'A separate surtax applies if the raw steel/aluminum in this good was melted or cast in China — regardless of the finished good\'s declared country of origin. This can\'t be confirmed from a country-of-origin selection alone.',
+        amount: null, qualifier: 'Not calculated here', warning: true, category: 'trade',
+        explain: {
+          headline: 'Why is this showing, with no dollar amount?',
+          body: `This code/origin also matches a melt/pour-based order (${droppedOrder.regNo}) separate from the surtax shown above — it's based on where the raw steel/aluminum was melted or cast, not the finished good's declared origin, so this tool can't calculate it from a country-of-origin selection alone.`,
+          kv: [['Regulation', droppedOrder.regNo], ['Rate if it applies', `${droppedOrder.rate}%`]],
+          caution: 'The importer is presumed Chinese-material unless proven otherwise with a mill test certificate or similar. ' + (droppedOrder.exclusionNote ? droppedOrder.exclusionNote + ' ' : '') + 'Confirm melt/pour or smelt/cast country with your supplier and broker before assuming this doesn\'t apply.'
+        }
+      } : {
+        label: 'Possible additional quota-based surtax', subtitle: 'Depends on current import quota',
+        tooltip: 'A separate tariff-rate quota (TRQ) order may add a further surtax once your quarterly import volume for this product exceeds Canada\'s allocated quota.',
+        amount: null, qualifier: 'Not calculable here', warning: true, category: 'trade',
+        explain: {
+          headline: 'Why is this showing?',
+          body: `This code/origin also matches a quota-based order (${droppedOrder.regNo}) separate from the surtax shown above. ${droppedOrder.rateNote || 'Rate depends on quota status.'}`,
+          kv: [['Regulation', droppedOrder.regNo]],
+          caution: (droppedOrder.exclusionNote ? droppedOrder.exclusionNote + ' ' : '') + 'This tool cannot check your current quota utilization — check Global Affairs Canada\'s import permit system or your broker before assuming this doesn\'t apply.'
+        }
+      });
+    });
   }
 
   if(simaMatches.length){
     simaMatches.forEach(c => {
-      if(!c.residualRates) return;
-      const adDesc = describeSimaRate(c.residualRates.antiDumping, origin);
-      const cvdDesc = describeSimaRate(c.residualRates.countervailing, origin);
+      // FIX (11 SEPT 2026): found via an exhaustive 61-case SIMA
+      // regression audit. 5 of 61 SIMA cases have no residualRates field
+      // at all (rate not yet researched, a separate data-completeness
+      // question). The old `if(!c.residualRates) return;` line silently
+      // dropped the SIMA warning ENTIRELY for these cases, even though
+      // the case genuinely, correctly matched the HS code and country of
+      // origin - a legitimate SIMA screening result was being hidden
+      // just because the specific rate wasn't documented. Fixed by
+      // guarding the two lookups instead of bailing out early, then
+      // falling through to the same generic "Screening indication"
+      // wording already used elsewhere (below) when no specific rate is
+      // available - never inventing a rate, never adding a dollar
+      // amount, just not hiding the case. Cases that DO have
+      // residualRates are completely unaffected - same behavior as
+      // before.
+      const adDesc = c.residualRates ? describeSimaRate(c.residualRates.antiDumping, origin) : null;
+      const cvdDesc = c.residualRates ? describeSimaRate(c.residualRates.countervailing, origin) : null;
       const parts = [];
       if(adDesc) parts.push(`anti-dumping duty of ${adDesc}`);
       if(cvdDesc) parts.push(`countervailing duty of ${cvdDesc}`);
-      if(!parts.length) return;
       // FIX (3 SEPT 2026): found via a real code that matches two distinct
       // SIMA cases at once (Aluminum extrusions AND Unitized wall
       // modules, both genuinely applying) - the label was hardcoded
@@ -2080,7 +2121,8 @@ function runEstimate(){
       // reflects only the type(s) genuinely applicable to this origin.
       const singleLabel = adDesc && cvdDesc ? 'SIMA (Anti-dumping/Countervailing)'
         : adDesc ? 'SIMA (Anti-dumping)'
-        : 'SIMA (Countervailing)';
+        : cvdDesc ? 'SIMA (Countervailing)'
+        : 'SIMA (Anti-dumping/Countervailing)';
       const simaLabel = simaMatches.length > 1
         ? `SIMA — ${c.product}`
         : singleLabel;
@@ -2090,8 +2132,10 @@ function runEstimate(){
         amount: null, qualifier: 'Screening indication', warning: true, category: 'trade',
         explain: {
           headline: 'Why is this showing?',
-          body: `Special Import Measures Act. This type of product (${c.product.toLowerCase()}) may be subject to ${parts.join(' and ')}, depending on its exact specifications and manufacturer.`,
-          kv: [['Origin', origin || '—'], ['Potential rate', [adDesc, cvdDesc].filter(Boolean).join('; ')]],
+          body: parts.length
+            ? `Special Import Measures Act. This type of product (${c.product.toLowerCase()}) may be subject to ${parts.join(' and ')}, depending on its exact specifications and manufacturer.`
+            : `Special Import Measures Act. This type of product (${c.product.toLowerCase()}) is subject to an active SIMA case for this origin, but a specific rate isn't documented in this tool yet - it may still apply depending on the exact specifications and manufacturer.`,
+          kv: [['Origin', origin || '—'], ['Potential rate', [adDesc, cvdDesc].filter(Boolean).join('; ') || 'Not yet documented']],
           caution: 'This result is a screening indication, not a determination of liability — confirm with a broker before relying on this.'
         }
       });
