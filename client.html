@@ -1331,14 +1331,22 @@ function renderBrokeragePanel(clientType){
     // rapid double-click from opening two separate Tally tabs, each with
     // its own freshly-generated, different quote_reference - confirmed
     // directly. Disabling immediately once validation passes closes this.
-    // CORRECTED comment (14 SEPT 2026, per Code's live-verification
-    // review): a disabled button can't dispatch click events at all, so
-    // the invalid-input path above is never reachable once disabled -
-    // there's no "re-enable on correction" branch to speak of. The real
-    // reset is a fresh renderBrokeragePanel() call (opening the panel
-    // again for a new search/quote gets a brand-new, enabled button),
-    // which is exactly what C92b in the regression suite verifies.
+    // UPDATED (14 SEPT 2026): see the fuller comment just below, at the
+    // actual disable/re-enable lines, for the current behavior - a short
+    // time-based re-enable now exists, not just a fresh panel render.
+    // FIX (14 SEPT 2026), found via real use: the previous permanent
+    // disable (until a fresh renderBrokeragePanel() call) went too far -
+    // a client who genuinely wanted to submit the SAME quote again later
+    // (e.g. re-sending because they weren't sure the first one worked, or
+    // wanting a duplicate copy) had no way to do so without artificially
+    // changing something just to force a new panel render. The original
+    // bug this protected against was specifically a RAPID, accidental
+    // double-click (two Tally tabs opening within the same click
+    // gesture) - a short time-based re-enable blocks that exact case
+    // (two clicks within a fraction of a second) while allowing a
+    // genuine, deliberate resubmission once a few seconds have passed.
     submitBtn.disabled = true;
+    setTimeout(() => { submitBtn.disabled = false; }, 3000);
     const inputs = window.__brokerageInputs;
     const carmLabels = {yes:'Yes, registered', no:'No, not registered', unsure:'Not sure'};
     // FEATURE (8 SEPT 2026): quote_reference, generated exactly once,

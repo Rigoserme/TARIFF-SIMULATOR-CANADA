@@ -2860,6 +2860,41 @@ Date = class extends __RealDate {
         doc.getElementById('bpSubmitBtn').disabled === false);
     }
 
+    // C93 — Time-based re-enable for the submit button (14 SEPT 2026),
+    // found via real use: the permanent disable from C92 went too far -
+    // a client wanting to genuinely resubmit the SAME quote later (no
+    // changes, just clicking again) had no way to do so without
+    // artificially forcing a new panel render. Fixed with a short
+    // (3-second) delayed re-enable: still blocks the original rapid-
+    // double-click case (two clicks within a fraction of a second), but
+    // allows a genuine, deliberate resubmission shortly after.
+    {
+      const dom = new (require('jsdom').JSDOM)(clientHtml, { runScripts: 'dangerously', resources: 'usable', url: 'https://example.com' });
+      await new Promise(r => setTimeout(r, 100));
+      const doc = dom.window.document, win = dom.window;
+      doc.getElementById('q').value = '1109.00.10.00';
+      doc.getElementById('value').value = '1000';
+      doc.getElementById('origin').value = 'Italy';
+      doc.getElementById('province').value = 'Ontario';
+      win.runEstimate();
+      await new Promise(r => setTimeout(r, 30));
+      win.renderBrokeragePanel('onetime');
+      doc.getElementById('bpName').value = 'Test User';
+      doc.getElementById('bpEmail').value = 'valid@example.com';
+      const capturedUrls = [];
+      win.open = (url) => capturedUrls.push(url);
+      const btn = doc.getElementById('bpSubmitBtn');
+      btn.click(); btn.click(); // rapid double-click, no panel re-render in between
+      const rapidBlocked = capturedUrls.length === 1 && btn.disabled === true;
+      await new Promise(r => setTimeout(r, 3200)); // past the 3-second re-enable window
+      btn.click(); // genuine resubmission attempt, same info, no re-render
+      const resubmitWorked = capturedUrls.length === 2;
+      const refs = capturedUrls.map(u => new URL(u).searchParams.get('quote_reference'));
+      const refsValidAndDistinct = refs.every(r => /^HFQ-\d{8}-\d{4}$/.test(r)) && refs[0] !== refs[1];
+      check('C93', 'Rapid double-click still blocked to one submission; genuine resubmission after the delay works with a fresh, valid, distinct reference',
+        rapidBlocked && resubmitWorked && refsValidAndDistinct);
+    }
+
     printSummary();
   })();
 }
