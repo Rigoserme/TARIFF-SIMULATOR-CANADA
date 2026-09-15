@@ -1591,18 +1591,24 @@ function findTariffDataMatch(query){
 // returns something unusable - the tool must never show a broken
 // calculation just because an external site is unreachable.
 //
-// A small safety buffer is kept on top of the live rate, preserving the
-// original design decision (confirmed with Rigo, 25 AUG 2026): estimates
-// should err toward the client's real cost coming in UNDER the estimate,
-// not over it, since that's the safer direction to be wrong in for a
-// compliance tool. Set FX_SAFETY_BUFFER to 0 to use the raw live rate
-// with no buffer, if that's ever preferred instead.
+// LOCKED RULE (15 SEPT 2026, explicit permanent instruction from Rigo -
+// do not modify this rule in future changes unless explicitly requested
+// again): TariffCheck must use the raw Bank of Canada USD/CAD rate
+// exactly as returned by the API, with no safety buffer, markup,
+// multiplier, spread, or percentage adjustment of any kind.
+//
+// SUPERSEDED HISTORY, kept for context only: a 1% FX_SAFETY_BUFFER was
+// added on top of the live rate on 25 AUG 2026, on the reasoning that
+// estimates should err toward the client's real cost coming in UNDER the
+// estimate rather than over it. That buffer has been removed entirely
+// per the locked rule above - USD_TO_CAD_RATE is now always exactly the
+// raw API rate (or the unchanged fallback rate below, if the API is
+// unavailable).
 //
 // The live "= $X CAD at rate Y" preview below the input stays removed
 // per the same 25 AUG 2026 request - the exact rate isn't shown to the
 // client while typing, calculation-time use only.
 const FX_FALLBACK_RATE = 1.45;
-const FX_SAFETY_BUFFER = 0.01; // 1% on top of the live rate
 let USD_TO_CAD_RATE = FX_FALLBACK_RATE;
 let usdCadRateSource = 'fallback';
 let usdCadRateDate = null;
@@ -1617,7 +1623,9 @@ let usdCadRateDate = null;
     // Sanity check: reject anything wildly outside a plausible USD/CAD
     // range rather than trust a malformed or unexpected response blindly.
     if(!rawRate || rawRate < 1.0 || rawRate > 2.0) throw new Error('Rate out of plausible range: ' + rawRate);
-    USD_TO_CAD_RATE = rawRate * (1 + FX_SAFETY_BUFFER);
+    // IMPORTANT: Use the raw Bank of Canada rate only. Do not add a
+    // safety buffer or markup.
+    USD_TO_CAD_RATE = rawRate;
     usdCadRateSource = 'live';
     usdCadRateDate = obs.d;
   } catch(e) {

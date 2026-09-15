@@ -2427,12 +2427,15 @@ Date = class extends __RealDate {
     // C71 — Live exchange rate feature (8 SEPT 2026): replaces the single
     // hardcoded USD->CAD rate with a live fetch of the Bank of Canada's
     // official daily rate (the same rate CBSA recognizes for customs
-    // valuation), with a 1% safety buffer preserving the original
-    // design decision (client's real cost should land under the
-    // estimate, not over it) and full silent fallback to the previous
-    // fixed rate (1.45) if the fetch fails, is unreachable, or returns
-    // something implausible. The tool must never show a broken
-    // calculation just because an external site is unreachable.
+    // valuation), with full silent fallback to the previous fixed rate
+    // (1.45) if the fetch fails, is unreachable, or returns something
+    // implausible. The tool must never show a broken calculation just
+    // because an external site is unreachable.
+    // UPDATED (15 SEPT 2026): a 1% safety buffer originally sat on top
+    // of the live rate here - per Rigo's explicit, permanent instruction,
+    // that buffer has been removed entirely. The live rate is now always
+    // used exactly as the Bank of Canada API returns it, with no
+    // adjustment of any kind.
     {
       // C70a: fetch genuinely unavailable (this sandbox has no network
       // path to bankofcanada.ca) - confirms the silent fallback produces
@@ -2442,8 +2445,14 @@ Date = class extends __RealDate {
         Math.abs(rFallback.inputs.estimatedLandedCost - 152.25) < 0.01);
     }
     {
-      // C71b: mocked successful live rate - confirms the fetched rate
-      // plus the 1% safety buffer are both correctly applied.
+      // C71b: mocked successful live rate - confirms the raw fetched
+      // rate is applied EXACTLY, with no buffer, markup, or adjustment
+      // of any kind. UPDATED (15 SEPT 2026): this test originally
+      // asserted the 1% safety buffer that was applied on top of the
+      // live rate - that buffer has been permanently, explicitly removed
+      // per Rigo's locked FX rule (see the code comment at the
+      // USD_TO_CAD_RATE assignment). This test now asserts the new,
+      // correct behavior instead of the old, removed one.
       const htmlWithMockFetch = clientHtml.replace('<script>', () => `<script>
         globalThis.fetch = async () => ({ ok: true, json: async () => ({ observations: [{ d: '2026-09-08', FXUSDCAD: { v: '1.4068' } }] }) });
       `);
@@ -2457,8 +2466,8 @@ Date = class extends __RealDate {
       doc.getElementById('province').value = 'Ontario';
       dom.window.runEstimate();
       await new Promise(r => setTimeout(r, 50));
-      const expected = 100 * 1.4068 * 1.01 * 1.05;
-      check('C71b', 'A successful live rate fetch correctly applies the fetched rate plus the 1% safety buffer',
+      const expected = 100 * 1.4068 * 1.05;
+      check('C71b', 'A successful live rate fetch applies the exact raw rate with no buffer, markup, or adjustment',
         Math.abs(dom.window.__brokerageInputs.estimatedLandedCost - expected) < 0.01);
     }
     {
