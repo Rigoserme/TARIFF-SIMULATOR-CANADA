@@ -16968,9 +16968,9 @@ const SEARCH_SYNONYMS = {
   "beef":["bovine","cattle"], "pork":["swine","pig","hog","hogs"], "chicken":["poultry","fowl"],
   "shrimp":["crustaceans"], "prawns":["crustaceans"], "lobster":["crustaceans"], "crab":["crustaceans"],
   "wine":["grape"], "beer":["malt beverages","malt"], "liquor":["spirits"], "whiskey":["whisky","spirits"],
-  "vodka":["spirits"], "rum":["spirits"], "gin":["spirits"], "cheese":["dairy"], "butter":["dairy"],
+  "vodka":["spirits"], "rum":["spirits"], "gin":["spirits"], "butter":["dairy"],
   "milk powder":["milk"], "sugar":["sucrose"], "honey":["natural honey"], "coffee":["coffee beans"],
-  "tea":["black tea","green tea"], "chocolate":["cocoa"], "candy":["confectionery"], "gum":["chewing gum"],
+  "tea":["black tea","green tea"], "candy":["confectionery"], "gum":["chewing gum"],
   "juice":["fruit juice"], "spices":["seasonings"], "flour":["wheat flour","cereal flour"],
   "pasta":["macaroni","noodles"], "bread":["bakers wares"], "cookies":["biscuits"], "crackers":["biscuits"],
   "canned vegetables":["preserved vegetables"], "canned fruit":["preserved fruit"], "vinegar":["acetic acid"],
@@ -17882,7 +17882,33 @@ const PINNED_SEARCH_TERMS = {
   "subwoofer": ["8518.21.00.00"],
   "home theater receiver": ["8518.50.00.00"],
   "streaming stick": ["8528.71.00.10"],
-  "fire starter": ["3606.90.00.00"]
+  "fire starter": ["3606.90.00.00"],
+  // Phase A of a description-search remediation plan, approved 15 SEPT
+  // 2026 after a dedicated audit. Same recurring pattern as every prior
+  // round - a short, unrelated leaf wins the scoring bonus over the
+  // correct, longer description. Some notably bad ones: electrical wire
+  // -> "electrical energy" (the abstract commodity itself); granite ->
+  // "graniteware" (enamel cookware, an unrelated use of the word);
+  // rubber gloves -> porcelain hand-forms (mannequin hands); wooden
+  // furniture -> furniture polish; car parts -> toy pedal cars; steel
+  // door -> a stove/oven door assembly; ceramic tile -> a niche diatomite
+  // tile variant. The remaining five (plastic bottle, soap, fertilizer,
+  // bolts, aluminum foil, paper bags) are near-ties where the correct
+  // code scores competitively but a less relevant one wins on dataset
+  // ordering, not a coincidental-word-collision like the others.
+  "electrical wire": ["8544.49.00.19"],
+  "granite": ["2516.12.00.00"],
+  "rubber gloves": ["4015.19.90.00"],
+  "wooden furniture": ["9403.60.10.99"],
+  "car parts": ["8708.99.19.90"],
+  "steel door": ["7308.30.00.21"],
+  "ceramic tile": ["6907.21.29.00"],
+  "plastic bottle": ["3923.30.90.10"],
+  "soap": ["3401.11.90.00"],
+  "fertilizer": ["3105.60.00.00"],
+  "bolts": ["7318.15.00.42"],
+  "aluminum foil": ["7607.19.00.00"],
+  "paper bags": ["4819.40.00.30"]
 };
 function searchCodes(query, maxResults){
   const trimmed = (query || "").trim();
