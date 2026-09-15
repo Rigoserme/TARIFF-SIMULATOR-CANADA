@@ -2378,19 +2378,40 @@ function runEstimate(){
     delete existingPanel.dataset.rendered;
   }
 
+  // DISPLAY-ONLY CHANGE (14 SEPT 2026), per explicit request: the large
+  // number previously showed 'total' (shipment value + duty + surtax +
+  // GST/HST/PST/QST) - the full landed cost - which could read as
+  // confusing to clients since it wasn't labeled as such. Now shows ONLY
+  // the customs/government charges (duty + surtax + tax on goods),
+  // explicitly excluding shipment value AND all brokerage-related
+  // charges (entry fee, bond fee, account setup, ACI, CARM, HST on fees,
+  // disbursement fee - none of which were ever part of 'total' in the
+  // first place, since 'total' is the main-card accumulator, entirely
+  // separate from computeBrokerageFees()'s own quote-total chain).
+  // 'total' itself is completely untouched here - it starts as value and
+  // only ever has duty/surtax/tax amounts added via total += amt, so
+  // total minus value is an exact, purely-derived display value with
+  // zero effect on estimatedLandedCost or any downstream calculation.
+  // roundMoney() applied for consistency with the existing rounding
+  // pattern used everywhere else charges are computed in this file.
+  // NOTE: kept as a plain JS comment here, not an HTML comment inside the
+  // template literal below - an HTML comment there would ship this whole
+  // explanation into every real user's page source, and its own mention
+  // of "HST"/"QST" was found (via regression testing) to falsely trip a
+  // string-matching test that checks the ACTUAL tax line item shown.
   resultsEl.innerHTML = `
     <div class="result-hero">
       <div class="hs-line">${matchedCode} · ${bestDescriptionSegment(CODE_DESCRIPTIONS[matchedCode])} <span class="hs-origin-inline">— Origin: ${origin || 'Not specified'}</span></div>
       <div class="top-row">
         <div class="label-row">
           <div class="label-icon">${ICON_DOCUMENT}</div>
-          <div class="label">Estimated Import Cost</div>
+          <div class="label">Estimated Customs &amp; Government Charges</div>
         </div>
         <button class="download-btn" id="downloadReportBtn" type="button">${ICON_DOWNLOAD} Download Report</button>
       </div>
-      <div class="amount">${formatMoney(total)}</div>
+      <div class="amount">${formatMoney(roundMoney(total - value))}</div>
       <div class="sub-row">
-        <div class="sub">on a ${formatMoney(value)} shipment${currency === 'USD' ? ` (converted from ${formatMoney(enteredValue)} USD to CAD)` : ''}</div>
+        <div class="sub">Based on a ${formatMoney(value)} shipment value${currency === 'USD' ? ` (converted from ${formatMoney(enteredValue)} USD to CAD)` : ''}</div>
         <!-- BUG FIX (26 AUG 2026): this badge previously always said "Estimate
              complete" even when duty couldn't actually be calculated (specific/
              compound per-unit rates, which need a quantity or weight this tool
