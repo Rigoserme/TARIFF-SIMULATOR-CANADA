@@ -17951,6 +17951,71 @@ function searchCodes(query, maxResults){
       .filter(r => !pinned.includes(r.code));
     return [...pinnedResults, ...rest].slice(0, limit);
   }
+  // PHASE B STEP 1 (15 SEPT 2026), found via a description-search
+  // remediation audit: PINNED_SEARCH_TERMS only ever checked the ENTIRE
+  // normalized query string. "coffee" is pinned correctly, but "coffee
+  // beans" and "unroasted coffee beans" are different query strings that
+  // never reached that pin at all - they fell straight through to
+  // searchCodesByText(), where an unrelated leaf match (e.g. "Coffee
+  // whitener") could outrank the correct coffee heading.
+  //
+  // Fix: when the whole query isn't pinned, check whether any EXISTING
+  // pinned key - single-word or multi-word alike - appears as a whole-
+  // phrase match somewhere within a longer query, using the same
+  // word-boundary-aware wholeWordMatch() already used everywhere else in
+  // this file (so "car" never matches inside "scarf", and "aluminum
+  // foil" is checked as the exact two-word phrase, not just "aluminum"
+  // alone - checking only single words was tried first and found, via
+  // testing, to miss every multi-word pin, e.g. "roll of aluminum foil"
+  // never reaching the "aluminum foil" pin at all). When more than one
+  // pinned key matches within the same query, the longest (most
+  // specific) one wins, since a longer phrase match is inherently less
+  // likely to be a coincidental collision than a shorter one.
+  //
+  // That inherited pin is only ever surfaced when the normal, unaided
+  // top result doesn't already fully cover every distinct word in the
+  // query. searchCodesByText() already sorts by how many distinct query
+  // words each result matches (conceptsMatched) before anything else, so
+  // its top result is always whichever code covers the most of the
+  // query - checking whether that top result's own description contains
+  // every one of the query's words is equivalent to asking "is there
+  // already a genuinely complete match for this whole phrase?". If yes
+  // (e.g. "coffee whitener" - the actual whitener product's own name
+  // contains both "coffee" and "whitener"), that match is already
+  // correct and specific, so it's left untouched. If no (e.g. "coffee
+  // beans" - no code's own description ever covers "beans" too, no
+  // matter which one currently wins), the match is incomplete, so
+  // surfacing the pinned concept is a safe improvement, not a substring
+  // collision.
+  //
+  // This reuses the existing wholeWordMatch() word-boundary matcher and
+  // the existing PINNED_SEARCH_TERMS data - no new scoring weights,
+  // synonym logic, relevance threshold, or fuzzy matching introduced.
+  if(lower.includes(" ")){
+    const queryWords = lower.split(/\s+/).filter(Boolean);
+    let inherited = null, inheritedKeyLength = 0;
+    for(const key in PINNED_SEARCH_TERMS){
+      if(key === lower) continue; // exact-match case already handled above
+      if(wholeWordMatch(lower, key) && key.length > inheritedKeyLength){
+        inherited = PINNED_SEARCH_TERMS[key];
+        inheritedKeyLength = key.length;
+      }
+    }
+    if(inherited){
+      const rest = searchCodesByText(trimmed, limit);
+      const conceptWords = queryWords.filter(w => w.length > 1 && !SEARCH_STOPWORDS.has(w));
+      const topAlreadyComplete = rest.length > 0 &&
+        conceptWords.every(w => wholeWordMatch(rest[0].description.toLowerCase(), w));
+      if(!topAlreadyComplete){
+        const inheritedResults = inherited
+          .filter(code => CODE_DESCRIPTIONS[code])
+          .map(code => ({ code, description: CODE_DESCRIPTIONS[code] }));
+        const restFiltered = rest.filter(r => !inherited.includes(r.code));
+        return [...inheritedResults, ...restFiltered].slice(0, limit);
+      }
+      return rest.slice(0, limit);
+    }
+  }
   return searchCodesByText(trimmed, maxResults);
 }
 
